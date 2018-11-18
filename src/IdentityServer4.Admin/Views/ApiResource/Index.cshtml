@@ -1,0 +1,82 @@
+﻿<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        Api Resource
+        <small></small>
+    </h1>
+    <ol class="breadcrumb">
+        <li>
+            <a href="/"><i class="fa fa-dashboard"></i> Home</a>
+        </li>
+        <li class="active">ApiResource</li>
+    </ol>
+</section>
+
+<!-- Main content -->
+<section class="content container-fluid">
+    <div class="col-xs-12">
+        <div class="box" id="view">
+            <div class="box-header">
+                <div class="box-title">
+                    <a class="btn btn-default" href="/apiResource/create">Create Api Resource</a>
+                </div>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body table-responsive no-padding">
+                <table class="table table-bordered">
+                    <tbody>
+                    <tr>
+                        <th>Name</th>
+                        <th>DisplayName</th>                      
+                        <th>Enabled</th>
+                        <th>Secrets</th>
+                        <th>Scopes</th>
+                        <th>Claims</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr v-show="els.length==0">
+                        <td colspan="13">
+                            No data to display...
+                        </td>
+                    </tr>
+                    <tr v-for="el in els">
+                        <td>
+                            <span v-text="el.name"></span>
+                        </td>
+                        <td>
+                            <span v-text="el.displayName"></span>
+                        </td>
+                        <td>
+                            <span v-text="el.enabled"></span>
+                        </td>
+                        <td>
+                            <span v-text="el.secrets"></span>
+                        </td>
+                        <td>
+                            <span v-text="el.scopes"></span>
+                        </td>
+                        <td>
+                            <span v-text="el.claims"></span>
+                        </td>
+                        <td>
+                            <span v-text="el.description"></span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer clearfix">
+                <ul id="pagination" v-show="total>size" class="pagination pagination-sm no-margin pull-left">
+                </ul>
+            </div>
+        </div>
+        <!-- /.box -->
+    </div>
+</section>
+<!-- /.content -->
+
+
+@section scripts{
+    <script src="~/js/apiResource.js" asp-append-version="true"></script>
+}
