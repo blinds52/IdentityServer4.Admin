@@ -31,13 +31,13 @@ namespace IdentityServer4.Admin
 
                     var roleMgr = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
 
-                    var role = roleMgr.FindByNameAsync("Admin").Result;
+                    var role = roleMgr.FindByNameAsync("superadmin").Result;
                     if (role == null)
                     {
                         role = new Role
                         {
-                            Name = "Admin",
-                            NormalizedName = "ADMIN"
+                            Name = "superadmin",
+                            NormalizedName = "SuperAdmin"
                         };
                         var createRoleResult = roleMgr.CreateAsync(role).Result;
                         if (!createRoleResult.Succeeded)
@@ -77,7 +77,7 @@ namespace IdentityServer4.Admin
                             throw new Exception(result.Errors.First().Description);
                         }
 
-                        userMgr.AddToRoleAsync(admin, "Admin").Wait();
+                        userMgr.AddToRoleAsync(admin, "superadmin").Wait();
                         Console.WriteLine("admin created");
                     }
                     else

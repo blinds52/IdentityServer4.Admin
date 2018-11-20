@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Security.Claims;
 using IdentityServer4.Models;
+using IdentityServer4.Test;
 
 namespace IdentityServer4.Admin
 {
@@ -19,7 +21,7 @@ namespace IdentityServer4.Admin
         {
             return new List<ApiResource>
             {
-                new ApiResource("superAdminApi", "Super Admin Api")
+                new ApiResource("api1", "My API")
             };
         }
 
@@ -29,55 +31,22 @@ namespace IdentityServer4.Admin
             // client credentials client
             return new List<Client>
             {
-                new Client
-                {
-                    ClientId = "client",
-                    AllowedGrantTypes = GrantTypes.ClientCredentials,
-
-                    ClientSecrets =
-                    {
-                        new Secret("secret".Sha256())
-                    },
-                    AllowedScopes = {"api1"}
-                },
-
-                // resource owner password grant client
-                new Client
-                {
-                    ClientId = "ro.client",
-                    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
-
-                    ClientSecrets =
-                    {
-                        new Secret("secret".Sha256())
-                    },
-                    AllowedScopes = {"api1"}
-                },
-
                 // OpenID Connect hybrid flow and client credentials client (MVC)
                 new Client
                 {
-                    ClientId = "mvc",
-                    ClientName = "MVC Client",
-                    AllowedGrantTypes = GrantTypes.HybridAndClientCredentials,
+                    ClientId = "ExpertApi",
+                    ClientName = "ExpertApi",
+                    AllowedGrantTypes = GrantTypes.Implicit,
 
-                    RequireConsent = true,
-
-                    ClientSecrets =
-                    {
-                        new Secret("secret".Sha256())
-                    },
-
-                    RedirectUris = {"http://localhost:5002/signin-oidc"},
-                    PostLogoutRedirectUris = {"http://localhost:5002/signout-callback-oidc"},
+                    RedirectUris = {"http://localhost:6568/signin-oidc"},
+                    PostLogoutRedirectUris = {"http://localhost:6568/signout-callback-oidc"},
 
                     AllowedScopes =
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
                         "api1"
-                    },
-                    AllowOfflineAccess = true
+                    }
                 }
             };
         }

@@ -1,7 +1,4 @@
 ﻿@model LoginViewModel
-@{
-    Layout = null;
-}
 <!DOCTYPE html>
 <html>
 <head>
@@ -34,18 +31,13 @@
 <body class="hold-transition login-page">
 <div class="login-box">
     <div class="login-logo">
-        <a><b>IdentityServer4 Admin</b></a>
+        <a>
+            <b>IdentityServer4 Admin</b>
+        </a>
     </div>
     <!-- /.login-logo -->
     <div class="login-box-body">
-        @if (ViewContext.ModelState.IsValid == false)
-        {
-            <div class="alert alert-danger">
-                <strong>Error</strong>
-                <div asp-validation-summary="All" class="danger"></div>
-            </div>
-        }
-        <form asp-route="Login">
+        <form action="/Account/Login" asp-route="Login">
             <input type="hidden" asp-for="ReturnUrl"/>
             <div class="form-group has-feedback">
                 <input asp-for="Username" type="text" class="form-control" placeholder="用户名">

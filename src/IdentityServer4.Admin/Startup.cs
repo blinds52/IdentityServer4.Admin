@@ -35,6 +35,7 @@ namespace IdentityServer4.Admin
             
             services.AddDbContext<AdminDbContext>(options =>
                 options.UseSqlServer(connectionString));
+            
             services.AddIdentity<User, Role>()
                 .AddEntityFrameworkStores<AdminDbContext>()
                 .AddDefaultTokenProviders();
@@ -65,27 +66,8 @@ namespace IdentityServer4.Admin
 
                     // this enables automatic token cleanup. this is optional.
                     options.EnableTokenCleanup = true;
-                    // options.TokenCleanupInterval = 15; // frequency in seconds to cleanup stale grants. 15 is useful during debugging
-                });
-
-
-            services.AddAuthentication()
-                .AddGoogle(options =>
-                {
-                    options.ClientId = "708996912208-9m4dkjb5hscn7cjrn5u0r4tbgkbj1fko.apps.googleusercontent.com";
-                    options.ClientSecret = "wdfPY6t8H8cecgjlxud__4Gh";
-                })
-                .AddOpenIdConnect("oidc", "OpenID Connect", options =>
-                {
-                    options.Authority = "https://demo.identityserver.io/";
-                    options.ClientId = "implicit";
-                    options.SaveTokens = true;
-
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        NameClaimType = "name",
-                        RoleClaimType = "role"
-                    };
+                    // frequency in seconds to cleanup stale grants. 15 is useful during debugging
+                    options.TokenCleanupInterval = 15; 
                 });
         }
 
