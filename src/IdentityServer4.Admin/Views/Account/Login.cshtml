@@ -1,4 +1,7 @@
 ﻿@model LoginViewModel
+@{
+    Layout = null;
+}
 <!DOCTYPE html>
 <html>
 <head>
@@ -14,9 +17,9 @@
     <!-- Ionicons -->
     <link rel="stylesheet" href="~/lib/Ionicons/css/ionicons.min.css" asp-append-version="true">
     <!-- Theme style -->
-    <link rel="stylesheet" href="~/lib/adminLTE/dist/css/AdminLTE.min.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/lib/admin-lte/dist/css/AdminLTE.min.css" asp-append-version="true">
     <!-- iCheck -->
-    <link rel="stylesheet" href="~/lib/iCheck/square/blue.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/lib/admin-lte/plugins/iCheck/square/blue.css" asp-append-version="true">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -37,7 +40,7 @@
     </div>
     <!-- /.login-logo -->
     <div class="login-box-body">
-        <form action="/Account/Login" asp-route="Login">
+        <form asp-route="Login">
             <input type="hidden" asp-for="ReturnUrl"/>
             <div class="form-group has-feedback">
                 <input asp-for="Username" type="text" class="form-control" placeholder="用户名">
@@ -87,7 +90,7 @@
 <!-- Bootstrap -->
 <script src="~/lib/bootstrap/dist/js/bootstrap.min.js" asp-append-version="true"></script>
 <!-- iCheck -->
-<script src="~/lib/iCheck/icheck.min.js" asp-append-version="true"></script>
+<script src="~/lib/admin-lte/plugins/iCheck/icheck.min.js" asp-append-version="true"></script>
 <script>
     $(function() {
         $('input').iCheck({

@@ -1,7 +1,5 @@
 using System.Collections.Generic;
-using System.Security.Claims;
 using IdentityServer4.Models;
-using IdentityServer4.Test;
 
 namespace IdentityServer4.Admin
 {
@@ -10,10 +8,13 @@ namespace IdentityServer4.Admin
         // scopes define the resources in your system
         public static IEnumerable<IdentityResource> GetIdentityResources()
         {
+            var profile = new IdentityResources.Profile();
+            profile.UserClaims.Add("role");
             return new List<IdentityResource>
             {
                 new IdentityResources.OpenId(),
-                new IdentityResources.Profile(),
+                profile
+               
             };
         }
 
@@ -21,7 +22,7 @@ namespace IdentityServer4.Admin
         {
             return new List<ApiResource>
             {
-                new ApiResource("api1", "My API")
+                // new ApiResource("expert", "Expert System", new List<string> {"role"}),
             };
         }
 
@@ -31,21 +32,20 @@ namespace IdentityServer4.Admin
             // client credentials client
             return new List<Client>
             {
-                // OpenID Connect hybrid flow and client credentials client (MVC)
                 new Client
                 {
-                    ClientId = "ExpertApi",
-                    ClientName = "ExpertApi",
+                    ClientId = "expert",
+                    ClientName = "Expert System",
                     AllowedGrantTypes = GrantTypes.Implicit,
 
-                    RedirectUris = {"http://localhost:6568/signin-oidc"},
-                    PostLogoutRedirectUris = {"http://localhost:6568/signout-callback-oidc"},
+                    RedirectUris = {"http://my.com:6568/signin-oidc"},
+                    PostLogoutRedirectUris = {"http://my.com:6568/signout-callback-oidc"},
 
+                    RequireConsent = false,
                     AllowedScopes =
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        "api1"
                     }
                 }
             };
