@@ -21,7 +21,7 @@ namespace IdentityServer4.Admin
         {
             return new List<ApiResource>
             {
-                new ApiResource("expert", "Expert System"),
+                new ApiResource("expert-api", "Expert Api"),
             };
         }
 
@@ -33,19 +33,19 @@ namespace IdentityServer4.Admin
             {
                 new Client
                 {
-                    ClientId = "js",
-                    ClientName = "Expert System",
+                    ClientId = "expert-web",
+                    ClientName = "Expert Web",
                     AllowedGrantTypes = GrantTypes.Implicit,
                     AllowAccessTokensViaBrowser = true,
                     AllowedCorsOrigins = {"http://localhost:6568"},
                     RedirectUris = {"http://localhost:6568/account/ssocallback"},
-                    PostLogoutRedirectUris = {"http://localhost:6568/account/logout"},
+                    PostLogoutRedirectUris = {"http://localhost:6568"},
                     RequireConsent = false,
                     AllowedScopes =
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        "expert"
+                        "expert-api"
                     }
                 }
             };
