@@ -3,7 +3,6 @@
   "dependencies": {
     "admin-lte": "2.4.8",
     "vue": "2.5.17",
-    "sweetalert": "2.1.2",
     "twbs-pagination": "1.4.2"
   }
 }
