@@ -17,7 +17,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Controllers\Api\Dtos" />
       <Folder Include="wwwroot\lib" />
     </ItemGroup>
 

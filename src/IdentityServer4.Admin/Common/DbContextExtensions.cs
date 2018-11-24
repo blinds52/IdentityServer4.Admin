@@ -9,7 +9,7 @@ namespace IdentityServer4.Admin.Common
 {
     public static class DbContextExtensions
     {
-        public static PaginationQueryResult PageList<TEntity, TKey, TOrderBy>(this DbSet<TEntity> dbSet,
+        public static PaginationQueryResult PageList<TEntity, TKey, TOrderBy>(this IQueryable<TEntity> dbSet,
             PaginationQuery input,
             Expression<Func<TEntity, bool>> where = null,
             Expression<Func<TEntity, TOrderBy>> orderBy = null) where TEntity : class, IEntity<TKey>
@@ -57,7 +57,7 @@ namespace IdentityServer4.Admin.Common
             return result;
         }
 
-        public static PaginationQueryResult PageList<TEntity>(this DbSet<TEntity> dbSet,
+        public static PaginationQueryResult PageList<TEntity>(this IQueryable<TEntity> dbSet,
             PaginationQuery input,
             Expression<Func<TEntity, bool>> where = null) where TEntity : class
         {

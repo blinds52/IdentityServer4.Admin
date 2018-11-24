@@ -41,7 +41,7 @@ namespace IdentityServer4.Admin
 
         private static async Task AddUsers(IServiceScope scope)
         {
-            await AddUser(scope, "admin", "1qazZAQ!", "zlzforever@163.com", "18721696556", "superadmin");
+            await AddUser(scope, "admin", "1qazZAQ!", "zlzforever@163.com", "18721696556", "admin");
             await AddUser(scope, "songzhiyun", "1qazZAQ!", "songzhiyun@163.com", "18721696556", "expert-admin");
             await AddUser(scope, "shunyin", "1qazZAQ!", "shunyin@163.com", "18721696556", "expert-admin");
             await AddUser(scope, "dingjiaoyi", "1qazZAQ!", "dingjiaoyi@163.com", "18721696556", "expert-leader");
@@ -83,13 +83,13 @@ namespace IdentityServer4.Admin
         {
             var roleMgr = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
 
-            var superAdmin = await roleMgr.FindByNameAsync("superadmin");
+            var superAdmin = await roleMgr.FindByNameAsync("admin");
             if (superAdmin == null)
             {
                 superAdmin = new Role
                 {
-                    Name = "superadmin",
-                    NormalizedName = "SuperAdmin"
+                    Name = "admin",
+                    NormalizedName = "Admin"
                 };
                 await roleMgr.CreateAsync(superAdmin);
 

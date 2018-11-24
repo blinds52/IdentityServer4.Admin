@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IdentityServer4.Admin.Migrations.ConfigurationDb
 {
     [DbContext(typeof(ConfigurationDbContext))]
-    [Migration("20181117143656_id4configuration")]
+    [Migration("20181124122427_id4configuration")]
     partial class id4configuration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -1,12 +1,45 @@
-﻿var app = {};
-app.queryString = function (name) {
-    var result = location.search.match(new RegExp("[\?\&]" + name + "=([^\&]+)", "i"));
+﻿const app = {};
+app.getUrlParam = function (name) {
+    let result = location.search.match(new RegExp("[\?\&]" + name + "=([^\&]+)", "i"));
     if (result === null || result.length < 1) {
         return "";
     }
     return result[1];
 };
-
+app.getResourceName = function (url) {
+    let nUrl = url ? url : window.location.href;
+    nUrl = nUrl.replace(/^http:\/\/[^/]+/, "");
+    let addr = nUrl.substr(nUrl.lastIndexOf('/', nUrl.lastIndexOf('/') - 1) + 1);
+    let index = addr.lastIndexOf("\/");
+    //js 获取字符串中最后一个斜杠后面的内容
+    return decodeURI(addr.substring(index + 1, addr.length));
+};
+app.successHandler = function (result, success, error) {
+    if (result && result.code === 200) {
+        if (success) {
+            success(result);
+        }
+    } else {
+        if (error) {
+            error(result);
+        } else {
+            if (swal) {
+                if (result.msg) {
+                    swal(result.msg, '', "error");
+                }
+            }
+        }
+    }
+};
+app.errorHandler = function (result, error) {
+    if (error) {
+        error(result);
+    } else {
+        if (swal) {
+            swal(result.responseText || result.responseText === '' ? result.statusText : result.responseText, '', "error");
+        }
+    }
+};
 app.post = function (url, data, success, error) {
     $.ajax({
         url: url,
@@ -15,30 +48,10 @@ app.post = function (url, data, success, error) {
         dataType: 'json',
         contentType: 'application/json',
         success: function (result) {
-            if (result && result.code === 200) {
-                if (success) {
-                    success(result);
-                }
-            } else {
-                if (error) {
-                    error(result);
-                } else {
-                    if (swal) {
-                        if (result.msg) {
-                            swal(result.msg, '', "error");
-                        }
-                    }
-                }
-            }
+            app.successHandler(result, success, error);
         },
         error: function (result) {
-            if (error) {
-                error(result);
-            } else {
-                if (swal) {
-                    swal(result.msg, '', "error");
-                }
-            }
+            app.errorHandler(result, error);
         }
     });
 };
@@ -48,30 +61,10 @@ app.get = function (url, success, error) {
         url: url,
         method: 'GET',
         success: function (result) {
-            if (result && result.code === 200) {
-                if (success) {
-                    success(result);
-                }
-            } else {
-                if (error) {
-                    error(result);
-                } else {
-                    if (swal) {
-                        if (result.msg) {
-                            swal(result.msg, '', "error");
-                        }
-                    }
-                }
-            }
+            app.successHandler(result, success, error);
         },
         error: function (result) {
-            if (error) {
-                error(result);
-            } else {
-                if (swal) {
-                    swal(result.msg, '', "error");
-                }
-            }
+            app.errorHandler(result, error);
         }
     });
 };
@@ -81,34 +74,13 @@ app.delete = function (url, success, error) {
         url: url,
         method: 'DELETE',
         success: function (result) {
-            if (result && result.code === 200) {
-                if (success) {
-                    success(result);
-                }
-            } else {
-                if (error) {
-                    error(result);
-                } else {
-                    if (swal) {
-                        if (result.msg) {
-                            swal(result.msg, '', "error");
-                        }
-                    }
-                }
-            }
+            app.successHandler(result, success, error);
         },
         error: function (result) {
-            if (error) {
-                error(result);
-            } else {
-                if (swal) {
-                    swal(result.msg, '', "error");
-                }
-            }
+            app.errorHandler(result, error);
         }
     });
 };
-
 
 app.put = function (url, data, success, error) {
     $.ajax({
@@ -118,30 +90,10 @@ app.put = function (url, data, success, error) {
         dataType: 'json',
         contentType: 'application/json',
         success: function (result) {
-            if (result && result.code === 200) {
-                if (success) {
-                    success(result);
-                }
-            } else {
-                if (error) {
-                    error(result);
-                } else {
-                    if (swal) {
-                        if (result.msg) {
-                            swal(result.msg, '', "error");
-                        }
-                    }
-                }
-            }
+            app.successHandler(result, success, error);
         },
         error: function (result) {
-            if (error) {
-                error(result);
-            } else {
-                if (swal) {
-                    swal(result.msg, '', "error");
-                }
-            }
+            app.errorHandler(result, error);
         }
     });
 };
@@ -157,11 +109,11 @@ app.ui.clearBusy = function () {
 
 app.pagers = {};
 app.ui.initPagination = function (query, option, click) {
-    var total = option.total || 1;
-    var size = option.size || 10;
-    var page = option.page || 1;
-    var totalPages = parseInt((total / size), 10) + ((total % size) > 0 ? 1 : 0) || 1;
-    var currOption = {
+    let total = option.total || 1;
+    let size = option.size || 10;
+    let page = option.page || 1;
+    let totalPages = parseInt((total / size), 10) + ((total % size) > 0 ? 1 : 0) || 1;
+    let currOption = {
         startPage: page,
         totalPages: totalPages,
         visiblePages: 10,
@@ -184,30 +136,16 @@ app.ui.initPagination = function (query, option, click) {
     app.pagers[query] = false;
     $(query).twbsPagination(currOption);
 };
-
-app.getFilter = function (key) {
-    var filter = app.queryString('filter');
-    if (!filter) {
-        return '';
-    }
-    var kvs = filter.split('|');
-    var filters = {};
-    for (i = 0; i < kvs.length; ++i) {
-        var kv = kvs[i].split('::');
-        filters[kv[0]] = kv[1];
-    }
-    return filters[key];
-};
 app.formatDate = function (time, format = 'YY-MM-DD hh:mm:ss') {
-    var date = new Date(time);
+    let date = new Date(time);
 
-    var year = date.getFullYear(),
+    let year = date.getFullYear(),
         month = date.getMonth() + 1,//月份是从0开始的
         day = date.getDate(),
         hour = date.getHours(),
         min = date.getMinutes(),
         sec = date.getSeconds();
-    var preArr = Array.apply(null, Array(10)).map(function (elem, index) {
+    let preArr = Array.apply(null, Array(10)).map(function (elem, index) {
         return '0' + index;
     });
 

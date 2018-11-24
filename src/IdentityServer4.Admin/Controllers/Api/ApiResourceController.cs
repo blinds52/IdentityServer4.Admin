@@ -1,3 +1,4 @@
+using System.Net;
 using System.Threading.Tasks;
 using IdentityServer4.Admin.Common;
 using IdentityServer4.EntityFramework.DbContexts;
@@ -9,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace IdentityServer4.Admin.Controllers.Api
 {
     [Route("api/[controller]")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "admin")]
     public class ApiResourceController : ApiControllerBase
     {
         private readonly ConfigurationDbContext _dbContext;
@@ -23,18 +24,15 @@ namespace IdentityServer4.Admin.Controllers.Api
         public IActionResult Query([FromQuery] PaginationQuery input)
         {
             var output = _dbContext.ApiResources.PageList(input);
-            return new JsonResult(new ApiResult(ApiResult.SuccessCode, null, output));
+            return new ApiResult(output);
         }
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] ApiResource resource)
         {
-            if (!ModelState.IsValid)
-                return new JsonResult(new ApiResult(ApiResult.ModelNotValid, GetModelStateErrorMsg()));
-
             await _dbContext.ApiResources.AddAsync(resource.ToEntity());
             await _dbContext.SaveChangesAsync();
-            return new JsonResult(new ApiResult());
+            return ApiResult.Ok;
         }
     }
 }

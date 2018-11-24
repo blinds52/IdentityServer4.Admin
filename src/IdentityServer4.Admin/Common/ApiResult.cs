@@ -1,24 +1,33 @@
+using System.Net;
+using Microsoft.AspNetCore.Mvc;
+
 namespace IdentityServer4.Admin.Common
 {
-    public class ApiResult
+    public class ApiResult : JsonResult
     {
-        public const int SuccessCode = 200;
-        public const int InternalError = 300;
-        public const int DbError = 302;
-        public const int ModelNotValid = 303;
-        public const int Error = 304;
+        public const int Success = 200;
+        public const int Error = 700;
+        public const int ModelNotValid = 701;
+        public const int DbError = 702;
 
-        public int Code { get; }
+        public static ApiResult Ok = new ApiResult();
 
-        public string Msg { get; }
-
-        public dynamic Data { get; }
-
-        public ApiResult(int code = SuccessCode, string msg = null, dynamic data = null)
+        public ApiResult(object data = null) : base(new
         {
-            Code = code;
-            Msg = msg;
-            Data = data;
+            Code = 200,
+            Msg = "success",
+            Data = data
+        })
+        {
+        }
+
+        public ApiResult(int code, string msg = null, object data = null) : base(new
+        {
+            Code = code,
+            Msg = msg,
+            Data = data
+        })
+        {
         }
     }
 }

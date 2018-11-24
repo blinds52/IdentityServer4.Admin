@@ -1,0 +1,72 @@
+﻿<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        User
+        <small></small>
+    </h1>
+    <ol class="breadcrumb">
+        <li>
+            <a href="/"><i class="fa fa-dashboard"></i>Home</a>
+        </li>
+        <li class="active">User</li>
+    </ol>
+</section>
+<!-- Main content -->
+<section class="content container-fluid">
+    <div class="col-xs-12">
+        <div class="box" id="view">
+            <div class="box-header">
+                <div class="box-title">
+                    <a class="btn btn-default" href="/user/create">Create User</a>
+                </div>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body table-responsive no-padding">
+                <table class="table table-bordered">
+                    <tbody>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>PhoneNumber</th>
+                        <th>Action</th>
+                    </tr>
+                    <tr v-show="els.length==0">
+                        <td colspan="5">
+                            No data to display...
+                        </td>
+                    </tr>
+                    <tr v-for="el in els">
+                        <td>
+                            <span v-text="el.userName"></span>
+                        </td>
+                        <td>
+                            <span v-text="el.email"></span>
+                        </td>
+                        <td>
+                            <span v-text="el.roles"></span>
+                        </td>
+                        <td>
+                            <span v-text="el.phoneNumber"></span>
+                        </td>
+                        <td>
+                            <a class="btn btn-default btn-sm" :href="'/user/edit/'+el.id">Edit</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer clearfix">
+                <ul id="pagination" v-show="total>size" class="pagination pagination-sm no-margin pull-left">
+                </ul>
+            </div>
+        </div>
+        <!-- /.box -->
+    </div>
+</section>
+<!-- /.content -->
+
+@section scripts{
+    <script src="~/js/user.js" asp-append-version="true"></script>
+}

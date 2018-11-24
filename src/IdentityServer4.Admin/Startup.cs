@@ -29,7 +29,12 @@ namespace IdentityServer4.Admin
             services.AddDbContext<AdminDbContext>(options =>
                 options.UseSqlServer(connectionString));
             
-            services.AddIdentity<User, Role>()
+            services.AddIdentity<User, Role>(options =>
+                {
+                    options.Password.RequireUppercase = false;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.User.RequireUniqueEmail = false;
+                })
                 .AddEntityFrameworkStores<AdminDbContext>()
                 .AddDefaultTokenProviders();
             

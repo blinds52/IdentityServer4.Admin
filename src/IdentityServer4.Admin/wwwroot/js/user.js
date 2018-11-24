@@ -1,5 +1,5 @@
 $(function () {
-    $('#apiResource').addClass('active');
+    $('#user').addClass('active');
     new Vue({
         el: '#view',
         data: {
@@ -10,17 +10,17 @@ $(function () {
             keyword: decodeURIComponent(app.getUrlParam('keyword') || '')
         },
         mounted: function () {
-            loadView(this);
+           loadView(this);
         },
         methods: {
             remove: function (id) {
                 const that = this;
                 swal({
-                    title: "Sure to remove this job?",
+                    title: "Sure to remove this user?",
                     type: "warning",
                     showCancelButton: true
                 }, function () {
-                    app.delete("/swarm/v1.0/job/" + id, function () {
+                    app.delete("/api/user/" + id, function () {
                         loadView(that);
                     });
                 });
@@ -29,7 +29,7 @@ $(function () {
     });
 
     function loadView(vue) {
-        const url = '/api/apiResource?keyword=' + vue.$data.keyword + '&page=' + vue.$data.page + '&size=' + vue.$data.size;
+        const url = '/api/user?keyword=' + vue.$data.keyword + '&page=' + vue.$data.page + '&size=' + vue.$data.size;
         app.get(url, function (result) {
             vue.$data.els = result.data.result;
             vue.$data.total = result.data.total;
@@ -37,7 +37,7 @@ $(function () {
             vue.$data.size = result.data.size;
 
             app.ui.initPagination('#pagination', result.data, function (page) {
-                window.location.href = '/api/apiResource?keyword=' + vue.$data.keyword + '&page=' + page + '&size=' + vue.$data.size;
+                window.location.href = '/api/user?keyword=' + vue.$data.keyword + '&page=' + page + '&size=' + vue.$data.size;
             });
         });
     }
