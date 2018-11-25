@@ -6,6 +6,5 @@ namespace IdentityServer4.Admin.Controllers
     [Authorize()]
     public class PermissionController
     {
-        public Task<bool>
     }
 }
