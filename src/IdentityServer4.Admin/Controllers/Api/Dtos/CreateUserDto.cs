@@ -19,6 +19,6 @@ namespace IdentityServer4.Admin.Controllers.Api.Dtos
         
         [Required]
         [Phone]
-        public string Phone { get; set; }
+        public string PhoneNumber { get; set; }
     }
 }

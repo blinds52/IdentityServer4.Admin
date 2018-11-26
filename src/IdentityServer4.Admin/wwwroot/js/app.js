@@ -6,13 +6,20 @@ app.getUrlParam = function (name) {
     }
     return result[1];
 };
-app.getResourceName = function (url) {
-    let nUrl = url ? url : window.location.href;
-    nUrl = nUrl.replace(/^http:\/\/[^/]+/, "");
-    let addr = nUrl.substr(nUrl.lastIndexOf('/', nUrl.lastIndexOf('/') - 1) + 1);
-    let index = addr.lastIndexOf("\/");
-    //js 获取字符串中最后一个斜杠后面的内容
-    return decodeURI(addr.substring(index + 1, addr.length));
+app.getPathPart = function (url, part) {
+    url = url.replace(/^http:\/\/[^/]+/, "");
+    let parts = url.split('/');
+    let result = '';
+    if (!part) {
+        result = parts[parts.length - 1];
+    } else {
+        part = part + 1;
+        if (part < parts.length) {
+
+            result = parts[part];
+        }
+    }
+    return decodeURI(result);
 };
 app.successHandler = function (result, success, error) {
     if (result && result.code === 200) {

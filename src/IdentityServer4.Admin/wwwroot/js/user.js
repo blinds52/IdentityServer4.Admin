@@ -1,7 +1,7 @@
 $(function () {
     $('#user').addClass('active');
     new Vue({
-        el: '#view',
+        el: '#context-view',
         data: {
             els: [],
             page: app.getUrlParam('page') || 1,
@@ -10,7 +10,7 @@ $(function () {
             keyword: decodeURIComponent(app.getUrlParam('keyword') || '')
         },
         mounted: function () {
-           loadView(this);
+            loadView(this);
         },
         methods: {
             remove: function (id) {

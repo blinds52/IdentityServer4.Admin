@@ -17,10 +17,15 @@ namespace IdentityServer4.Admin.Controllers.Api
     public class UserController : ApiControllerBase
     {
         private readonly UserManager<User> _userManager;
+        private readonly IPasswordHasher<User> _passwordHasher;
+        private readonly IUserStore<User> _userStore;
 
-        public UserController(UserManager<User> userManager)
+        public UserController(UserManager<User> userManager, IUserStore<User> userStore,
+            IPasswordHasher<User> passwordHasher)
         {
             _userManager = userManager;
+            _passwordHasher = passwordHasher;
+            _userStore = userStore;
         }
 
         [Authorize(Roles = "super-admin")]
@@ -46,7 +51,7 @@ namespace IdentityServer4.Admin.Controllers.Api
             {
                 dto.PhoneNumber = user.PhoneNumber;
                 dto.Email = user.Email;
-                dto.UserName = user.Email;
+                dto.UserName = user.UserName;
                 dto.Id = user.Id;
                 dto.Roles = string.Join(",", await _userManager.GetRolesAsync(user));
             }
@@ -54,18 +59,32 @@ namespace IdentityServer4.Admin.Controllers.Api
             return new ApiResult(dto);
         }
 
-        [HttpPost("{userId}")]
-        public async Task<IActionResult> Update(string userId, UserDto dto)
+        [HttpPut("{userId}")]
+        public async Task<IActionResult> Update(string userId, [FromBody] UpdateUserDto dto)
         {
-            if (dto.Id != userId) return new ApiResult(ApiResult.Error, "更新编码号不匹配");
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null) return new ApiResult(ApiResult.Error, "用户不存在");
+            user.UserName = dto.UserName;
+            user.Email = dto.Email;
+            user.PhoneNumber = dto.PhoneNumber;
+            var result = await _userManager.UpdateAsync(user);
+            return result.Succeeded ? ApiResult.Ok : new ApiResult(ApiResult.Error, result.Errors.First().Description);
+        }
 
-            var result = await _userManager.UpdateAsync(new User
+        [HttpPut("{userId}/changePassword")]
+        public async Task<IActionResult> ChangePassword(string userId, [FromBody] ChangePasswordDto dto)
+        {
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null) return new ApiResult(ApiResult.Error, "用户不存在");
+
+            var result = await _userManager.RemovePasswordAsync(user);
+            if (!result.Succeeded)
             {
-                UserName = dto.UserName,
-                Email = dto.Email,
-                PhoneNumber = dto.PhoneNumber,
-                Id = dto.Id
-            });
+                return new ApiResult(ApiResult.Error, result.Errors.First().Description);
+            }
+
+            result = await _userManager.AddPasswordAsync(user, dto.NewPassword);
+
             return result.Succeeded ? ApiResult.Ok : new ApiResult(ApiResult.Error, result.Errors.First().Description);
         }
 
@@ -81,7 +100,7 @@ namespace IdentityServer4.Admin.Controllers.Api
             {
                 UserName = dto.UserName,
                 Email = dto.Email,
-                PhoneNumber = dto.Phone
+                PhoneNumber = dto.PhoneNumber
             }, dto.Password);
             if (result.Succeeded)
             {

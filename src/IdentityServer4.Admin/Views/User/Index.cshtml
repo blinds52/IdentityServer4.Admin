@@ -14,7 +14,7 @@
 <!-- Main content -->
 <section class="content container-fluid">
     <div class="col-xs-12">
-        <div class="box" id="view">
+        <div class="box" id="context-view">
             <div class="box-header">
                 <div class="box-title">
                     <a class="btn btn-default" href="/user/create">Create User</a>
@@ -31,11 +31,6 @@
                         <th>PhoneNumber</th>
                         <th>Action</th>
                     </tr>
-                    <tr v-show="els.length==0">
-                        <td colspan="5">
-                            No data to display...
-                        </td>
-                    </tr>
                     <tr v-for="el in els">
                         <td>
                             <span v-text="el.userName"></span>
@@ -50,7 +45,8 @@
                             <span v-text="el.phoneNumber"></span>
                         </td>
                         <td>
-                            <a class="btn btn-default btn-sm" :href="'/user/edit/'+el.id">Edit</a>
+                            <a class="btn btn-default btn-sm" :href="'/user/' + el.id + '/edit'">Edit</a>
+                            <a class="btn btn-default btn-sm" :href="'/user/' +el.id + '/changepassword'">ChangePassword</a>
                         </td>
                     </tr>
                     </tbody>
@@ -66,7 +62,6 @@
     </div>
 </section>
 <!-- /.content -->
-
 @section scripts{
     <script src="~/js/user.js" asp-append-version="true"></script>
 }

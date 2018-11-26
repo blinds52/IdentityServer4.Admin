@@ -6,11 +6,11 @@ $(function () {
             userName: '',
             email: '',
             password: '',
-            phone: ''
+            phoneNumber: ''
         },
         methods: {
             create: function () {
-                const user = this.$data.el;
+                const user = this.$data;
                 app.post('/api/user', user, function () {
                     window.location.href = '/user';
                 });

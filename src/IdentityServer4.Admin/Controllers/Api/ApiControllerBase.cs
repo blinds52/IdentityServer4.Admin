@@ -4,6 +4,7 @@ using System.Net;
 using IdentityServer4.Admin.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace IdentityServer4.Admin.Controllers.Api
 {
@@ -29,7 +30,8 @@ namespace IdentityServer4.Admin.Controllers.Api
             if (!ModelState.IsValid)
             {
                 context.Result = new ApiResult(ApiResult.ModelNotValid,
-                    ModelState.First().Value.Errors.First().ErrorMessage);
+                    ModelState.First(kv => kv.Value.ValidationState == ModelValidationState.Invalid).Value.Errors
+                        .First().ErrorMessage);
                 return;
             }
 

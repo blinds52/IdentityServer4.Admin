@@ -5,15 +5,16 @@ $(function () {
         data: {
             userName: '',
             email: '',
-            password: '',
-            phone: ''
+            phoneNumber: ''
         },
         mounted: function () {
             loadView(this);
         },
         methods: {
             update: function () {
-                app.put("/api/user/" + app.getResourceName(), null, function () {
+                app.put("/api/user/" + app.getPathPart(window.location.href, 1), this.$data, function () {
+                    window.location.href = '/user';
+                }, function () {
                     swal({
                         title: "更新失败",
                         type: "error",
@@ -25,12 +26,11 @@ $(function () {
     });
 
     function loadView(vue) {
-        const url = '/api/user/' + app.getResourceName();
+        const url = '/api/user/' + app.getPathPart(window.location.href, 1);
         app.get(url, function (result) {
             vue.$data.userName = result.data.userName;
             vue.$data.email = result.data.email;
-            vue.$data.password = result.data.password;
-            vue.$data.phone = result.data.phone;
+            vue.$data.phoneNumber = result.data.phoneNumber;
         });
     }
 });

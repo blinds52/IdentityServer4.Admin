@@ -7,21 +7,30 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityServer4.Admin.Controllers
 {
-    [SecurityHeaders]
     [Authorize(Roles = "admin")]
+    [Route("[controller]")]
     public class UserController : Controller
-    {
+    { 
+        [HttpGet()]
         public IActionResult Index()
         {
             return View();
         }
 
+        [HttpGet("create")]
         public IActionResult Create()
         {
             return View();
         }
 
+        [HttpGet("{userId}/edit")]
         public IActionResult Edit()
+        {
+            return View();
+        }
+
+        [HttpGet("{userId}/changepassword")]
+        public IActionResult ChangePassword()
         {
             return View();
         }
