@@ -15,7 +15,8 @@ $(function () {
             remove: function (id) {
                 const that = this;
                 swal({
-                    title: "Sure to remove this permission?",
+                    title: "确定要删除此权限吗?",
+                    text: '删除权限会把用户权限和角色权限级连删除',
                     type: "warning",
                     showCancelButton: true
                 }, function () {

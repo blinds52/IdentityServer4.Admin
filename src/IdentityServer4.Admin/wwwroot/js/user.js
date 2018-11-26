@@ -16,7 +16,7 @@ $(function () {
             remove: function (id) {
                 const that = this;
                 swal({
-                    title: "Sure to remove this user?",
+                    title: "确定要删除此用户吗?",
                     type: "warning",
                     showCancelButton: true
                 }, function () {

@@ -14,7 +14,7 @@ $(function () {
             remove: function (id) {
                 let that = this;
                 swal({
-                    title: "Sure to remove this role?",
+                    title: "确定要删除此角色吗?",
                     type: "warning",
                     showCancelButton: true
                 }, function () {

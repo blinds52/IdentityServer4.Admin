@@ -15,8 +15,9 @@ $(function () {
             remove: function (id) {
                 const that = this;
                 swal({
-                    title: "Sure to remove this permission?",
+                    title: "确定要删除此角色吗?",
                     type: "warning",
+                    text: '删除角色会把用户角色级连删除',
                     showCancelButton: true
                 }, function () {
                     app.delete("/api/role/" + id, function () {
