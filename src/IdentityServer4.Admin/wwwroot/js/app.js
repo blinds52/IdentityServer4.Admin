@@ -43,7 +43,7 @@ app.errorHandler = function (result, error) {
         error(result);
     } else {
         if (swal) {
-            swal(result.responseText || result.responseText === '' ? result.statusText : result.responseText, '', "error");
+            swal('错误', result.statusText, "error");
         }
     }
 };
@@ -163,7 +163,6 @@ app.formatDate = function (time, format = 'YY-MM-DD hh:mm:ss') {
         .replace(/mm/g, preArr[min] || min)
         .replace(/ss/g, preArr[sec] || sec);
 };
-
 $(function () {
     $(".dropdown-trigger").dropdown();
 });

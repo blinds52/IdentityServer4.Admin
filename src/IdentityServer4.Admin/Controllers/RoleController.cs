@@ -6,7 +6,7 @@ namespace IdentityServer4.Admin.Controllers
 { 
     [Authorize(Roles = "admin")]
     [Route("[controller]")]
-    public class PermissionController : Controller
+    public class RoleController : Controller
     { 
         [HttpGet]
         public IActionResult Index()
@@ -22,6 +22,12 @@ namespace IdentityServer4.Admin.Controllers
 
         [HttpGet("{permissionId}/edit")]
         public IActionResult Edit()
+        {
+            return View();
+        }
+        
+        [HttpGet("{userId}/permission")]
+        public IActionResult Permission()
         {
             return View();
         }

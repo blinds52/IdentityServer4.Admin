@@ -3,15 +3,13 @@ $(function () {
     new Vue({
         el: '#view',
         data: {
-            userName: '',
-            email: '',
-            password: '',
-            phoneNumber: ''
+            name: '',
+            description: ''
         },
         methods: {
             create: function () {
-                app.post('/api/user', this.$data, function () {
-                    window.location.href = '/user';
+                app.post('/api/role', this.$data, function () {
+                    window.location.href = '/role';
                 });
             }
         }

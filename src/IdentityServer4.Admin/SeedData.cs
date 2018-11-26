@@ -30,8 +30,11 @@ namespace IdentityServer4.Admin
                     var context = scope.ServiceProvider.GetService<AdminDbContext>();
                     context.Database.Migrate();
 
-                    AddRoles(scope).Wait();
-                    AddUsers(scope).Wait();
+                    if (!context.Users.Any())
+                    {
+                        AddRoles(scope).Wait();
+                        AddUsers(scope).Wait();
+                    }
                 }
             }
 

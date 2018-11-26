@@ -12,7 +12,7 @@ namespace IdentityServer4.Admin
     {
         public static void Main(string[] args)
         {
-            // args = new[] {"/seed"};
+            args = new[] {"/seed"};
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Information()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)

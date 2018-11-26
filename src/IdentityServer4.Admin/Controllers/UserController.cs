@@ -11,7 +11,7 @@ namespace IdentityServer4.Admin.Controllers
     [Route("[controller]")]
     public class UserController : Controller
     { 
-        [HttpGet()]
+        [HttpGet]
         public IActionResult Index()
         {
             return View();
@@ -31,6 +31,12 @@ namespace IdentityServer4.Admin.Controllers
 
         [HttpGet("{userId}/changepassword")]
         public IActionResult ChangePassword()
+        {
+            return View();
+        }
+        
+        [HttpGet("{userId}/role")]
+        public IActionResult Role()
         {
             return View();
         }
