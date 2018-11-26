@@ -1,29 +1,23 @@
-using System.ComponentModel.DataAnnotations;
-
-namespace IdentityServer4.Admin.Data
+namespace IdentityServer4.Admin.Controllers.Api.Dtos
 {
     /// <summary>
-    /// 用户权限
+    /// 用户权限 DTO
     /// </summary>
-    public class UserPermission : IEntity<int>
+    public class UserPermissionDto
     {
         /// <summary>
         /// 主键
         /// </summary>
-        [Key] 
         public int Id { get; set; }
-        
+
         /// <summary>
         /// 用户编号
         /// </summary>
-        [Required]
         public int UserId { get; set; }
-        
+
         /// <summary>
-        /// 用户权限
+        /// 权限
         /// </summary>
-        [Required]
-        [StringLength(256)]
         public string Permission { get; set; }
     }
 }

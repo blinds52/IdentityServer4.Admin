@@ -40,5 +40,11 @@ namespace IdentityServer4.Admin.Controllers
         {
             return View();
         }
+        
+        [HttpGet("{userId}/permission")]
+        public IActionResult Permission()
+        {
+            return View();
+        }
     }
 }

@@ -33,12 +33,14 @@ namespace IdentityServer4.Admin
                 {
                     options.Password.RequireUppercase = false;
                     options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequireDigit = false;
                     options.User.RequireUniqueEmail = false;
                 })
                 .AddEntityFrameworkStores<AdminDbContext>()
                 .AddDefaultTokenProviders();
             
-            services.AddMvc().AddMvcOptions(o => o.Filters.Add<HttpGlobalExceptionFilter>()).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc().AddMvcOptions(o => o.Filters.Add<HttpGlobalExceptionFilter>())
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             
             var builder = services.AddIdentityServer(options =>
                 {
@@ -47,7 +49,8 @@ namespace IdentityServer4.Admin
                     options.Events.RaiseFailureEvents = true;
                     options.Events.RaiseSuccessEvents = true;
                 })
-                .AddAspNetIdentity<User>().AddDeveloperSigningCredential()
+                .AddAspNetIdentity<User>()
+                .AddDeveloperSigningCredential()
                 // this adds the config data from DB (clients, resources)
                 .AddConfigurationStore(options =>
                 {

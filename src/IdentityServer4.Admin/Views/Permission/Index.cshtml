@@ -1,14 +1,14 @@
 ﻿<!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        权限
+        权限管理
         <small></small>
     </h1>
     <ol class="breadcrumb">
         <li>
             <a href="/"><i class="fa fa-dashboard"></i>首页</a>
         </li>
-        <li class="active">权限</li>
+        <li class="active">权限管理</li>
     </ol>
 </section>
 <!-- Main content -->
@@ -25,11 +25,15 @@
                 <table class="table table-bordered">
                     <tbody>
                     <tr>
+                        <th>编号</th>
                         <th>权限</th>
                         <th>描述</th>
                         <th>操作</th>
                     </tr>
                     <tr v-for="el in els">
+                        <td>
+                            <span v-text="el.id"></span>
+                        </td>
                         <td>
                             <span v-text="el.name"></span>
                         </td>

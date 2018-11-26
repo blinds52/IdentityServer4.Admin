@@ -20,13 +20,13 @@ namespace IdentityServer4.Admin.Controllers
             return View();
         }
 
-        [HttpGet("{permissionId}/edit")]
+        [HttpGet("{roleId}/edit")]
         public IActionResult Edit()
         {
             return View();
         }
         
-        [HttpGet("{userId}/permission")]
+        [HttpGet("{roleId}/permission")]
         public IActionResult Permission()
         {
             return View();

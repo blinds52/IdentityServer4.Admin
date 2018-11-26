@@ -27,66 +27,6 @@ namespace IdentityServer4.Admin.Controllers.Api
 
         #region User
 
-        [Authorize(Roles = "super-admin")]
-        [HttpDelete("{userId}")]
-        public async Task<IActionResult> Delete(string userId)
-        {
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId && u.IsDeleted == false);
-            if (user == null)
-            {
-                return new ApiResult(ApiResult.Error, "用户不存在");
-            }
-
-            await _userManager.DeleteAsync(user);
-            return ApiResult.Ok;
-        }
-
-        [HttpGet("{userId}")]
-        public async Task<IActionResult> GetFirst(string userId)
-        {
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId && u.IsDeleted == false);
-            var dto = new UserDto();
-            if (user != null)
-            {
-                dto.PhoneNumber = user.PhoneNumber;
-                dto.Email = user.Email;
-                dto.UserName = user.UserName;
-                dto.Id = user.Id;
-                dto.Roles = string.Join(",", await _userManager.GetRolesAsync(user));
-            }
-
-            return new ApiResult(dto);
-        }
-
-        [HttpPut("{userId}")]
-        public async Task<IActionResult> Update(string userId, [FromBody] UpdateUserDto dto)
-        {
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            if (user == null) return new ApiResult(ApiResult.Error, "用户不存在");
-            user.UserName = dto.UserName;
-            user.Email = dto.Email;
-            user.PhoneNumber = dto.PhoneNumber;
-            var result = await _userManager.UpdateAsync(user);
-            return result.Succeeded ? ApiResult.Ok : new ApiResult(ApiResult.Error, result.Errors.First().Description);
-        }
-
-        [HttpPut("{userId}/changePassword")]
-        public async Task<IActionResult> ChangePassword(string userId, [FromBody] ChangePasswordDto dto)
-        {
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            if (user == null) return new ApiResult(ApiResult.Error, "用户不存在");
-
-            var result = await _userManager.RemovePasswordAsync(user);
-            if (!result.Succeeded)
-            {
-                return new ApiResult(ApiResult.Error, result.Errors.First().Description);
-            }
-
-            result = await _userManager.AddPasswordAsync(user, dto.NewPassword);
-
-            return result.Succeeded ? ApiResult.Ok : new ApiResult(ApiResult.Error, result.Errors.First().Description);
-        }
-
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateUserDto dto)
         {
@@ -113,7 +53,7 @@ namespace IdentityServer4.Admin.Controllers.Api
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] PaginationQuery input)
+        public async Task<IActionResult> Find([FromQuery] PaginationQuery input)
         {
             var output = _userManager.Users.PageList(input, u => u.IsDeleted == false);
             var users = (IEnumerable<User>) output.Result;
@@ -134,12 +74,92 @@ namespace IdentityServer4.Admin.Controllers.Api
             return new ApiResult(output);
         }
 
+        [HttpGet("{userId}")]
+        public async Task<IActionResult> FindFirst(int userId)
+        {
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId && u.IsDeleted == false);
+            var dto = new UserDto();
+            if (user != null)
+            {
+                dto.PhoneNumber = user.PhoneNumber;
+                dto.Email = user.Email;
+                dto.UserName = user.UserName;
+                dto.Id = user.Id;
+                dto.Roles = string.Join(",", await _userManager.GetRolesAsync(user));
+            }
+
+            return new ApiResult(dto);
+        }
+
+        [HttpPut("{userId}")]
+        public async Task<IActionResult> Update(int userId, [FromBody] UpdateUserDto dto)
+        {
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null) return new ApiResult(ApiResult.Error, "用户不存在");
+            user.UserName = dto.UserName;
+            user.Email = dto.Email;
+            user.PhoneNumber = dto.PhoneNumber;
+            var result = await _userManager.UpdateAsync(user);
+            return result.Succeeded ? ApiResult.Ok : new ApiResult(ApiResult.Error, result.Errors.First().Description);
+        }
+
+        [Authorize(Roles = "super-admin")]
+        [HttpDelete("{userId}")]
+        public async Task<IActionResult> Delete(int userId)
+        {
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId && u.IsDeleted == false);
+            if (user == null)
+            {
+                return new ApiResult(ApiResult.Error, "用户不存在");
+            }
+
+            await _userManager.DeleteAsync(user);
+            return ApiResult.Ok;
+        }
+
+        [HttpPut("{userId}/changePassword")]
+        public async Task<IActionResult> ChangePassword(int userId, [FromBody] ChangePasswordDto dto)
+        {
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null) return new ApiResult(ApiResult.Error, "用户不存在");
+
+            var result = await _userManager.RemovePasswordAsync(user);
+            if (!result.Succeeded)
+            {
+                return new ApiResult(ApiResult.Error, result.Errors.First().Description);
+            }
+
+            result = await _userManager.AddPasswordAsync(user, dto.NewPassword);
+
+            return result.Succeeded ? ApiResult.Ok : new ApiResult(ApiResult.Error, result.Errors.First().Description);
+        }
+
         #endregion
 
         #region User Permission
 
+        [HttpGet("{userId}/permission")]
+        public IActionResult FindRolePermission([FromQuery] PaginationQuery input)
+        {
+            var output = _dbContext.UserPermissions.PageList(input);
+            var userPermissions = (IEnumerable<UserPermission>) output.Result;
+            var userPermissionDtos = new List<UserPermissionDto>();
+            foreach (var rolePermission in userPermissions)
+            {
+                userPermissionDtos.Add(new UserPermissionDto
+                {
+                    Id = rolePermission.Id,
+                    Permission = rolePermission.Permission,
+                    UserId = rolePermission.UserId
+                });
+            }
+
+            output.Result = userPermissionDtos;
+            return new ApiResult(output);
+        }
+
         [HttpPost("{userId}/permission/{permissionId}")]
-        public async Task<IActionResult> AddUserPermission(string userId, string permissionId)
+        public async Task<IActionResult> CreateUserPermission(int userId, int permissionId)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(p => p.Id == userId);
             if (user == null)
@@ -161,17 +181,16 @@ namespace IdentityServer4.Admin.Controllers.Api
             await _dbContext.SaveChangesAsync();
             return ApiResult.Ok;
         }
-        
+
         [HttpDelete("{userId}/permission/{permissionId}")]
-        public async Task<IActionResult> DeleteUserPermission(string userId, string permissionId)
+        public async Task<IActionResult> DeleteUserPermission(int userId, int permissionId)
         {
-            var userPermission =
-                await _dbContext.UserPermissions.FirstOrDefaultAsync(p =>
-                    p.UserId == userId && p.Permission == permissionId);
-            if (userPermission == null)
-            {
-                return new ApiResult(ApiResult.Error, "数据不存在");
-            }
+            var permission = await _dbContext.Permissions.FirstOrDefaultAsync(p => p.Id == permissionId);
+            if (permission == null) return new ApiResult(ApiResult.Error, "权限不存在");
+
+            var userPermission = await _dbContext.UserPermissions.FirstOrDefaultAsync(p =>
+                p.UserId == userId && p.Permission == permission.Name);
+            if (userPermission == null) return new ApiResult(ApiResult.Error, "数据不存在");
 
             _dbContext.UserPermissions.Remove(userPermission);
             await _dbContext.SaveChangesAsync();
@@ -182,8 +201,26 @@ namespace IdentityServer4.Admin.Controllers.Api
 
         #region User Role
 
+        [HttpPost("{userId}/role/{roleId}")]
+        public async Task<IActionResult> CreateUserRole(int userId, int roleId)
+        {
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null) return new ApiResult(ApiResult.Error, "用户不存在");
+
+            if (await _userManager.IsInRoleAsync(user, "admin"))
+            {
+                return new ApiResult(ApiResult.Error, "管理员不能添加角色");
+            }
+
+            var role = await _dbContext.Roles.FirstOrDefaultAsync(p => p.Id == roleId);
+            if (role == null) return new ApiResult(ApiResult.Error, "角色不存在");
+
+            var result = await _userManager.AddToRoleAsync(user, role.Name);
+            return result.Succeeded ? ApiResult.Ok : new ApiResult(ApiResult.Error, result.Errors.First().Description);
+        }
+
         [HttpGet("{userId}/role")]
-        public async Task<IActionResult> GetRoles(string userId)
+        public async Task<IActionResult> FindUserRole(int userId)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null) return new ApiResult(ApiResult.Error, "用户不存在");
@@ -198,25 +235,8 @@ namespace IdentityServer4.Admin.Controllers.Api
             return new ApiResult(roles);
         }
 
-        [HttpPost("{userId}/role/{roleId}")]
-        public async Task<IActionResult> AddUserRole(string userId, string roleId)
-        {
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            if (user == null) return new ApiResult(ApiResult.Error, "用户不存在");
-
-            if (await _userManager.IsInRoleAsync(user, "admin"))
-            {
-                return new ApiResult(ApiResult.Error, "管理员不能添加角色");
-            }
-            var role = await _dbContext.Roles.FirstOrDefaultAsync(p => p.Id == roleId);
-            if (role == null) return new ApiResult(ApiResult.Error, "角色不存在");
-
-            var result = await _userManager.AddToRoleAsync(user, role.Name);
-            return result.Succeeded ? ApiResult.Ok : new ApiResult(ApiResult.Error, result.Errors.First().Description);
-        }
-        
         [HttpDelete("{userId}/role/{roleId}")]
-        public async Task<IActionResult> DeleteUserRole(string userId, string roleId)
+        public async Task<IActionResult> DeleteUserRole(int userId, int roleId)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null) return new ApiResult(ApiResult.Error, "用户不存在");

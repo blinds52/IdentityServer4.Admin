@@ -5,11 +5,11 @@ namespace IdentityServer4.Admin.Controllers.Api.Dtos
     public class CreateUserDto
     {        
         [Required]
-        [StringLength(50)]
+        [StringLength(32)]
         [MinLength(4)]
         public string UserName { get; set; }
         
-        [StringLength(50)]
+        [StringLength(256)]
         [EmailAddress]
         public string Email { get; set; }
         
@@ -19,6 +19,7 @@ namespace IdentityServer4.Admin.Controllers.Api.Dtos
         
         [Required]
         [Phone]
+        [StringLength(50)]
         public string PhoneNumber { get; set; }
     }
 }

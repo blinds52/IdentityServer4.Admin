@@ -9,7 +9,7 @@
             <a href="/"><i class="fa fa-dashboard"></i>首页</a>
         </li>
         <li class="active">
-            <a href="/role">角色</a>
+            <a href="/role">角色管理</a>
         </li>
         <li class="active">权限</li>
     </ol>
@@ -28,6 +28,7 @@
                 <table class="table table-bordered">
                     <tbody>
                     <tr>
+                        <th>编号</th>
                         <th>权限</th>
                         <th>操作</th>
                     </tr>
@@ -36,10 +37,13 @@
                     </tr>
                     <tr v-for="el in els">
                         <td>
+                            <span v-text="el.id"></span>
+                        </td>
+                        <td>
                             <span v-text="el.permission"></span>
                         </td>
                         <td>
-                            <a class="btn btn-default btn-sm" @@click="remove(el.id)">删除</a>
+                            <a class="btn btn-default btn-sm" @@click="remove(el.roleId)">删除</a>
                         </td>
                     </tr>
                     </tbody>

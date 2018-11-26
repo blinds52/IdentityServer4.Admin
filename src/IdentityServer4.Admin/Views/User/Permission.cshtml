@@ -1,7 +1,7 @@
-﻿<!-- Content Header (Page header) -->
+<!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        用户角色
+        用户权限
         <small></small>
     </h1>
     <ol class="breadcrumb">
@@ -11,7 +11,7 @@
         <li class="active">
             <a href="/user">用户管理</a>
         </li>
-        <li class="active">角色</li>
+        <li class="active">权限</li>
     </ol>
 </section>
 <!-- Main content -->
@@ -20,7 +20,7 @@
         <div class="box">
             <div class="box-header">
                 <div class="box-title">
-                    <a class="btn btn-default" @@click="showAddRole()">添加</a>
+                    <a class="btn btn-default" @@click="showAddPermission()">添加</a>
                 </div>
             </div>
             <!-- /.box-header -->
@@ -29,8 +29,7 @@
                     <tbody>
                     <tr>
                         <th>编号</th>
-                        <th>角色</th>
-                        <th>描述</th>
+                        <th>权限</th>
                         <th>操作</th>
                     </tr>
                     <tr v-show="els.length==0">
@@ -41,14 +40,10 @@
                             <span v-text="el.id"></span>
                         </td>
                         <td>
-                            <span v-text="el.name"></span>
+                            <span v-text="el.permission"></span>
                         </td>
                         <td>
-                            <span v-text="el.description"></span>
-                        </td>
-
-                        <td>
-                            <a class="btn btn-default btn-sm" @@click="remove(el.id)">删除</a>
+                            <a class="btn btn-default btn-sm" @@click="remove(el.userId)">删除</a>
                         </td>
                     </tr>
                     </tbody>
@@ -64,21 +59,21 @@
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
-                    <h4 class="modal-title">添加角色</h4>
+                    <h4 class="modal-title">添加权限</h4>
                 </div>
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">   
-                                <select class="form-control select2" v-model="role" style="width: 100%;">
-                                    <option v-for="r in roles" :value="r.id" v-text="r.name"></option>
+                                <select class="form-control select2" style="width: 100%;">
+                                    <option v-for="r in permissions" :value="r.id" v-text="r.name"></option>
                                 </select>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal" @@click="addRole()">添加</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal" @@click="addPermission()">添加</button>
                 </div>
             </div>
             <!-- /.modal-content -->
@@ -89,5 +84,5 @@
 <!-- /.content -->
 
 @section scripts{
-    <script src="~/js/userRole.js" asp-append-version="true"></script>
+    <script src="~/js/userPermission.js" asp-append-version="true"></script>
 }

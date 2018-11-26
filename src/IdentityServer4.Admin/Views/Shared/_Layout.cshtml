@@ -11,7 +11,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>IdentityServer4.Admin</title>
+    <title>IDS4.Admin</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" asp-append-version="true">
@@ -221,34 +221,34 @@
         <ul class="sidebar-menu" data-widget="tree">
             <li class="header">HEADER</li>
             <!-- Optionally, you can add icons to the links -->
-            <li>
+            <li id="home">
                 <a href="/">
-                    <i class="fa fa-dashboard"></i> <span>Home</span>
+                    <i class="fa fa-area-chart"></i> <span>首页</span>
                 </a>
             </li>
             <li id="permission">
                 <a href="/permission">
-                    <i class="fa fa-dashboard"></i> <span>Permission</span>
+                    <i class="fa fa-key"></i> <span>权限管理</span>
                 </a>
             </li>
             <li id="role">
                 <a href="/role">
-                    <i class="fa fa-dashboard"></i> <span>Role</span>
+                    <i class="fa fa-graduation-cap"></i> <span>角色管理</span>
                 </a>
             </li>
             <li id="user">
                 <a href="/user">
-                    <i class="fa fa-dashboard"></i> <span>User</span>
+                    <i class="fa fa-user"></i> <span>用户管理</span>
                 </a>
             </li>
-            <li id="apiResource" >
+            <li id="apiResource">
                 <a href="/apiResource">
-                    <i class="fa fa-dashboard"></i> <span>ApiResource</span>
+                    <i class="fa fa-book"></i> <span>API 资源管理</span>
                 </a>
             </li>
-            <li>
+            <li id="client">
                 <a href="/client">
-                    <i class="fa fa-dashboard"></i> <span>Client</span>
+                    <i class="fa fa-desktop"></i> <span>客户端管理</span>
                 </a>
             </li>
         </ul>

@@ -1,5 +1,5 @@
 $(function () {
-    $('#apiResource').addClass('active');
+    $('#role').addClass('active');
     new Vue({
         el: '#view',
         data: {

@@ -1,5 +1,5 @@
 $(function () {
-    $('#role').addClass('active');
+    $('#user').addClass('active');
     new Vue({
         el: '#view',
         data: {
@@ -17,7 +17,7 @@ $(function () {
                     type: "warning",
                     showCancelButton: true
                 }, function () {
-                    app.delete("/api/role/" + app.getPathPart(window.location.href, 1) + "/permission/" + id, function () {
+                    app.delete("/api/user/" + app.getPathPart(window.location.href, 1) + "/permission/" + id, function () {
                         loadView(that);
                     });
                 });
@@ -30,7 +30,7 @@ $(function () {
             },
             addPermission: function () {
                 let that = this;
-                app.post("/api/role/" + app.getPathPart(window.location.href, 1) + "/permission/" + $('.select2').val(), null, function () {
+                app.post("/api/user/" + app.getPathPart(window.location.href, 1) + "/permission/" + $('.select2').val(), null, function () {
                     loadView(that);
                 });
             }
@@ -38,7 +38,7 @@ $(function () {
     });
 
     function loadView(vue) {
-        let url = '/api/role/' + app.getPathPart(window.location.href, 1) + '/permission';
+        let url = '/api/user/' + app.getPathPart(window.location.href, 1) + '/permission';
         app.get(url, function (result) {
             vue.$data.els = result.data.result;
         });

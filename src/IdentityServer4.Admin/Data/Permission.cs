@@ -4,14 +4,14 @@ using Newtonsoft.Json;
 
 namespace IdentityServer4.Admin.Data
 {
-    public class Permission : IEntity<string>
+    public class Permission : IEntity<int>
     {
         /// <summary>
         /// Unique name of the permission.
         /// This is the key name to grant permissions.
         /// </summary>
         [Required]
-        [StringLength(255)]
+        [StringLength(256)]
         public string Name { get; set; }
 
         /// <summary>
@@ -24,9 +24,11 @@ namespace IdentityServer4.Admin.Data
         {
             return $"[Permission: {Name}]";
         }
-
+        
+        /// <summary>
+        /// 主键
+        /// </summary>
         [Key] 
-        [StringLength(50)]
-        public string Id { get; set; }
+        public int Id { get; set; }
     }
 }

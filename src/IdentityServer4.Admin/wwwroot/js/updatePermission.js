@@ -1,5 +1,5 @@
 $(function () {
-    $('#user').addClass('active');
+    $('#permission').addClass('active');
     new Vue({
         el: '#view',
         data: {
