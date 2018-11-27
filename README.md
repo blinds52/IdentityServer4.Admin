@@ -1,5 +1,7 @@
 # IdentityServer4.Admin
 
+[![Build Status](https://dev.azure.com/zlzforever/IdentityServer4.Admin/_apis/build/status/zlzforever.IdentityServer4.Admin)](https://dev.azure.com/zlzforever/IdentityServer4.Admin/_build/latest?definitionId=1)
+
 ##### 项目介绍
 
 基于 IdentityServer4 开发的授权、用户管理、角色管理、权限管理
