@@ -29,6 +29,6 @@ namespace IdentityServer4.Admin
 
         private static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>().UseSerilog();
+                .UseStartup<Startup>().UseUrls("http://*:6566").UseSerilog();
     }
 }
