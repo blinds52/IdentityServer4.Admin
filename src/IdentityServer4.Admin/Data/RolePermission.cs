@@ -20,6 +20,11 @@ namespace IdentityServer4.Admin.Data
         public int RoleId { get; set; }
 
         /// <summary>
+        /// 权限编号
+        /// </summary>
+        public int PermissionId { get; set; }
+        
+        /// <summary>
         /// 角色权限
         /// </summary>
         [Required]

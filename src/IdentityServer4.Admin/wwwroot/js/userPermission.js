@@ -45,7 +45,8 @@ $(function () {
         let getRoleUrl = '/api/permission?page=1&size=1000';
         app.get(getRoleUrl, function (result) {
             vue.$data.permissions = result.data.result;
-            $('.select2').val(result.data.result[0].id)
+            if (result.data.result.length > 0)
+                $('.select2').val(result.data.result[0].permissionId)
         });
     }
 });

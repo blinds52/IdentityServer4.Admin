@@ -1,9 +1,9 @@
-namespace IdentityServer4.Admin.Controllers.Api.Dtos
+namespace IdentityServer4.Admin.Controllers.API.Dtos
 {
     /// <summary>
-    /// 角色权限 DTO
+    /// 用户权限 DTO
     /// </summary>
-    public class RolePermissionDto
+    public class UserPermissionDto
     {
         /// <summary>
         /// 主键
@@ -11,9 +11,14 @@ namespace IdentityServer4.Admin.Controllers.Api.Dtos
         public int Id { get; set; }
 
         /// <summary>
-        /// 角色编号
+        /// 权限编号
         /// </summary>
-        public int RoleId { get; set; }
+        public int PermissionId { get; set; }
+
+        /// <summary>
+        /// 用户编号
+        /// </summary>
+        public int UserId { get; set; }
 
         /// <summary>
         /// 权限

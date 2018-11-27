@@ -18,7 +18,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace IdentityServer4.Admin.Controllers
+namespace IdentityServer4.Admin.Controllers.UI
 {
     public class AccountController : Controller
     {

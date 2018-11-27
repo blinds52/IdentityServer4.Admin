@@ -2,17 +2,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer4.Admin.Common;
-using IdentityServer4.Admin.Controllers.Api.Dtos;
+using IdentityServer4.Admin.Controllers.API.Dtos;
 using IdentityServer4.Admin.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace IdentityServer4.Admin.Controllers.Api
+namespace IdentityServer4.Admin.Controllers.API
 {
     [Route("api/[controller]")]
-    [Authorize(Roles = "admin")]
+    [Authorize(Roles = AdminConsts.AdminName)]
     public class RoleController : ApiControllerBase
     {
         private readonly AdminDbContext _dbContext;
@@ -65,20 +65,18 @@ namespace IdentityServer4.Admin.Controllers.Api
         public async Task<IActionResult> FindFirst(int roleId)
         {
             var role = await _roleManager.Roles.FirstOrDefaultAsync(p => p.Id == roleId);
-            if (role == null)
-            {
-                return new ApiResult(ApiResult.Error, "角色不存在");
-            }
+            if (role == null) return new ApiResult(ApiResult.Error, "角色不存在");
 
             var dto = new RoleDto {Name = role.Name};
             return new ApiResult(dto);
         }
-        
+
         [HttpPut("{roleId}")]
         public async Task<IActionResult> Update(int roleId, [FromBody] UpdateRoleDto dto)
         {
             var role = await _roleManager.Roles.FirstOrDefaultAsync(p => p.Id == roleId);
             if (role == null) return new ApiResult(ApiResult.Error, "角色不存在");
+            if (role.Name == AdminConsts.AdminName) return new ApiResult(ApiResult.Error, "管理员角色不允许修改");
             role.Name = dto.Name;
             role.Description = dto.Description;
             var result = await _roleManager.UpdateAsync(role);
@@ -89,11 +87,10 @@ namespace IdentityServer4.Admin.Controllers.Api
         public async Task<IActionResult> Delete(int roleId)
         {
             var role = await _roleManager.Roles.FirstOrDefaultAsync(p => p.Id == roleId);
-            if (role == null)
-            {
-                return new ApiResult(ApiResult.Error, "角色不存在");
-            }
-
+            if (role == null) return new ApiResult(ApiResult.Error, "角色不存在");
+            if (role.Name == AdminConsts.AdminName) return new ApiResult(ApiResult.Error, "管理员角色不允许删除");
+            _dbContext.UserRoles.RemoveRange(
+                _dbContext.UserRoles.Where(rp => rp.RoleId == roleId));
             var result = await _roleManager.DeleteAsync(role);
             return result.Succeeded ? ApiResult.Ok : new ApiResult(ApiResult.Error, result.Errors.First().Description);
         }
@@ -106,20 +103,18 @@ namespace IdentityServer4.Admin.Controllers.Api
         public async Task<IActionResult> CreateRolePermission(int roleId, int permissionId)
         {
             var role = await _roleManager.Roles.FirstOrDefaultAsync(p => p.Id == roleId);
-            if (role == null)
-            {
-                return new ApiResult(ApiResult.Error, "角色不存在");
-            }
-
+            if (role == null) return new ApiResult(ApiResult.Error, "角色不存在");
+            if (role.Name == AdminConsts.AdminName) return new ApiResult(ApiResult.Error, "管理员角色不允许修改");
             var permission = await _dbContext.Permissions.FirstOrDefaultAsync(p => p.Id == permissionId);
-            if (permission == null)
-            {
-                return new ApiResult(ApiResult.Error, "权限不存在");
-            }
+            if (permission == null) return new ApiResult(ApiResult.Error, "权限不存在");
 
+            if (await _dbContext.RolePermissions.AnyAsync(rp => rp.RoleId == roleId && rp.PermissionId == permissionId))
+                return new ApiResult(ApiResult.Error, "权限已经存在");
+            
             await _dbContext.RolePermissions.AddAsync(new RolePermission
             {
                 Permission = permission.Name,
+                PermissionId = permissionId,
                 RoleId = roleId
             });
             await _dbContext.SaveChangesAsync();
@@ -138,7 +133,8 @@ namespace IdentityServer4.Admin.Controllers.Api
                 {
                     Id = rolePermission.Id,
                     Permission = rolePermission.Permission,
-                    RoleId = rolePermission.RoleId
+                    RoleId = rolePermission.RoleId,
+                    PermissionId = rolePermission.PermissionId
                 });
             }
 
@@ -149,10 +145,8 @@ namespace IdentityServer4.Admin.Controllers.Api
         [HttpDelete("{roleId}/permission/{permissionId}")]
         public async Task<IActionResult> DeleteRolePermission(int roleId, int permissionId)
         {
-            var permission = await _dbContext.Permissions.FirstOrDefaultAsync(p => p.Id == permissionId);
-            if (permission == null) return new ApiResult(ApiResult.Error, "权限不存在");
             var rolePermission = await _dbContext.RolePermissions.FirstOrDefaultAsync(p =>
-                p.RoleId == roleId && p.Permission == permission.Name);
+                p.RoleId == roleId && p.PermissionId == permissionId);
             if (rolePermission == null) return new ApiResult(ApiResult.Error, "数据不存在");
 
             _dbContext.RolePermissions.Remove(rolePermission);

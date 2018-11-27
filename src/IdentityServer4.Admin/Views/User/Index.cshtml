@@ -30,6 +30,7 @@
                         <th>邮箱</th>
                         <th>角色</th>
                         <th>电话</th>
+                        <th>已删除</th>
                         <th>操作</th>
                     </tr>
                     <tr v-for="el in els">
@@ -49,10 +50,14 @@
                             <span v-text="el.phoneNumber"></span>
                         </td>
                         <td>
+                            <span v-text="el.isDelete"></span>
+                        </td>
+                        <td>
                             <a class="btn btn-default btn-sm" :href="'/user/' + el.id + '/edit'">编辑</a>
+                            <a class="btn btn-default btn-sm" @@click="remove(el.id)" v-show="el.roles != 'admin'">删除</a>
                             <a class="btn btn-default btn-sm" :href="'/user/' + el.id + '/permission'" v-show="el.roles != 'admin'">权限</a>
                             <a class="btn btn-default btn-sm" :href="'/user/' + el.id + '/role'" v-show="el.roles != 'admin'">角色</a>
-                            <a class="btn btn-default btn-sm" :href="'/user/' +el.id + '/changepassword'">更新密码</a>
+                            <a class="btn btn-default btn-sm" :href="'/user/' +el.id + '/changepassword'" v-show="el.roles != 'admin'">更新密码</a>
                         </td>
                     </tr>
                     </tbody>
@@ -68,6 +73,7 @@
     </div>
 </section>
 <!-- /.content -->
+
 @section scripts{
     <script src="~/js/user.js" asp-append-version="true"></script>
 }

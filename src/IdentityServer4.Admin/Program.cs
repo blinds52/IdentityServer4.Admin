@@ -12,15 +12,6 @@ namespace IdentityServer4.Admin
     {
         public static void Main(string[] args)
         {
-            args = new[] {"/seed"};
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Information()
-                .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-                .MinimumLevel.Override("System", LogEventLevel.Warning)
-                .MinimumLevel.Override("Microsoft.AspNetCore.Authentication", LogEventLevel.Information)
-                .Enrich.FromLogContext()
-                .WriteTo.Console().WriteTo.RollingFile("ids4.log")
-                .CreateLogger();
             var seed = args.Contains("/seed");
             if (seed)
             {
@@ -38,6 +29,6 @@ namespace IdentityServer4.Admin
 
         private static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>();
+                .UseStartup<Startup>().UseSerilog();
     }
 }

@@ -13,10 +13,11 @@ $(function () {
             update: function () {
                 app.put("/api/role/" + app.getPathPart(window.location.href, 1), this.$data, function () {
                     window.location.href = '/role';
-                }, function () {
+                }, function (result) {
                     swal({
                         title: "更新失败",
                         type: "error",
+                        text: result.msg,
                         showCancelButton: true
                     });
                 });

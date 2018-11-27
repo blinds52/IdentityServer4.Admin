@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace IdentityServer4.Admin.Controllers.Api.Dtos
+namespace IdentityServer4.Admin.Controllers.API.Dtos
 {
     public class CreateUserDto
     {        

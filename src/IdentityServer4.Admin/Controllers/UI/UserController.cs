@@ -1,16 +1,13 @@
-using System.Net;
 using IdentityServer4.Admin.Common;
-using IdentityServer4.Admin.Data;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 
-namespace IdentityServer4.Admin.Controllers
+namespace IdentityServer4.Admin.Controllers.UI
 {
-    [Authorize(Roles = "admin")]
+    [Authorize(Roles = AdminConsts.AdminName)]
     [Route("[controller]")]
     public class UserController : Controller
-    { 
+    {
         [HttpGet]
         public IActionResult Index()
         {
@@ -34,13 +31,13 @@ namespace IdentityServer4.Admin.Controllers
         {
             return View();
         }
-        
+
         [HttpGet("{userId}/role")]
         public IActionResult Role()
         {
             return View();
         }
-        
+
         [HttpGet("{userId}/permission")]
         public IActionResult Permission()
         {

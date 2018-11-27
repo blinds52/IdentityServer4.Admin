@@ -1,26 +1,26 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace IdentityServer4.Admin.Controllers.Api.Dtos
+namespace IdentityServer4.Admin.Controllers.API.Dtos
 {
     /// <summary>
-    /// 角色 DTO
+    /// 更新权限 DTO
     /// </summary>
-    public class RoleDto
+    public class UpdatePermissionDto
     {
         /// <summary>
-        /// 角色编号
+        /// 主键
         /// </summary>
         public int Id { get; set; }
         
         /// <summary>
-        /// 角色名称
+        /// 权限名称
         /// </summary>
         [Required]
-        [StringLength(256)]
+        [StringLength(255)]
         public string Name { get; set; }
-        
+
         /// <summary>
-        /// 角色描述
+        /// 权限描述
         /// </summary>
         [StringLength(500)]
         public string Description { get; set; }

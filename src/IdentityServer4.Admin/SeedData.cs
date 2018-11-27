@@ -3,9 +3,11 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using IdentityModel;
+using IdentityServer4.Admin.Common;
 using IdentityServer4.Admin.Data;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,21 +22,25 @@ namespace IdentityServer4.Admin
 
             using (IServiceScope scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
-                scope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();
-                {
-                    var context = scope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
-                    context.Database.Migrate();
-                    EnsureSeedData(context);
+                var hostEnv = scope.ServiceProvider.GetService<IHostingEnvironment>();
+                var configurationDbContext = scope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
+                if (!hostEnv.IsDevelopment())
+                {              
+                    scope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();
+                    configurationDbContext.Database.Migrate();
                 }
-                {
-                    var context = scope.ServiceProvider.GetService<AdminDbContext>();
-                    context.Database.Migrate();
+                EnsureSeedData(configurationDbContext);
 
-                    if (!context.Users.Any())
-                    {
-                        AddRoles(scope).Wait();
-                        AddUsers(scope).Wait();
-                    }
+                var context = scope.ServiceProvider.GetService<AdminDbContext>();
+                if (!hostEnv.IsDevelopment())
+                {
+                    context.Database.Migrate();
+                }
+
+                if (!context.Users.Any())
+                {
+                    AddRoles(scope).Wait();
+                    AddUsers(scope).Wait();
                 }
             }
 
@@ -44,7 +50,7 @@ namespace IdentityServer4.Admin
 
         private static async Task AddUsers(IServiceScope scope)
         {
-            await AddUser(scope, "admin", "1qazZAQ!", "zlzforever@163.com", "18721696556", "admin");
+            await AddUser(scope, AdminConsts.AdminName, "1qazZAQ!", "zlzforever@163.com", "18721696556", AdminConsts.AdminName);
             await AddUser(scope, "songzhiyun", "1qazZAQ!", "songzhiyun@163.com", "18721696556", "expert-admin");
             await AddUser(scope, "shunyin", "1qazZAQ!", "shunyin@163.com", "18721696556", "expert-admin");
             await AddUser(scope, "dingjiaoyi", "1qazZAQ!", "dingjiaoyi@163.com", "18721696556", "expert-leader");
@@ -86,13 +92,13 @@ namespace IdentityServer4.Admin
         {
             var roleMgr = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
 
-            var superAdmin = await roleMgr.FindByNameAsync("admin");
+            var superAdmin = await roleMgr.FindByNameAsync(AdminConsts.AdminName);
             if (superAdmin == null)
             {
                 superAdmin = new Role
                 {
-                    Name = "admin",
-                    NormalizedName = "Admin"
+                    Name =AdminConsts.AdminName,
+                    NormalizedName = AdminConsts.AdminName.ToUpper()
                 };
                 await roleMgr.CreateAsync(superAdmin);
 
@@ -123,7 +129,7 @@ namespace IdentityServer4.Admin
                     NormalizedName = "Expert Operation"
                 };
                 await roleMgr.CreateAsync(expertOp);
-                
+
                 var expertLeader = new Role
                 {
                     Name = "expert-leader",

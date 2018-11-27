@@ -14,10 +14,11 @@ $(function () {
             update: function () {
                 app.put("/api/user/" + app.getPathPart(window.location.href, 1), this.$data, function () {
                     window.location.href = '/user';
-                }, function () {
+                }, function (result) {
                     swal({
                         title: "更新失败",
                         type: "error",
+                        text: result.msg,
                         showCancelButton: true
                     });
                 });

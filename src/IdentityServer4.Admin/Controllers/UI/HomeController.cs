@@ -5,7 +5,7 @@ using IdentityServer4.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace IdentityServer4.Admin.Controllers
+namespace IdentityServer4.Admin.Controllers.UI
 {
     [SecurityHeaders]
     public class HomeController : Controller

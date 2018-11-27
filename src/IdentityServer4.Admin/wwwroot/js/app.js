@@ -32,7 +32,9 @@ app.successHandler = function (result, success, error) {
         } else {
             if (swal) {
                 if (result.msg) {
-                    swal(result.msg, '', "error");
+                    swal('错误', result.msg, "error");
+                } else {
+                    swal('错误', '未知错误', "error");
                 }
             }
         }
@@ -43,7 +45,11 @@ app.errorHandler = function (result, error) {
         error(result);
     } else {
         if (swal) {
-            swal('错误', result.statusText, "error");
+            if (result.statusText) {
+                swal('错误', result.statusText, "error");
+            } else {
+                swal('错误', '未知错误', "error");
+            }
         }
     }
 };
@@ -101,6 +107,19 @@ app.put = function (url, data, success, error) {
         },
         error: function (result) {
             app.errorHandler(result, error);
+        }
+    });
+};
+
+app.head = function (url, success, error) {
+    $.ajax({
+        url: url,
+        method: 'HEAD',
+        success: function (result) {
+            if (success) success();
+        },
+        error: function (result) {
+            if (error) error();
         }
     });
 };

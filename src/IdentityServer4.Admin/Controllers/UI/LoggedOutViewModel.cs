@@ -1,4 +1,4 @@
-namespace IdentityServer4.Admin.Controllers
+namespace IdentityServer4.Admin.Controllers.UI
 {
     public class LoggedOutViewModel
     {

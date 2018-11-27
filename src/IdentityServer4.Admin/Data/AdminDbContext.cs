@@ -18,13 +18,13 @@ namespace IdentityServer4.Admin.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            base.OnModelCreating(builder);
+
             builder.Entity<Permission>().HasIndex(p => p.Name).IsUnique();
             builder.Entity<RolePermission>().HasIndex(p => new {p.RoleId, p.Permission}).IsUnique();
+            builder.Entity<RolePermission>().HasIndex(p => new {p.RoleId, p.PermissionId}).IsUnique();
             builder.Entity<UserPermission>().HasIndex(p => new {p.UserId, p.Permission}).IsUnique();
-            base.OnModelCreating(builder);
-            // Customize the ASP.NET Identity model and override the defaults if needed.
-            // For example, you can rename the ASP.NET Identity table names and more.
-            // Add your customizations after calling base.OnModelCreating(builder);
+            builder.Entity<UserPermission>().HasIndex(p => new {p.UserId, p.PermissionId}).IsUnique();
         }
     }
 }

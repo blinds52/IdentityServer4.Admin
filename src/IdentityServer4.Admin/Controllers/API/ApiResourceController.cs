@@ -1,4 +1,3 @@
-using System.Net;
 using System.Threading.Tasks;
 using IdentityServer4.Admin.Common;
 using IdentityServer4.EntityFramework.DbContexts;
@@ -7,10 +6,10 @@ using IdentityServer4.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace IdentityServer4.Admin.Controllers.Api
+namespace IdentityServer4.Admin.Controllers.API
 {
     [Route("api/[controller]")]
-    [Authorize(Roles = "admin")]
+    [Authorize(Roles = AdminConsts.AdminName)]
     public class ApiResourceController : ApiControllerBase
     {
         private readonly ConfigurationDbContext _dbContext;

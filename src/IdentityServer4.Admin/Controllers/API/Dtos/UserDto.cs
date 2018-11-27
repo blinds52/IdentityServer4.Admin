@@ -1,6 +1,4 @@
-using System.Collections.Generic;
-
-namespace IdentityServer4.Admin.Controllers.Api.Dtos
+namespace IdentityServer4.Admin.Controllers.API.Dtos
 {
     /// <summary>
     /// 用户 DTO
@@ -31,5 +29,10 @@ namespace IdentityServer4.Admin.Controllers.Api.Dtos
         /// 用户拥有的角色
         /// </summary>
         public string Roles { get; set; }
+        
+        /// <summary>
+        /// 是否删除
+        /// </summary>
+        public bool IsDelete { get; set; }
     }
 }
