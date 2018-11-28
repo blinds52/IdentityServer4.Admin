@@ -1,0 +1,175 @@
+@model DiagnosticsViewModel
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        诊断
+        <small></small>
+    </h1>
+    <ol class="breadcrumb">
+        <li>
+            <a href="/"><i class="fa fa-dashboard"></i>首页</a>
+        </li>
+        <li class="active">诊断</li>
+    </ol>
+</section>
+<!-- Main content -->
+<section class="content container-fluid">
+    <div class="col-xs-12">
+        <div class="box" id="view">
+            <div class="box-header">
+                <div class="box-title">
+                    Claims
+                </div>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body table-responsive no-padding">
+                <table class="table table-bordered">
+                    <tbody>
+                    @{
+                        int claimsCount = Model.AuthenticateResult.Principal.Claims.Count();
+                        int column = 4;
+                        int row = claimsCount % column;
+                        if (row == 0)
+                        {
+                            row = 1;
+                        }
+                        else
+                        {
+                            row = row + (row != 0 ? 1 : 0);
+                        }
+                        for (int i = 0; i < row; i++)
+                        {
+                            <tr>
+                                @for (int j = 0; j < column; ++j)
+                                {
+                                    int index = i * column + j;
+                                    if (index < claimsCount)
+                                    {
+                                        var claim = Model.AuthenticateResult.Principal.Claims.ElementAt(index);
+                                        <td>
+                                            <strong>@claim.Type</strong>
+                                        </td>
+                                        <td>@claim.Value</td>
+                                        <td></td>
+                                    }
+                                }
+                            </tr>
+                        }
+                    }
+                    </tbody>
+                </table>
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer clearfix">
+                <ul id="pagination" v-show="total>size" class="pagination pagination-sm no-margin pull-left">
+                </ul>
+            </div>
+        </div>
+        <!-- /.box -->
+    </div>
+    <div class="col-xs-12">
+        <div class="box" id="view">
+            <div class="box-header">
+                <div class="box-title">
+                    Properties
+                </div>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body table-responsive no-padding">
+                <table class="table table-bordered">
+                    <tbody>
+                    @{
+                        int propertyCount = Model.AuthenticateResult.Properties.Items.Count;
+                        int propertyColumn = 4;
+                        int propertyRow = propertyCount % propertyColumn;
+                        if (propertyRow == 0)
+                        {
+                            propertyRow = 1;
+                        }
+                        else
+                        {
+                            propertyRow = propertyRow + (propertyRow != 0 ? 1 : 0);
+                        }
+
+                        propertyRow = propertyRow == 0 ? 1 : propertyRow;
+                        for (int i = 0; i < propertyRow; i++)
+                        {
+                            <tr>
+                                @for (int j = 0; j < propertyColumn; ++j)
+                                {
+                                    var index = i * propertyColumn + j;
+                                    if (index < propertyCount)
+                                    {
+                                        var prop = Model.AuthenticateResult.Properties.Items.ElementAt(i * propertyColumn + j);
+                                        <td>
+                                            <strong>@prop.Key</strong>
+                                        </td>
+                                        <td>@prop.Value</td>
+                                        <td></td>
+                                    }
+                                }
+                            </tr>
+                        }
+                    }
+                    </tbody>
+                </table>
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer clearfix">
+                <ul id="pagination" v-show="total>size" class="pagination pagination-sm no-margin pull-left">
+                </ul>
+            </div>
+        </div>
+        <!-- /.box -->
+    </div>
+    <div class="col-xs-12">
+        <div class="box" id="view">
+            <div class="box-header">
+                <div class="box-title">
+                    Clients
+                </div>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body table-responsive no-padding">
+                <table class="table table-bordered">
+                    <tbody>
+                    @{
+                        int clientCount = Model.Clients.Count();
+                        int clientColumn = 4;
+                        int clientRow = clientCount % clientColumn;
+                        if (clientRow == 0)
+                        {
+                            clientRow = 1;
+                        }
+                        else
+                        {
+                            clientRow = clientRow + (clientRow != 0 ? 1 : 0);
+                        }
+                        for (int i = 0; i < clientRow; i++)
+                        {
+                            <tr>
+                                @for (int j = 0; j < clientColumn; ++j)
+                                {
+                                    var index = i * clientColumn + j;
+                                    if (index < clientCount)
+                                    {
+                                        var client = Model.Clients.ElementAt(index);
+                                        <td>
+                                            <strong>@client</strong>
+                                        </td>
+                                        <td></td>
+                                    }
+                                }
+                            </tr>
+                        }
+                    }
+                    </tbody>
+                </table>
+            </div>
+            <!-- /.box-body -->
+        </div>
+        <!-- /.box -->
+    </div>
+</section>
+<!-- /.content -->

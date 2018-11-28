@@ -8,6 +8,7 @@ using IdentityModel;
 using IdentityServer4.Admin.Common;
 using IdentityServer4.Admin.Data;
 using IdentityServer4.Admin.Models;
+using IdentityServer4.Admin.Models.Account;
 using IdentityServer4.Events;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
@@ -20,6 +21,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityServer4.Admin.Controllers.UI
 {
+    [SecurityHeaders]
     public class AccountController : Controller
     {
         private readonly UserManager<User> _userManager;
@@ -50,6 +52,25 @@ namespace IdentityServer4.Admin.Controllers.UI
             return View();
         }
 
+        /// <summary>
+        /// Show logout page
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> Logout(string logoutId)
+        {
+            // build a model so the logout page knows what to display
+            var vm = await BuildLogoutViewModelAsync(logoutId);
+
+            if (vm.ShowLogoutPrompt == false)
+            {
+                // if the request for logout was properly authenticated from IdentityServer, then
+                // we don't need to show the prompt and can just log the user out directly.
+                return await Logout(vm);
+            }
+
+            return View(vm);
+        }
+        
         /// <summary>
         /// Show login page
         /// </summary>
@@ -256,7 +277,7 @@ namespace IdentityServer4.Admin.Controllers.UI
                     EnableLocalLogin = false,
                     ReturnUrl = returnUrl,
                     Username = context?.LoginHint,
-                    ExternalProviders = new ExternalProvider[]
+                    ExternalProviders = new[]
                         {new ExternalProvider {AuthenticationScheme = context.IdP}}
                 };
             }
@@ -349,7 +370,7 @@ namespace IdentityServer4.Admin.Controllers.UI
             if (User?.Identity.IsAuthenticated == true)
             {
                 var idp = User.FindFirst(JwtClaimTypes.IdentityProvider)?.Value;
-                if (idp != null && idp != IdentityServer4.IdentityServerConstants.LocalIdentityProvider)
+                if (idp != null && idp != IdentityServerConstants.LocalIdentityProvider)
                 {
                     var providerSupportsSignout = await HttpContext.GetSchemeSupportsSignOutAsync(idp);
                     if (providerSupportsSignout)

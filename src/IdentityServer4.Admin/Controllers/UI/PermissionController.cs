@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace IdentityServer4.Admin.Controllers.UI
 { 
     [Authorize(Roles = AdminConsts.AdminName)]
-    [Route("[controller]")]
     public class PermissionController : Controller
     { 
         [HttpGet]

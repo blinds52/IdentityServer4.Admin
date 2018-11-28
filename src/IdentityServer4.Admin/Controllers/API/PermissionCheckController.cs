@@ -11,6 +11,7 @@ namespace IdentityServer4.Admin.Controllers.API
 {
     [Route("api/user")]
     [Authorize]
+    [SecurityHeaders]
     public class PermissionCheckController : ApiControllerBase
     {
         private readonly UserManager<User> _userManager;

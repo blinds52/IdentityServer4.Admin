@@ -39,6 +39,17 @@
     "sourceMap": false
   },
   {
+    "outputFileName": "wwwroot/js/consent.min.js",
+    "inputFiles": [
+      "wwwroot/js/consent.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
     "outputFileName": "wwwroot/js/createApiResource.min.js",
     "inputFiles": [
       "wwwroot/js/createApiResource.js"
@@ -75,6 +86,17 @@
     "outputFileName": "wwwroot/js/createUser.min.js",
     "inputFiles": [
       "wwwroot/js/createUser.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/login.min.js",
+    "inputFiles": [
+      "wwwroot/js/login.js"
     ],
     "minify": {
       "enabled": true,

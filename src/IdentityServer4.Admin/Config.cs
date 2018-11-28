@@ -40,7 +40,7 @@ namespace IdentityServer4.Admin
                     AllowedCorsOrigins = {"http://localhost:6568"},
                     RedirectUris = {"http://localhost:6568/account/ssocallback"},
                     PostLogoutRedirectUris = {"http://localhost:6568"},
-                    RequireConsent = false,
+                    RequireConsent = true,
                     AllowedScopes =
                     {
                         IdentityServerConstants.StandardScopes.OpenId,

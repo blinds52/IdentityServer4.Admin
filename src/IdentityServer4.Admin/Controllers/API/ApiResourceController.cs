@@ -10,6 +10,7 @@ namespace IdentityServer4.Admin.Controllers.API
 {
     [Route("api/[controller]")]
     [Authorize(Roles = AdminConsts.AdminName)]
+    [SecurityHeaders]
     public class ApiResourceController : ApiControllerBase
     {
         private readonly ConfigurationDbContext _dbContext;
