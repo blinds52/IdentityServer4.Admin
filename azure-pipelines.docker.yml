@@ -18,6 +18,6 @@ steps:
     docker build -f Dockerfile -t $(dockerId)/$(imageName) .
     docker login -u $(dockerId) -p $pswd
     docker push $(dockerId)/$(imageName)
-    
+    docker push $(dockerId)/ids4admin:latest
   env:
     pswd: $(dockerPassword)
