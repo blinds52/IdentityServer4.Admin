@@ -1,6 +1,6 @@
 # IdentityServer4.Admin
 
-[![Build Status](https://dev.azure.com/zlzforever/IdentityServer4.Admin/_apis/build/status/zlzforever.IdentityServer4.Admin)](https://dev.azure.com/zlzforever/IdentityServer4.Admin/_build/latest?definitionId=1)
+[![Build Status](https://dev.azure.com/zlzforever/IdentityServer4.Admin/_apis/build/status/Ids4.Admin%20Build)](https://dev.azure.com/zlzforever/IdentityServer4.Admin/_build/latest?definitionId=2)
 
 ##### 项目介绍
 
