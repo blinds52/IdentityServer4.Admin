@@ -9,6 +9,7 @@ ProjectSection(SolutionItems) = preProject
 	build.sh = build.sh
 	Dockerfile = Dockerfile
 	azure-pipelines.docker.yml = azure-pipelines.docker.yml
+	azure-pipelines.yml = azure-pipelines.yml
 EndProjectSection
 EndProject
 Global

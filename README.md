@@ -66,8 +66,8 @@
 
 #### Build docker image
 
-        sudo docker build -f Dockerfile -t zlzforever/ids4admin .
+        docker build -f Dockerfile -t zlzforever/ids4admin .
         
 #### Run test docker instance
 
-        docker run -d --name ids4admin  -e ASPNETCORE_ENVIRONMENT=Development --restart always -p 6566:6566 zlzforever/ids4admin:latest /seed
+        docker run -d --name ids4admin  -e ASPNETCORE_ENVIRONMENT=Development --restart always -p 8566:80 zlzforever/ids4admin:latest /seed
