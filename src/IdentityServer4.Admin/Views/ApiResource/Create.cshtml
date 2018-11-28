@@ -282,7 +282,13 @@
 </section>
 <!-- /.content -->
 
-
-@section scripts{
-    <script src="~/js/createApiResource.js" asp-append-version="true"></script>
-}
+<environment names="Development">
+    @section scripts{
+        <script src="~/js/createApiResource.js" asp-append-version="true"></script>
+    }
+</environment>
+<environment names="Staging,Production">
+    @section scripts{
+        <script src="~/js/createApiResource.min.js" asp-append-version="true"></script>
+    }
+</environment>
