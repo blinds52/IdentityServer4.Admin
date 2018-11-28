@@ -14,7 +14,9 @@ variables:
 steps:
 - script: |
     npm install bower
-    bower install src/IdentityServer4.Admin/bower.json  src/IdentityServer4.Admin/wwwroot/lib
+    cd src/IdentityServer4.Admin
+    bower install
+    cd ../..
     dotnet build --configuration $(buildConfiguration) 
     dotnet publish --configuration $(buildConfiguration) --output out
     docker build -f Dockerfile -t $(dockerId)/$(imageName) .
