@@ -11,6 +11,10 @@ trigger:
   paths:
     exclude:
     - README.md
+    - azure-pipelines.docker.yml
+    - Dockerfile
+    - .gitignore
+    - .dockerignore
     
 pool:
   vmImage: 'Ubuntu 16.04'
