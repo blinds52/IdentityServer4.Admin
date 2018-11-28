@@ -26,7 +26,7 @@
                     <tbody>
                     <tr>
                         <th>Name</th>
-                        <th>DisplayName</th>                      
+                        <th>DisplayName</th>
                         <th>Enabled</th>
                         <th>Secrets</th>
                         <th>Scopes</th>
@@ -74,13 +74,12 @@
     </div>
 </section>
 <!-- /.content -->
-<environment names="Development">
-    @section scripts{
+
+@section scripts{
+    <environment names="Development">
         <script src="~/js/apiResource.js" asp-append-version="true"></script>
-    }
-</environment>
-<environment names="Staging,Production">
-    @section scripts{
+    </environment>
+    <environment names="Staging,Production">
         <script src="~/js/apiResource.min.js" asp-append-version="true"></script>
-    }
-</environment>
+    </environment>
+}

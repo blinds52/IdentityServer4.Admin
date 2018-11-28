@@ -57,6 +57,9 @@ app.post = function (url, data, success, error) {
     $.ajax({
         url: url,
         data: JSON.stringify(data),
+        headers: {
+            RequestVerificationToken: $('input[name$="__RequestVerificationToken"]').val()
+        },
         method: 'POST',
         dataType: 'json',
         contentType: 'application/json',
@@ -183,6 +186,8 @@ app.formatDate = function (time, format = 'YY-MM-DD hh:mm:ss') {
         .replace(/ss/g, preArr[sec] || sec);
 };
 $(function () {
+    $('#btnLogout').click(function () {
+        $('#logoutForm').submit();
+    });
     $(".dropdown-trigger").dropdown();
 });
- 

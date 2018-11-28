@@ -4,48 +4,56 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityServer4.Admin.Controllers.UI
 {
-    [Authorize(Roles = AdminConsts.AdminName)]
-    public class UserController : Controller
+    [Authorize]
+    public class UserController : BaseController
     {
+        [Authorize(Roles = AdminConsts.AdminName)]
         [HttpGet]
         public IActionResult Index()
         {
             return View();
         }
 
-        [HttpGet("create")]
+        [Authorize(Roles = AdminConsts.AdminName)]
+        [HttpGet("[controller]/create")]
         public IActionResult Create()
         {
             return View();
         }
 
-        [HttpGet("{userId}/edit")]
+        [Authorize(Roles = AdminConsts.AdminName)]
+        [HttpGet("[controller]/{userId}/edit")]
         public IActionResult Edit()
         {
             return View();
         }
 
-        [HttpGet("{userId}/changepassword")]
+        [Authorize(Roles = AdminConsts.AdminName)]
+        [HttpGet("[controller]/{userId}/changepassword")]
         public IActionResult ChangePassword()
         {
             return View();
         }
 
-        [HttpGet("{userId}/role")]
+        [Authorize(Roles = AdminConsts.AdminName)]
+        [HttpGet("[controller]/{userId}/role")]
         public IActionResult Role()
         {
             return View();
         }
 
-        [HttpGet("{userId}/permission")]
+        [Authorize(Roles = AdminConsts.AdminName)]
+        [HttpGet("[controller]/{userId}/permission")]
         public IActionResult Permission()
         {
             return View();
         }
-        
-        [HttpGet("{userId}/profile")]
-        public IActionResult Profile()
+
+        [HttpGet("[controller]/{userId}/profile")]
+        public IActionResult Profile(int userId)
         {
+            if (User.FindFirst("sub")?.Value != userId.ToString())
+                return RedirectToAction("AccessDenied", "Account");
             return View();
         }
     }

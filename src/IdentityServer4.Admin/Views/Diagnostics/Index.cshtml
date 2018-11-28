@@ -28,7 +28,7 @@
                     <tbody>
                     @{
                         int claimsCount = Model.AuthenticateResult.Principal.Claims.Count();
-                        int column = 4;
+                        int column = 3;
                         int row = claimsCount % column;
                         if (row == 0)
                         {
@@ -81,7 +81,7 @@
                     <tbody>
                     @{
                         int propertyCount = Model.AuthenticateResult.Properties.Items.Count;
-                        int propertyColumn = 4;
+                        int propertyColumn = 3;
                         int propertyRow = propertyCount % propertyColumn;
                         if (propertyRow == 0)
                         {
@@ -136,7 +136,7 @@
                     <tbody>
                     @{
                         int clientCount = Model.Clients.Count();
-                        int clientColumn = 4;
+                        int clientColumn = 3;
                         int clientRow = clientCount % clientColumn;
                         if (clientRow == 0)
                         {

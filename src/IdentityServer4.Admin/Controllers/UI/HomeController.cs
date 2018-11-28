@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace IdentityServer4.Admin.Controllers.UI
 {
     [SecurityHeaders]
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
         private readonly IIdentityServerInteractionService _interaction;
 
@@ -21,8 +21,8 @@ namespace IdentityServer4.Admin.Controllers.UI
         public IActionResult Index()
         {
             return View();
-        }  
-        
+        }
+
         /// <summary>
         /// Shows the error page
         /// </summary>

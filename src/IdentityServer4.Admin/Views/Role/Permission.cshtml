@@ -8,7 +8,7 @@
         <li>
             <a href="/"><i class="fa fa-dashboard"></i>首页</a>
         </li>
-        <li class="active">
+        <li>
             <a href="/role">角色管理</a>
         </li>
         <li class="active">权限</li>
@@ -64,7 +64,7 @@
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="form-group">   
+                            <div class="form-group">
                                 <select class="form-control select2" style="width: 100%;">
                                     <option v-for="r in permissions" :value="r.id" v-text="r.name"></option>
                                 </select>
@@ -82,13 +82,12 @@
     </div>
 </section>
 <!-- /.content -->
-<environment names="Development">
-    @section scripts{
+
+@section scripts{
+    <environment names="Development">
         <script src="~/js/rolePermission.js" asp-append-version="true"></script>
-    }
-</environment>
-<environment names="Staging,Production">
-    @section scripts{
+    </environment>
+    <environment names="Staging,Production">
         <script src="~/js/rolePermission.min.js" asp-append-version="true"></script>
-    }
-</environment>
+    </environment>
+}

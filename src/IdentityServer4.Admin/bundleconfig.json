@@ -116,6 +116,17 @@
     "sourceMap": false
   },
   {
+    "outputFileName": "wwwroot/js/profile.min.js",
+    "inputFiles": [
+      "wwwroot/js/profile.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
     "outputFileName": "wwwroot/js/role.min.js",
     "inputFiles": [
       "wwwroot/js/role.js"

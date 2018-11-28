@@ -37,7 +37,7 @@ namespace IdentityServer4.Admin.Controllers.API
         {
             var newRole = new Role
             {
-                Name = dto.Name
+                Name = dto.Name.Trim()
             };
             var result = await _roleManager.CreateAsync(newRole);
             return result.Succeeded ? ApiResult.Ok : new ApiResult(ApiResult.Error, result.Errors.First().Description);
@@ -77,6 +77,9 @@ namespace IdentityServer4.Admin.Controllers.API
         {
             var role = await _roleManager.Roles.FirstOrDefaultAsync(p => p.Id == roleId);
             if (role == null) return new ApiResult(ApiResult.Error, "角色不存在");
+            dto.Name = dto.Name.Trim();
+            dto.Description = dto.Description.Trim();
+            if (dto.Name == "admin") return new ApiResult(ApiResult.Error, "角色不能使用 admin");
             if (role.Name == AdminConsts.AdminName) return new ApiResult(ApiResult.Error, "管理员角色不允许修改");
             role.Name = dto.Name;
             role.Description = dto.Description;
@@ -111,7 +114,7 @@ namespace IdentityServer4.Admin.Controllers.API
 
             if (await _dbContext.RolePermissions.AnyAsync(rp => rp.RoleId == roleId && rp.PermissionId == permissionId))
                 return new ApiResult(ApiResult.Error, "权限已经存在");
-            
+
             await _dbContext.RolePermissions.AddAsync(new RolePermission
             {
                 Permission = permission.Name,

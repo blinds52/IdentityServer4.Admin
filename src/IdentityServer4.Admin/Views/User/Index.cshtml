@@ -73,13 +73,12 @@
     </div>
 </section>
 <!-- /.content -->
-<environment names="Development">
-    @section scripts{
+
+@section scripts{
+    <environment names="Development">
         <script src="~/js/user.js" asp-append-version="true"></script>
-    }
-</environment>
-<environment names="Staging,Production">
-    @section scripts{
+    </environment>
+    <environment names="Staging,Production">
         <script src="~/js/user.min.js" asp-append-version="true"></script>
-    }
-</environment>
+    </environment>
+}

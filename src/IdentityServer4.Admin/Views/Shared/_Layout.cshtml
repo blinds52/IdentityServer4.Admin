@@ -1,12 +1,19 @@
-﻿@using IdentityServer4.Admin.Common
+﻿@using System.Security.Claims
+@using IdentityServer4.Admin.Common
 @using IdentityServer4.Extensions
 @{
     string name = null;
+    bool isAdmin = false;
+    string userId = null;
     if (!true.Equals(ViewData["signed-out"]))
-    {
-        name = Context.User?.GetDisplayName();
+    {       
+        if (Context.User != null)
+        {
+            name = Context.User.GetDisplayName();
+            isAdmin = Context.User.IsInRole(AdminConsts.AdminName);
+            userId = Context.User.FindFirst("sub").Value;
+        }
     }
-    bool isAdmin = Context.User.IsInRole(AdminConsts.AdminName);
 }
 <!DOCTYPE html>
 <html>
@@ -42,7 +49,7 @@
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
-        <!-- Main Header -->
+    <!-- Main Header -->
     <header class="main-header">
         <!-- Logo -->
         <a href="/" class="logo">
@@ -61,69 +68,56 @@
             </a>
             <!-- Navbar Right Menu -->
             <div class="navbar-custom-menu">
-                <ul class="nav navbar-nav">
-                    <!-- User Account Menu -->
-                    <li class="dropdown user user-menu">
-                        <!-- Menu Toggle Button -->
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                            <!-- The user image in the navbar-->
-                            <img src="~/lib/admin-lte/dist/img/user2-160x160.jpg" class="user-image" alt="User Image">
-                            <!-- hidden-xs hides the username on small devices so only the image appears. -->
-                            <span class="hidden-xs">@name</span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <!-- The user image in the menu -->
-                            <li class="user-header">
-                                <img src="~/lib/admin-lte/dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
+                <form id="logoutForm" asp-controller="Account" asp-action="Logout">
+                    <ul class="nav navbar-nav">
+                        <!-- User Account Menu -->
+                        <li class="dropdown user user-menu">
+                            <!-- Menu Toggle Button -->
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <!-- The user image in the navbar-->
+                                <img src="~/lib/admin-lte/dist/img/user2-160x160.jpg" class="user-image" alt="User Image">
+                                <!-- hidden-xs hides the username on small devices so only the image appears. -->
+                                <span class="hidden-xs">@name</span>
+                            </a>
 
-                                <p>
-                                    @name
-                                    <small>Member since Nov. 2018</small>
-                                </p>
-                            </li>
-                            <!-- Menu Body -->
-                            @*<li class="user-body">                         
-                            <!-- /.row -->
-                        </li>*@
-                            <!-- Menu Footer-->
-                            <li class="user-footer">
-                                <div class="pull-left">
-                                    <a href="#" class="btn btn-default btn-flat">Profile</a>
-                                </div>
-                                @if (!string.IsNullOrWhiteSpace(name))
-                                {
-                                    <div class="pull-right">
-                                        <form asp-controller="Account" asp-action="Logout">
-                                            <input type="hidden" name="logoutId" value=""/>
-                                            <button type="submit" class="btn btn-default btn-flat">Sign out</button>
-                                        </form>
-                                    </div>
-                                }
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
+                        </li>
+                        <li>
+                            @if (!string.IsNullOrWhiteSpace(name))
+                            {
+                                <a id="btnLogout" href="#">Logout</a>
+                            }
+                        </li>
+                    </ul>
+                </form>
             </div>
         </nav>
     </header>
-    @if (isAdmin)
-    {
 
-        <!-- Left side column. contains the logo and sidebar -->
-        <aside class="main-sidebar">
+    <!-- Left side column. contains the logo and sidebar -->
+    <aside class="main-sidebar">
 
-            <!-- sidebar: style can be found in sidebar.less -->
-            <section class="sidebar">
+        <!-- sidebar: style can be found in sidebar.less -->
+        <section class="sidebar">
 
-                <!-- Sidebar Menu -->
-                <ul class="sidebar-menu" data-widget="tree">
-                    <li class="header">HEADER</li>
-                    <!-- Optionally, you can add icons to the links -->
+            <!-- Sidebar Menu -->
+            <ul class="sidebar-menu" data-widget="tree">
+                <li class="header">HEADER</li>
+                <!-- Optionally, you can add icons to the links -->
+                @if (isAdmin)
+                {
                     <li id="home">
                         <a href="/">
                             <i class="fa fa-area-chart"></i> <span>首页</span>
                         </a>
                     </li>
+                }
+                <li id="profile">
+                    <a href="/user/@userId/profile">
+                        <i class="fa fa-area-chart"></i> <span>个人信息</span>
+                    </a>
+                </li>
+                @if (isAdmin)
+                {
                     <li id="permission">
                         <a href="/permission">
                             <i class="fa fa-key"></i> <span>权限管理</span>
@@ -149,22 +143,22 @@
                             <i class="fa fa-desktop"></i> <span>客户端管理</span>
                         </a>
                     </li>
-                    <li id="client">
-                        <a href="/grants">
-                            <i class="fa fa-history"></i> <span>授权记录</span>
-                        </a>
-                    </li>
-                    <li id="client">
-                        <a href="/diagnostics">
-                            <i class="fa fa-flask"></i> <span>诊断</span>
-                        </a>
-                    </li>
-                </ul>
-                <!-- /.sidebar-menu -->
-            </section>
-            <!-- /.sidebar -->
-        </aside>
-    }
+                }
+                <li id="grants">
+                    <a href="/grants">
+                        <i class="fa fa-history"></i> <span>授权记录</span>
+                    </a>
+                </li>
+                <li id="diagnostics">
+                    <a href="/diagnostics">
+                        <i class="fa fa-flask"></i> <span>诊断</span>
+                    </a>
+                </li>
+            </ul>
+            <!-- /.sidebar-menu -->
+        </section>
+        <!-- /.sidebar -->
+    </aside>
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
         @RenderBody()
