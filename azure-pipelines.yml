@@ -9,7 +9,6 @@ trigger:
     include:
     - master
   paths:
-    include:
     exclude:
     - README.md
     
