@@ -56,9 +56,20 @@ namespace IdentityServer4.Admin.Controllers.API
         }
 
         [HttpGet]
-        public async Task<IActionResult> Find([FromQuery] PaginationQuery input)
+        public async Task<IActionResult> Find([FromQuery] QueryUserDto input)
         {
-            var output = _userManager.Users.PageList(input, u => u.IsDeleted == false);
+            PaginationQueryResult output;
+            if (string.IsNullOrWhiteSpace(input.Keyword))
+            {
+                output = _userManager.Users.PageList(input);
+            }
+            else
+            {
+                output = _userManager.Users.PageList(input,
+                    u => u.Email.Contains(input.Keyword) || u.UserName.Contains(input.Keyword) ||
+                         u.PhoneNumber.Contains(input.Keyword));
+            }
+
             var users = (IEnumerable<User>) output.Result;
             var userDtos = new List<UserDto>();
             foreach (var user in users)

@@ -15,7 +15,7 @@ namespace IdentityServer4.Admin.Controllers.UI
         }
 
         [Authorize(Roles = AdminConsts.AdminName)]
-        [HttpGet("create")]
+        [HttpGet("[controller]/create")]
         public IActionResult Create()
         {
             return View();

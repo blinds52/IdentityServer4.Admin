@@ -24,6 +24,9 @@ $(function () {
                         loadView(that);
                     });
                 });
+            },
+            search: function () {
+                loadView(this);
             }
         }
     });
