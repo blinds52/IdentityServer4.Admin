@@ -18,7 +18,7 @@ namespace IdentityServer4.Admin
         public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
             Configuration = configuration;
-            HostingEnvironment = env;            
+            HostingEnvironment = env;
         }
 
         private IConfiguration Configuration { get; }
@@ -28,6 +28,9 @@ namespace IdentityServer4.Admin
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Add configuration
+            services.Configure<AdminOptions>(Configuration.GetSection("IdentityServer4Admin"));
+
             // Add MVC
             services.AddMvc()
                 .AddMvcOptions(o => o.Filters.Add<HttpGlobalExceptionFilter>())
@@ -64,13 +67,14 @@ namespace IdentityServer4.Admin
                 options.Password.RequireUppercase = false;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireDigit = false;
+                options.Password.RequiredLength = 6;
                 options.User.RequireUniqueEmail = false;
             });
 
             string connectionString = Configuration.GetSection("IdentityServer4Admin")
                 .GetValue<string>("ConnectionString");
 
-            // add DbContext
+            // Add DbContext
             if (!HostingEnvironment.IsDevelopment())
             {
                 services.AddDbContext<AdminDbContext>(options =>
@@ -108,7 +112,7 @@ namespace IdentityServer4.Admin
                         // this enables automatic token cleanup. this is optional.
                         options.EnableTokenCleanup = true;
                         // frequency in seconds to cleanup stale grants. 15 is useful during debugging
-                        options.TokenCleanupInterval = 15;
+                        options.TokenCleanupInterval = 3600;
                     });
             }
             else

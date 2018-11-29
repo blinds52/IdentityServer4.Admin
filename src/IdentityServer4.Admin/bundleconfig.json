@@ -160,6 +160,17 @@
     "sourceMap": false
   },
   {
+    "outputFileName": "wwwroot/js/signout-redirect.min.js",
+    "inputFiles": [
+      "wwwroot/js/signout-redirect.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
     "outputFileName": "wwwroot/js/updatePermission.min.js",
     "inputFiles": [
       "wwwroot/js/updatePermission.js"

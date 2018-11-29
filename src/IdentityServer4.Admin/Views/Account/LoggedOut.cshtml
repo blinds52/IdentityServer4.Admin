@@ -1,0 +1,26 @@
+﻿@model LoggedOutViewModel
+@{
+    // set this so the layout rendering sees an anonymous user
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>IDS4.Admin</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+</head>
+<body>
+<h3>跳转第三方登出中...</h3>
+<a href="/">返回首页</a>
+<input id="redirectUrl" hidden="true" value="@Model.PostLogoutRedirectUri"/>
+<environment names="Development">
+    <script src="~/js/signout-redirect.js" asp-append-version="true"></script>
+</environment>
+<environment names="Staging,Production">
+    <script src="~/js/signout-redirect.min.js" asp-append-version="true"></script>
+</environment>
+</body>
+</html>

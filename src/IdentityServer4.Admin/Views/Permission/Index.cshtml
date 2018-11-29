@@ -41,8 +41,8 @@
                             <span v-text="el.description"></span>
                         </td>
                         <td>
-                            <a class="btn btn-default btn-sm" :href="'/permission/' + el.id + '/edit'">编辑</a>
-                            <a class="btn btn-default btn-sm" @@click="remove(el.id)">删除</a>
+                            <a class="btn btn-default btn-sm" :href="'/permission/' + el.id + '/edit'" v-show="el.name != 'admin'">编辑</a>
+                            <a class="btn btn-default btn-sm" @@click="remove(el.id)" v-show="el.name != 'admin'">删除</a>
                         </td>
                     </tr>
                     </tbody>

@@ -7,6 +7,7 @@ using IdentityServer4.Admin.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace IdentityServer4.Admin.Controllers.API
 {
@@ -25,7 +26,10 @@ namespace IdentityServer4.Admin.Controllers.API
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] PermissionDto dto)
         {
-            if (dto.Name?.Trim() == AdminConsts.AdminName)
+            dto.Name = dto.Name.Trim();
+            dto.Description = dto.Description?.Trim();
+
+            if (dto.Name == AdminConsts.AdminName)
                 return new ApiResult(ApiResult.Error, $"权限名不能是: {AdminConsts.AdminName}");
             if (await _dbContext.Permissions.AnyAsync(u => u.Name == dto.Name))
                 return new ApiResult(ApiResult.Error, "权限已经存在");
@@ -77,6 +81,12 @@ namespace IdentityServer4.Admin.Controllers.API
         [HttpPut("{permissionId}")]
         public async Task<IActionResult> Update(int permissionId, [FromBody] UpdatePermissionDto dto)
         {
+            dto.Name = dto.Name.Trim();
+            dto.Description = dto.Description?.Trim();
+
+            if (dto.Name == AdminConsts.AdminName)
+                return new ApiResult(ApiResult.Error, $"权限名不能是: {AdminConsts.AdminName}");
+
             var permission = await _dbContext.Permissions.FirstOrDefaultAsync(u => u.Id == permissionId);
             if (permission == null) return new ApiResult(ApiResult.Error, "权限不存在");
             if (await _dbContext.Permissions.AnyAsync(u => u.Name == dto.Name))
@@ -94,6 +104,7 @@ namespace IdentityServer4.Admin.Controllers.API
         {
             var permission = await _dbContext.Permissions.FirstOrDefaultAsync(p => p.Id == permissionId);
             if (permission == null) return new ApiResult(ApiResult.Error, "权限不存在");
+            if (permission.Name == AdminConsts.AdminName) return new ApiResult(ApiResult.Error, "不能删除管理员权限");
             _dbContext.RolePermissions.RemoveRange(
                 _dbContext.RolePermissions.Where(rp => rp.Permission == permission.Name));
             _dbContext.UserPermissions.RemoveRange(

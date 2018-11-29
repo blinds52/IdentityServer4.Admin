@@ -30,6 +30,11 @@ namespace IdentityServer4.Admin.Controllers.API
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateUserDto dto)
         {
+            dto.Password = dto.Password.Trim();
+            dto.Email = dto.Email.Trim();
+            dto.PhoneNumber = dto.PhoneNumber.Trim();
+            dto.UserName = dto.UserName.Trim();
+
             if (await _userManager.Users.AnyAsync(u => u.UserName == dto.UserName && u.IsDeleted == false))
             {
                 return new ApiResult(ApiResult.Error, "用户名已经存在");
@@ -93,10 +98,18 @@ namespace IdentityServer4.Admin.Controllers.API
         [HttpPut("{userId}")]
         public async Task<IActionResult> Update(int userId, [FromBody] UpdateUserDto dto)
         {
+            dto.PhoneNumber = dto.PhoneNumber.Trim();
+            dto.Email = dto.Email.Trim();
+            dto.UserName = dto.UserName.Trim();
+
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null) return new ApiResult(ApiResult.Error, "用户不存在");
             if (user.UserName == AdminConsts.AdminName && dto.UserName != AdminConsts.AdminName)
                 return new ApiResult(ApiResult.Error, "管理员用户名不能修改");
+
+            if (user.UserName != AdminConsts.AdminName && dto.UserName == AdminConsts.AdminName)
+                return new ApiResult(ApiResult.Error, $"用户名不能是: {AdminConsts.AdminName}");
+
             user.UserName = dto.UserName;
             user.Email = dto.Email;
             user.PhoneNumber = dto.PhoneNumber;
@@ -126,7 +139,7 @@ namespace IdentityServer4.Admin.Controllers.API
             var result = await _userManager.RemovePasswordAsync(user);
             if (!result.Succeeded) return new ApiResult(ApiResult.Error, result.Errors.First().Description);
 
-            result = await _userManager.AddPasswordAsync(user, dto.NewPassword);
+            result = await _userManager.AddPasswordAsync(user, dto.NewPassword.Trim());
             return result.Succeeded ? ApiResult.Ok : new ApiResult(ApiResult.Error, result.Errors.First().Description);
         }
 

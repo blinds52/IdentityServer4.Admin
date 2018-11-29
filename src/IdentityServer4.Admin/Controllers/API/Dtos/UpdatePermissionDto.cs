@@ -8,11 +8,6 @@ namespace IdentityServer4.Admin.Controllers.API.Dtos
     public class UpdatePermissionDto
     {
         /// <summary>
-        /// 主键
-        /// </summary>
-        public int Id { get; set; }
-        
-        /// <summary>
         /// 权限名称
         /// </summary>
         [Required]

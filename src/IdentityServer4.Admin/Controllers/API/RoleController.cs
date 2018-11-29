@@ -35,9 +35,13 @@ namespace IdentityServer4.Admin.Controllers.API
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] RoleDto dto)
         {
+            dto.Name = dto.Name.Trim();
+            dto.Description = dto.Description?.Trim();
+
             var newRole = new Role
             {
-                Name = dto.Name.Trim()
+                Name = dto.Name,
+                Description = dto.Description
             };
             var result = await _roleManager.CreateAsync(newRole);
             return result.Succeeded ? ApiResult.Ok : new ApiResult(ApiResult.Error, result.Errors.First().Description);
@@ -49,12 +53,13 @@ namespace IdentityServer4.Admin.Controllers.API
             var output = _roleManager.Roles.PageList(input);
             var roles = (IEnumerable<Role>) output.Result;
             var roleDtos = new List<RoleDto>();
-            foreach (var permission in roles)
+            foreach (var role in roles)
             {
                 roleDtos.Add(new RoleDto
                 {
-                    Id = permission.Id,
-                    Name = permission.Name
+                    Id = role.Id,
+                    Name = role.Name,
+                    Description = role.Description
                 });
             }
 
@@ -75,11 +80,14 @@ namespace IdentityServer4.Admin.Controllers.API
         [HttpPut("{roleId}")]
         public async Task<IActionResult> Update(int roleId, [FromBody] UpdateRoleDto dto)
         {
+            dto.Name = dto.Name.Trim();
+            dto.Description = dto.Description?.Trim();
+
+            if (dto.Name == "admin") return new ApiResult(ApiResult.Error, "角色不能使用 admin");
+
             var role = await _roleManager.Roles.FirstOrDefaultAsync(p => p.Id == roleId);
             if (role == null) return new ApiResult(ApiResult.Error, "角色不存在");
-            dto.Name = dto.Name.Trim();
-            dto.Description = dto.Description.Trim();
-            if (dto.Name == "admin") return new ApiResult(ApiResult.Error, "角色不能使用 admin");
+
             if (role.Name == AdminConsts.AdminName) return new ApiResult(ApiResult.Error, "管理员角色不允许修改");
             role.Name = dto.Name;
             role.Description = dto.Description;

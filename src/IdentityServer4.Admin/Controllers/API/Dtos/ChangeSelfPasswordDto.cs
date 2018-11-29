@@ -12,6 +12,7 @@ namespace IdentityServer4.Admin.Controllers.API.Dtos
         /// </summary>
         [StringLength(24)]
         [MinLength(6)]
+        [Required]
         public string NewPassword { get; set; }
 
         /// <summary>

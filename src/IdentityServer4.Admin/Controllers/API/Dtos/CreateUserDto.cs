@@ -11,10 +11,12 @@ namespace IdentityServer4.Admin.Controllers.API.Dtos
         
         [StringLength(256)]
         [EmailAddress]
+        [Required]
         public string Email { get; set; }
         
         [StringLength(24)]
         [MinLength(6)]
+        [Required]
         public string Password { get; set; }
         
         [Required]

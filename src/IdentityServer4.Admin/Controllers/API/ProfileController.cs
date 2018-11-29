@@ -47,30 +47,36 @@ namespace IdentityServer4.Admin.Controllers.API
         [HttpPut("{userId}/profile")]
         public async Task<IActionResult> Update(int userId, [FromBody] UpdateProfileDto dto)
         {
+            dto.PhoneNumber = dto.PhoneNumber.Trim();
+            dto.Email = dto.Email.Trim();
+
             if (User.FindFirst("sub")?.Value != userId.ToString())
                 return new ApiResult(ApiResult.Error, "验证失败");
 
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null) return new ApiResult(ApiResult.Error, "用户不存在");
-            if (user.UserName == AdminConsts.AdminName )
+            if (user.UserName == AdminConsts.AdminName)
                 return new ApiResult(ApiResult.Error, "验证失败");
-           
-            user.Email = dto.Email.Trim();
-            user.PhoneNumber = dto.PhoneNumber.Trim();
+
+            user.Email = dto.Email;
+            user.PhoneNumber = dto.PhoneNumber;
             var result = await _userManager.UpdateAsync(user);
             return result.Succeeded ? ApiResult.Ok : new ApiResult(ApiResult.Error, result.Errors.First().Description);
         }
 
         [HttpPut("{userId}/password")]
         public async Task<IActionResult> ChangePassword(int userId, [FromBody] ChangeSelfPasswordDto dto)
-        {
+        {            
             if (User.FindFirst("sub")?.Value != userId.ToString())
                 return new ApiResult(ApiResult.Error, "验证失败");
-
+            
+            dto.NewPassword = dto.NewPassword.Trim();
+            dto.OldPassword = dto.OldPassword?.Trim();
+            
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null) return new ApiResult(ApiResult.Error, "用户不存在");
 
-            var result = await _userManager.ChangePasswordAsync(user, dto.OldPassword.Trim(), dto.NewPassword.Trim());
+            var result = await _userManager.ChangePasswordAsync(user, dto.OldPassword, dto.NewPassword);
             return result.Succeeded ? ApiResult.Ok : new ApiResult(ApiResult.Error, result.Errors.First().Description);
         }
     }

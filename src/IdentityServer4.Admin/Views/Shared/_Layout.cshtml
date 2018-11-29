@@ -69,6 +69,7 @@
             <!-- Navbar Right Menu -->
             <div class="navbar-custom-menu">
                 <form id="logoutForm" asp-controller="Account" asp-action="Logout">
+                    @Html.AntiForgeryToken();
                     <ul class="nav navbar-nav">
                         <!-- User Account Menu -->
                         <li class="dropdown user user-menu">
@@ -84,7 +85,7 @@
                         <li>
                             @if (!string.IsNullOrWhiteSpace(name))
                             {
-                                <a id="btnLogout" href="#">Logout</a>
+                                <a id="btnLogout" href="#">退出</a>
                             }
                         </li>
                     </ul>
@@ -113,7 +114,7 @@
                 }
                 <li id="profile">
                     <a href="/user/@userId/profile">
-                        <i class="fa fa-area-chart"></i> <span>个人信息</span>
+                        <i class="fa fa-book"></i> <span>个人信息</span>
                     </a>
                 </li>
                 @if (isAdmin)
