@@ -10,3 +10,79 @@
         </li>
     </ol>
 </section>
+<section class="content container-fluid" id="view">
+    <div class="row">
+        <div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="info-box">
+                <span class="info-box-icon bg-aqua">
+                    <i class="ion ion-ios-gear-outline"></i>
+                </span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text">Users</span>
+                    <span class="info-box-number" v-text="userCount">0</span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+        </div>
+        <!-- /.col -->
+        <div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="info-box">
+                <span class="info-box-icon bg-red">
+                    <i class="fa fa-google-plus"></i>
+                </span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text">Locked Users</span>
+                    <span class="info-box-number" v-text="lockedUserCount">0</span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+        </div>
+        <!-- /.col -->
+
+        <!-- fix for small devices only -->
+        <div class="clearfix visible-sm-block"></div>
+
+        <div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="info-box">
+                <span class="info-box-icon bg-green">
+                    <i class="ion ion-ios-cart-outline"></i>
+                </span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text">Clients</span>
+                    <span class="info-box-number" v-text="clientCount">0</span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+        </div>
+        <!-- /.col -->
+        <div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="info-box">
+                <span class="info-box-icon bg-yellow">
+                    <i class="ion ion-ios-people-outline"></i>
+                </span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text">Api Resources</span>
+                    <span class="info-box-number" v-text="apiResourceCount">0</span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+        </div>
+        <!-- /.col -->
+    </div>
+</section>
+@section scripts{
+    <environment names="Development">
+        <script src="~/js/dashboard.js" asp-append-version="true"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="~/js/dashboard.min.js" asp-append-version="true"></script>
+    </environment>
+}

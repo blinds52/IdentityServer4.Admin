@@ -58,11 +58,31 @@
                             <input class="form-control" type="text" v-model="phoneNumber" placeholder="电话">
                         </div>
                     </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>公司电话</label>
+                            <input class="form-control" type="text" v-model="officePhone" placeholder="公司电话">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>性别</label>
+                            <input class="form-control" type="text" v-model="sex" placeholder="性别">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>职位</label>
+                            <input class="form-control" type="text" v-model="title" placeholder="职位">
+                        </div>
+                    </div>
                 </div>
             </div>
             <!-- /.box-body -->
             <div class="box-footer clearfix">
-                <button type="button" class="btn btn-default" @@click="update()">更新</button>
+                <button type="button" class="btn btn-default btn-sm" @@click="update()">更新</button>
             </div>
         </div>
         <!-- /.box -->
@@ -92,7 +112,7 @@
             </div>
             <!-- /.box-body -->
             <div class="box-footer clearfix">
-                <button type="button" class="btn btn-default" @@click="changePassword()">更新</button>
+                <button type="button" class="btn btn-default btn-sm" @@click="changePassword()">更新</button>
             </div>
         </div>
         <!-- /.box -->

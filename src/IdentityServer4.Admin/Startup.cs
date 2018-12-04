@@ -39,12 +39,12 @@ namespace IdentityServer4.Admin
 
             // Add Log
             var debugMode = Environment.CommandLine.Contains("/debug");
-            if (!HostingEnvironment.IsDevelopment() || debugMode)
+            if (HostingEnvironment.IsDevelopment() || debugMode)
             {
                 Log.Logger = new LoggerConfiguration()
                     .MinimumLevel.Information()
-                    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-                    .MinimumLevel.Override("System", LogEventLevel.Warning)
+                    .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                    .MinimumLevel.Override("System", LogEventLevel.Information)
                     .MinimumLevel.Override("Microsoft.AspNetCore.Authentication", LogEventLevel.Information)
                     .Enrich.FromLogContext()
                     .WriteTo.Console().WriteTo.RollingFile("ids4.log")
@@ -54,8 +54,8 @@ namespace IdentityServer4.Admin
             {
                 Log.Logger = new LoggerConfiguration()
                     .MinimumLevel.Information()
-                    .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-                    .MinimumLevel.Override("System", LogEventLevel.Information)
+                    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+                    .MinimumLevel.Override("System", LogEventLevel.Warning)
                     .MinimumLevel.Override("Microsoft.AspNetCore.Authentication", LogEventLevel.Information)
                     .Enrich.FromLogContext()
                     .WriteTo.Console().WriteTo.RollingFile("ids4.log")
@@ -70,20 +70,20 @@ namespace IdentityServer4.Admin
                 options.Password.RequireDigit = false;
                 options.Password.RequiredLength = 6;
                 options.User.RequireUniqueEmail = false;
-            });
+            }).AddErrorDescriber<CustomIdentityErrorDescriber>();
 
             string connectionString = Configuration.GetSection("IdentityServer4Admin")
                 .GetValue<string>("ConnectionString");
 
             // Add DbContext
-            if (!HostingEnvironment.IsDevelopment() || debugMode)
+            if (HostingEnvironment.IsDevelopment() || debugMode)
             {
-                services.AddDbContext<AdminDbContext>(options =>
-                    options.UseSqlServer(connectionString));
+                services.AddDbContext<AdminDbContext>(options => options.UseInMemoryDatabase("IDS4"));
             }
             else
             {
-                services.AddDbContext<AdminDbContext>(options => options.UseInMemoryDatabase("IDS4"));
+                services.AddDbContext<AdminDbContext>(options =>
+                    options.UseSqlServer(connectionString));
             }
 
             idBuilder.AddDefaultTokenProviders();

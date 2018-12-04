@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityServer4.Admin.Controllers.UI
 {
-    [SecurityHeaders]
     public class HomeController : BaseController
     {
         private readonly IIdentityServerInteractionService _interaction;

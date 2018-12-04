@@ -4,6 +4,7 @@
 
 using System.Linq;
 using System.Threading.Tasks;
+using IdentityModel;
 using IdentityServer4.Admin.Common;
 using IdentityServer4.Admin.Models.Consent;
 using IdentityServer4.Models;
@@ -161,7 +162,8 @@ namespace IdentityServer4.Admin.Controllers.UI
                     }
                     else
                     {
-                        _logger.LogError("No scopes matching: {0}", request.ScopesRequested.Aggregate((x, y) => x + ", " + y));
+                        _logger.LogError("No scopes matching: {0}",
+                            request.ScopesRequested.Aggregate((x, y) => x + ", " + y));
                     }
                 }
                 else
@@ -180,7 +182,7 @@ namespace IdentityServer4.Admin.Controllers.UI
         private ConsentViewModel CreateConsentViewModel(
             ConsentInputModel model, string returnUrl,
             AuthorizationRequest request,
-            Client client, Resources resources)
+            Client client, IdentityServer4.Models.Resources resources)
         {
             var vm = new ConsentViewModel();
             vm.RememberConsent = model?.RememberConsent ?? true;
@@ -193,12 +195,17 @@ namespace IdentityServer4.Admin.Controllers.UI
             vm.ClientLogoUrl = client.LogoUri;
             vm.AllowRememberConsent = client.AllowRememberConsent;
 
-            vm.IdentityScopes = resources.IdentityResources.Select(x => CreateScopeViewModel(x, vm.ScopesConsented.Contains(x.Name) || model == null)).ToArray();
-            vm.ResourceScopes = resources.ApiResources.SelectMany(x => x.Scopes).Select(x => CreateScopeViewModel(x, vm.ScopesConsented.Contains(x.Name) || model == null)).ToArray();
+            vm.IdentityScopes = resources.IdentityResources
+                .Select(x => CreateScopeViewModel(x, vm.ScopesConsented.Contains(x.Name) || model == null)).ToArray();
+            vm.ResourceScopes = resources.ApiResources.SelectMany(x => x.Scopes).Select(x =>
+                CreateScopeViewModel(x, vm.ScopesConsented.Contains(x.Name) || model == null)).ToArray();
             if (AdminConsts.EnableOfflineAccess && resources.OfflineAccess)
             {
-                vm.ResourceScopes = vm.ResourceScopes.Union(new[] {
-                    GetOfflineAccessScope(vm.ScopesConsented.Contains(IdentityServerConstants.StandardScopes.OfflineAccess) || model == null)
+                vm.ResourceScopes = vm.ResourceScopes.Union(new[]
+                {
+                    GetOfflineAccessScope(
+                        vm.ScopesConsented.Contains(IdentityServerConstants.StandardScopes.OfflineAccess) ||
+                        model == null)
                 });
             }
 
@@ -242,7 +249,7 @@ namespace IdentityServer4.Admin.Controllers.UI
                 Checked = check
             };
         }
-        
+
         public class ProcessConsentResult
         {
             public bool IsRedirect => RedirectUri != null;

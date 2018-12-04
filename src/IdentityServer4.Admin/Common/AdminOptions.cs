@@ -18,6 +18,6 @@ namespace IdentityServer4.Admin.Common
         // if user uses windows auth, should we load the groups from windows
         public bool IncludeWindowsGroups { get; set; } = false;
 
-        public string InvalidCredentialsErrorMessage { get; set; } = "Invalid username or password";
+        public string InvalidCredentialsErrorMessage { get; set; } = "用户名或密码错误";
     }
 }

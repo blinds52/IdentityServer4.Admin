@@ -94,6 +94,17 @@
     "sourceMap": false
   },
   {
+    "outputFileName": "wwwroot/js/dashboard.min.js",
+    "inputFiles": [
+      "wwwroot/js/dashboard.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
     "outputFileName": "wwwroot/js/login.min.js",
     "inputFiles": [
       "wwwroot/js/login.js"

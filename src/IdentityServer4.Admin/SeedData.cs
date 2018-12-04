@@ -65,10 +65,13 @@ namespace IdentityServer4.Admin
 
         private static async Task AddUsers(IServiceScope scope)
         {
-            await AddUser(scope, "songzhiyun", "1qazZAQ!", "songzhiyun@163.com", "18721696556", "expert-admin");
-            await AddUser(scope, "shunyin", "1qazZAQ!", "shunyin@163.com", "18721696556", "expert-admin");
-            await AddUser(scope, "dingjiaoyi", "1qazZAQ!", "dingjiaoyi@163.com", "18721696556", "expert-leader");
-            await AddUser(scope, "yangjun", "1qazZAQ!", "yangjun@163.com", "18721696556", "expert-qc", "expert-op");
+            await AddUser(scope, "songzhiyun", "1qazZAQ!", "songzhiyun@163.com", "18721696556", "expert",
+                "expert-admin");
+            await AddUser(scope, "shunyin", "1qazZAQ!", "shunyin@163.com", "18721696556", "expert", "expert-admin");
+            await AddUser(scope, "dingjiaoyi", "1qazZAQ!", "dingjiaoyi@163.com", "18721696556", "expert",
+                "expert-leader");
+            await AddUser(scope, "yangjun", "1qazZAQ!", "yangjun@163.com", "18721696556", "expert", "expert-qc",
+                "expert-op");
             await AddUser(scope, "wangliang", "1qazZAQ!", "wangliang@163.com", "18721696556", "expert");
             await AddUser(scope, "zousong", "1qazZAQ!", "zousong@163.com", "18721696556", "expert");
             await AddUser(scope, "shengwei", "1qazZAQ!", "shengwei@163.com", "18721696556", "expert");
@@ -79,7 +82,7 @@ namespace IdentityServer4.Admin
             params string[] roles)
         {
             var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
-            var admin = new User
+            var user = new User
             {
                 UserName = name,
                 Email = email,
@@ -87,8 +90,8 @@ namespace IdentityServer4.Admin
                 PhoneNumber = phone,
                 PhoneNumberConfirmed = true
             };
-            await userMgr.CreateAsync(admin, password);
-            await userMgr.AddClaimsAsync(admin, new[]
+            await userMgr.CreateAsync(user, password);
+            await userMgr.AddClaimsAsync(user, new[]
             {
                 new Claim(JwtClaimTypes.Name, name),
                 new Claim(JwtClaimTypes.Email, email),
@@ -96,7 +99,7 @@ namespace IdentityServer4.Admin
             });
             foreach (var role in roles)
             {
-                await userMgr.AddToRoleAsync(admin, role);
+                await userMgr.AddToRoleAsync(user, role);
             }
         }
 
