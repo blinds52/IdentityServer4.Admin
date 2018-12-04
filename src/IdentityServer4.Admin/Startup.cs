@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using IdentityServer4.Admin.Common;
 using IdentityServer4.Admin.Data;
 using Microsoft.AspNetCore.Builder;
@@ -37,8 +38,8 @@ namespace IdentityServer4.Admin
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             // Add Log
-
-            if (!HostingEnvironment.IsDevelopment())
+            var debugMode = Environment.CommandLine.Contains("/debug");
+            if (!HostingEnvironment.IsDevelopment() || debugMode)
             {
                 Log.Logger = new LoggerConfiguration()
                     .MinimumLevel.Information()
@@ -75,7 +76,7 @@ namespace IdentityServer4.Admin
                 .GetValue<string>("ConnectionString");
 
             // Add DbContext
-            if (!HostingEnvironment.IsDevelopment())
+            if (!HostingEnvironment.IsDevelopment() || debugMode)
             {
                 services.AddDbContext<AdminDbContext>(options =>
                     options.UseSqlServer(connectionString));
