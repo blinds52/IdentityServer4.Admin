@@ -71,7 +71,6 @@ app.post = function (url, data, success, error) {
         }
     });
 };
-
 app.get = function (url, success, error) {
     $.ajax({
         url: url,
@@ -84,7 +83,6 @@ app.get = function (url, success, error) {
         }
     });
 };
-
 app.delete = function (url, success, error) {
     $.ajax({
         url: url,
@@ -97,7 +95,6 @@ app.delete = function (url, success, error) {
         }
     });
 };
-
 app.put = function (url, data, success, error) {
     $.ajax({
         url: url,
@@ -126,16 +123,7 @@ app.head = function (url, success, error) {
         }
     });
 };
-
 app.ui = {};
-
-app.ui.setBusy = function () {
-    $("#loading").css("display", "");
-};
-app.ui.clearBusy = function () {
-    $("#loading").css("display", "none");
-};
-
 app.pagers = {};
 app.ui.initPagination = function (query, option, click) {
     let total = option.total || 1;
@@ -188,6 +176,5 @@ app.formatDate = function (time, format = 'YY-MM-DD hh:mm:ss') {
 $(function () {
     $('#btnLogout').click(function () {
         $('#logoutForm').submit();
-    });
-    $(".dropdown-trigger").dropdown();
-});
+    })
+})

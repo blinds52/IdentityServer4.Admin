@@ -1,13 +1,23 @@
 $(function () {
-    $('#user').addClass('active');
     new Vue({
         el: '#view',
         data: {
+            activeMenu: '用户管理',
+            menus: menus,
+            module: '用户角色',
+            moduleDescription: '',
+            breadcrumb: [{
+                name: '用户管理',
+                href: '/user'
+            }, {
+                name: '角色',
+                href: '#'
+            }],
             els: [],
             roles: [],
             role: ''
         },
-        mounted: function () {
+        created: function () {
             loadView(this);
         },
         methods: {

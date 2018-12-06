@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityServer4.Admin.Controllers.UI
 {
-    [SecurityHeaders]
     [Authorize]
     public class DiagnosticsController : Controller
     {

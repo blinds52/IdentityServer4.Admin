@@ -1,14 +1,21 @@
 $(function () {
-    $('#permission').addClass('active');
     new Vue({
         el: '#view',
         data: {
+            activeMenu: '权限管理',
+            menus: menus,
+            module: '权限管理',
+            moduleDescription: '',
+            breadcrumb: [{
+                name: '权限管理',
+                href: '#'
+            }],
             els: [],
             page: app.getUrlParam('page') || 1,
             size: app.getUrlParam('size') || 16,
             total: 0
         },
-        mounted: function () {
+        created: function () {
             loadView(this);
         },
         methods: {

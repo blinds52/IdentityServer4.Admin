@@ -6,7 +6,7 @@
     bool isAdmin = false;
     string userId = null;
     if (!true.Equals(ViewData["signed-out"]))
-    {       
+    {
         if (Context.User != null)
         {
             name = Context.User.GetDisplayName();
@@ -48,6 +48,83 @@
     <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true"/>
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
+@if (isAdmin)
+{
+    <script>
+        const menus = [
+            {
+                icon: 'fa fa-area-chart',
+                name: '首页',
+                href: '/',
+                isActive: false
+            }, {
+                icon: 'fa fa-book',
+                name: '个人信息',
+                href: '/user/@userId/profile',
+                isActive: false
+            }, {
+                icon: 'fa fa-key',
+                name: '权限管理',
+                href: '/permission',
+                isActive: false
+            }, {
+                icon: 'fa fa-graduation-cap',
+                name: '角色管理',
+                href: '/role',
+                isActive: false
+            }, {
+                icon: 'fa fa-user',
+                name: '用户管理',
+                href: '/user',
+                isActive: false
+            }, {
+                icon: 'fa fa-book',
+                name: 'API 资源管理',
+                href: '/apiResource',
+                isActive: false
+            }, {
+                icon: 'fa fa-desktop',
+                name: '客户端管理',
+                href: '/client',
+                isActive: false
+            }, {
+                icon: 'fa fa-history',
+                name: '授权记录',
+                href: '/grants',
+                isActive: false
+            }, {
+                icon: 'fa fa-flask',
+                name: '诊断',
+                href: '/diagnostics',
+                isActive: false
+            }
+        ];
+    </script>
+}
+else
+{
+    <script>
+        const menus = [
+            {
+                icon: 'fa fa-book',
+                name: '个人信息',
+                href: '/user/@userId/profile',
+                isActive: false
+            }, {
+                icon: 'fa fa-history',
+                name: '授权记录',
+                href: '/grants',
+                isActive: false
+            }, {
+                icon: 'fa fa-flask',
+                name: '诊断',
+                href: '/diagnostics',
+                isActive: false
+            }
+        ];
+    </script>
+}
+
 <div class="wrapper">
     <!-- Main Header -->
     <header class="main-header">
@@ -69,7 +146,7 @@
             <!-- Navbar Right Menu -->
             <div class="navbar-custom-menu">
                 <form id="logoutForm" asp-controller="Account" asp-action="Logout">
-                    @Html.AntiForgeryToken();
+                    @Html.AntiForgeryToken()
                     <ul class="nav navbar-nav">
                         <!-- User Account Menu -->
                         <li class="dropdown user user-menu">
@@ -80,12 +157,11 @@
                                 <!-- hidden-xs hides the username on small devices so only the image appears. -->
                                 <span class="hidden-xs">@name</span>
                             </a>
-
                         </li>
                         <li>
                             @if (!string.IsNullOrWhiteSpace(name))
                             {
-                                <a id="btnLogout" href="#">退出</a>
+                                <a id='btnLogout' href="#">退出</a>
                             }
                         </li>
                     </ul>
@@ -94,91 +170,61 @@
         </nav>
     </header>
 
-    <!-- Left side column. contains the logo and sidebar -->
-    <aside class="main-sidebar">
+    <div id="view">
+        <!-- Left side column. contains the logo and sidebar -->
+        <aside class="main-sidebar">
 
-        <!-- sidebar: style can be found in sidebar.less -->
-        <section class="sidebar">
+            <!-- sidebar: style can be found in sidebar.less -->
+            <section class="sidebar">
 
-            <!-- Sidebar Menu -->
-            <ul class="sidebar-menu" data-widget="tree">
-                <li class="header">HEADER</li>
-                <!-- Optionally, you can add icons to the links -->
-                @if (isAdmin)
-                {
-                    <li id="home">
-                        <a href="/">
-                            <i class="fa fa-area-chart"></i> <span>首页</span>
+                <!-- Sidebar Menu -->
+                <ul class="sidebar-menu" data-widget="tree">
+                    <li class="header">HEADER</li>
+                    <li v-for="el in menus" :class="(el.name == activeMenu) ? 'active' : ''">
+                        <a :href="el.href">
+                            <i :class="el.icon"></i><span v-text="el.name"></span>
                         </a>
                     </li>
-                }
-                <li id="profile">
-                    <a href="/user/@userId/profile">
-                        <i class="fa fa-book"></i> <span>个人信息</span>
-                    </a>
-                </li>
-                @if (isAdmin)
-                {
-                    <li id="permission">
-                        <a href="/permission">
-                            <i class="fa fa-key"></i> <span>权限管理</span>
-                        </a>
+                </ul>
+                <!-- /.sidebar-menu -->
+            </section>
+            <!-- /.sidebar -->
+        </aside>
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <section class="content-header">
+                <h1 v-text="module">
+                    <small v-text="moduleDescription"></small>
+                </h1>
+                <ol class="breadcrumb">
+                    <li>
+                        <a href="/"><i class="fa fa-dashboard"></i>首页</a>
                     </li>
-                    <li id="role">
-                        <a href="/role">
-                            <i class="fa fa-graduation-cap"></i> <span>角色管理</span>
-                        </a>
+                    <li v-for="el in breadcrumb">
+                        <a v-text="el.name" :href="(el.href === '#' || el.href === '' || el.href) ? '#' : el.href"></a>
                     </li>
-                    <li id="user">
-                        <a href="/user">
-                            <i class="fa fa-user"></i> <span>用户管理</span>
-                        </a>
-                    </li>
-                    <li id="apiResource">
-                        <a href="/apiResource">
-                            <i class="fa fa-book"></i> <span>API 资源管理</span>
-                        </a>
-                    </li>
-                    <li id="client">
-                        <a href="/client">
-                            <i class="fa fa-desktop"></i> <span>客户端管理</span>
-                        </a>
-                    </li>
-                }
-                <li id="grants">
-                    <a href="/grants">
-                        <i class="fa fa-history"></i> <span>授权记录</span>
-                    </a>
-                </li>
-                <li id="diagnostics">
-                    <a href="/diagnostics">
-                        <i class="fa fa-flask"></i> <span>诊断</span>
-                    </a>
-                </li>
-            </ul>
-            <!-- /.sidebar-menu -->
-        </section>
-        <!-- /.sidebar -->
-    </aside>
-    <!-- Content Wrapper. Contains page content -->
-    <div class="content-wrapper">
-        @RenderBody()
-    </div>
-    <!-- /.content-wrapper -->
-
-    <!-- Main Footer -->
-    <footer class="main-footer">
-        <!-- To the right -->
-        <div class="pull-right hidden-xs">
+                </ol>
+            </section>
+            <!-- Main content -->
+            <section class="content container-fluid">
+                @RenderBody()
+            </section>
         </div>
-        <!-- Default to the left -->
-        <strong>Copyright &copy; 2018 <a href="#">IdentityServer4.Admin</a>.</strong> All rights reserved.
-    </footer>
-    <!-- /.control-sidebar -->
-    <!-- Add the sidebar's background. This div must be placed
-    immediately after the control sidebar -->
-    <div class="control-sidebar-bg">
+        <!-- /.content-wrapper -->
 
+        <!-- Main Footer -->
+        <footer class="main-footer">
+            <!-- To the right -->
+            <div class="pull-right hidden-xs">
+            </div>
+            <!-- Default to the left -->
+            <strong>Copyright &copy; 2018 <a href="#">IdentityServer4.Admin</a>.</strong> All rights reserved.
+        </footer>
+        <!-- /.control-sidebar -->
+        <!-- Add the sidebar's background. This div must be placed
+        immediately after the control sidebar -->
+        <div class="control-sidebar-bg">
+        </div>
     </div>
 </div>
 <!-- ./wrapper -->

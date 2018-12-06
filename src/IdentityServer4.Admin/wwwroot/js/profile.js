@@ -1,15 +1,22 @@
 $(function () {
-    $('#user').addClass('active');
     new Vue({
         el: '#view',
         data: {
+            activeMenu: '个人信息',
+            menus: menus,
+            module: '个人信息',
+            moduleDescription: '',
+            breadcrumb: [{
+                name: '个人信息',
+                href: '#'
+            }],
             userName: '',
             email: '',
             phoneNumber: '',
             oldPassword: '',
             newPassword: ''
         },
-        mounted: function () {
+        created: function () {
             loadView(this);
         },
         methods: {

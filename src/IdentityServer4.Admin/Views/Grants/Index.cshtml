@@ -1,83 +1,70 @@
 ﻿@model IdentityServer4.Admin.Models.Grants.GrantsViewModel
-<!-- Content Header (Page header) -->
-<section class="content-header">
-    <h1>
-        授权记录
-        <small></small>
-    </h1>
-    <ol class="breadcrumb">
-        <li>
-            <a href="/"><i class="fa fa-dashboard"></i>首页</a>
-        </li>
-        <li class="active">授权</li>
-    </ol>
-</section>
-<!-- Main content -->
-<section class="content container-fluid">
-    <div class="col-xs-12">
-        <div class="box" id="view">
-            <!-- /.box-header -->
-            <div class="box-body table-responsive no-padding">
-                <table class="table table-bordered">
-                    <tbody>
+<div class="col-xs-12">
+    <div class="box">
+        <!-- /.box-header -->
+        <div class="box-body table-responsive no-padding">
+            <table class="table table-bordered">
+                <tbody>
+                <tr>
+                    <th>#</th>
+                    <th>客户端</th>
+                    <th>授权时间</th>
+                    <th>过期时间</th>
+                    <th>Identity Grants</th>
+                    <th>API Grants</th>
+                    <th>注销</th>
+                </tr>
+                @if (Model.Grants.Any() == false)
+                {
                     <tr>
-                        <th>#</th>
-                        <th>客户端</th>
-                        <th>授权时间</th>
-                        <th>过期时间</th>
-                        <th>Identity Grants</th>
-                        <th>API Grants</th>
-                        <th>注销</th>
+                        <td colspan="7">
+                            No data to display...
+                        </td>
                     </tr>
-                    @if (Model.Grants.Any() == false)
+                }
+                else
+                {
+                    foreach (var grant in Model.Grants)
                     {
                         <tr>
-                            <td colspan="7">
-                                No data to display...
+                            <td>
+                                @if (grant.ClientLogoUrl != null)
+                                {
+                                    <img src="@grant.ClientLogoUrl">
+                                }
+                            </td>
+                            <td>
+                                @grant.ClientName
+                            </td>
+                            <td>
+                                @grant.Created.ToString("yyyy-MM-dd")
+                            </td>
+                            <td>
+                                @grant.Expires?.ToString("yyyy-MM-dd")
+                            </td>
+                            <td>
+                                @string.Join(", ", grant.IdentityGrantNames)
+                            </td>
+                            <td>
+                                @string.Join(", ", grant.ApiGrantNames)
+                            </td>
+                            <td>
+                                <form asp-action="Revoke">
+                                    <input type="hidden" name="clientId" value="@grant.ClientId">
+                                    <button class="btn btn-danger">注销</button>
+                                </form>
                             </td>
                         </tr>
                     }
-                    else
-                    {
-                        foreach (var grant in Model.Grants)
-                        {
-                            <tr>
-                                <td>
-                                    @if (grant.ClientLogoUrl != null)
-                                    {
-                                        <img src="@grant.ClientLogoUrl">
-                                    }
-                                </td>
-                                <td>
-                                    @grant.ClientName
-                                </td>
-                                <td>
-                                    @grant.Created.ToString("yyyy-MM-dd")
-                                </td>
-                                <td>
-                                    @grant.Expires?.ToString("yyyy-MM-dd")
-                                </td>
-                                <td>
-                                    @string.Join(", ", grant.IdentityGrantNames)
-                                </td>
-                                <td>
-                                    @string.Join(", ", grant.ApiGrantNames)
-                                </td>
-                                <td>
-                                    <form asp-action="Revoke">
-                                        <input type="hidden" name="clientId" value="@grant.ClientId">
-                                        <button class="btn btn-danger">注销</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        }
-                    }
-                    </tbody>
-                </table>
-            </div>
-            <!-- /.box-body -->
+                }
+                </tbody>
+            </table>
         </div>
-        <!-- /.box -->
+        <!-- /.box-body -->
     </div>
-</section>
-<!-- /.content -->
+    <!-- /.box -->
+</div>
+
+@section scripts{
+    <script src="~/js/grants.js" asp-append-version="true"></script>
+}

@@ -1,14 +1,21 @@
 $(function () {
-    $('#role').addClass('active');
     new Vue({
         el: '#view',
         data: {
+            activeMenu: '角色管理',
+            menus: menus,
+            module: '角色管理',
+            moduleDescription: '',
+            breadcrumb: [{
+                name: '角色管理',
+                href: '#'
+            }],
             els: [],
             page: app.getUrlParam('page') || 1,
             size: app.getUrlParam('size') || 16,
             total: 0
         },
-        mounted: function () {
+        created: function () {
             loadView(this);
         },
         methods: {

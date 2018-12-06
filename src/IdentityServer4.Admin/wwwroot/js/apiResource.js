@@ -1,15 +1,22 @@
 $(function () {
-    $('#apiResource').addClass('active');
     new Vue({
         el: '#view',
         data: {
+            activeMenu: 'API 资源管理',
+            menus: menus,
+            module: 'API 资源',
+            moduleDescription: '',
+            breadcrumb: [{
+                name: 'API 资源',
+                href: '#'
+            }],
             els: [],
             page: app.getUrlParam('page') || 1,
             size: app.getUrlParam('size') || 16,
             total: 0,
             keyword: decodeURIComponent(app.getUrlParam('keyword') || '')
         },
-        mounted: function () {
+        created: function () {
             loadView(this);
         },
         methods: {

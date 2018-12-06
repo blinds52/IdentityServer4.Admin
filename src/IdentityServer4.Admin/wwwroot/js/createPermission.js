@@ -1,8 +1,18 @@
 $(function () {
-    $('#permission').addClass('active');
     new Vue({
         el: '#view',
         data: {
+            activeMenu: '权限管理',
+            menus: menus,
+            module: '创建权限',
+            moduleDescription: '',
+            breadcrumb: [{
+                name: '权限管理',
+                href: '/permission'
+            }, {
+                name: '创建',
+                href: '#'
+            }],
             name: '',
             description: ''
         },

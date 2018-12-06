@@ -1,8 +1,18 @@
 $(function () {
-    $('#apiResource').addClass('active');
     new Vue({
         el: '#view',
         data: {
+            activeMenu: 'API 资源管理',
+            menus: menus,
+            module: 'API 资源',
+            moduleDescription: '',
+            breadcrumb: [{
+                name: 'API 资源',
+                href: '/apiResource'
+            }, {
+                name: '创建',
+                href: '#'
+            }],
             el: {
                 name: '',
                 displayName: '',
@@ -28,7 +38,7 @@ $(function () {
                 type: ''
             }
         },
-        mounted: function () {
+        created: function () {
             $('.select2').select2({
                 minimumResultsForSearch: Infinity
             });

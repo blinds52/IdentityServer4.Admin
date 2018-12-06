@@ -1,16 +1,20 @@
 $(function () {
-    $('#role').addClass('home');
     new Vue({
         el: '#view',
         data: {
+            activeMenu: '首页',
+            menus: menus,
+            module: '首页',
+            moduleDescription: '',
+            breadcrumb: [],
             userCount: 0,
             clientCount: 0,
             apiResourceCount: 0,
             lockedUserCount: 0
         },
-        mounted: function () {
+        created: function () {
             loadView(this);
-        }
+        },
     });
 
     function loadView(vue) {

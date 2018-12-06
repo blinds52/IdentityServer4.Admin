@@ -1,15 +1,22 @@
 $(function () {
-    $('#user').addClass('active');
     new Vue({
         el: '#view',
         data: {
+            activeMenu: '用户管理',
+            menus: menus,
+            module: '用户管理',
+            moduleDescription: '',
+            breadcrumb: [{
+                name: '用户管理',
+                href: '#'
+            }],
             els: [],
             page: app.getUrlParam('page') || 1,
             size: app.getUrlParam('size') || 16,
             total: 0,
             keyword: decodeURIComponent(app.getUrlParam('keyword') || '')
         },
-        mounted: function () {
+        created: function () {
             loadView(this);
         },
         methods: {

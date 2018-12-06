@@ -1,124 +1,91 @@
-@using IdentityServer4.Admin.Common
-<!-- Content Header (Page header) -->
-@{
-    bool isAdmin = false;
-    if (!true.Equals(ViewData["signed-out"]))
-    {
-        if (Context.User != null)
-        {
-            isAdmin = Context.User.IsInRole(AdminConsts.AdminName);
-        }
-    }
-}
-<section class="content-header">
-    <h1>
-        个人信息
-        <small></small>
-    </h1>
-    <ol class="breadcrumb">
-        <li>
-            <a href="/"><i class="fa fa-dashboard"></i>首页</a>
-        </li>
-        @if (isAdmin)
-        {
-            <li>
-                <a href="/user">用户</a>
-            </li>
-        }
-        <li class="active">个人信息</li>
-    </ol>
-</section>
-<section class="content container-fluid" id="view">
-    <div class="col-xs-12">
-        <div class="box">
-            <div class="box-header">
-                <div class="box-title">
-                    基本资料
-                </div>
-            </div>
-            <div class="box-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label>用户名</label>
-                            <input class="form-control" type="text" readonly :value="userName">
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label>邮箱</label>
-                            <input class="form-control" type="text" v-model="email" placeholder="邮箱">
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label>电话</label>
-                            <input class="form-control" type="text" v-model="phoneNumber" placeholder="电话">
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label>公司电话</label>
-                            <input class="form-control" type="text" v-model="officePhone" placeholder="公司电话">
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label>性别</label>
-                            <input class="form-control" type="text" v-model="sex" placeholder="性别">
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label>职位</label>
-                            <input class="form-control" type="text" v-model="title" placeholder="职位">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- /.box-body -->
-            <div class="box-footer clearfix">
-                <button type="button" class="btn btn-default btn-sm" @@click="update()">更新</button>
+<div class="col-xs-12">
+    <div class="box">
+        <div class="box-header">
+            <div class="box-title">
+                基本资料
             </div>
         </div>
-        <!-- /.box -->
-    </div>
-    <div class="col-xs-12">
-        <div class="box">
-            <div class="box-header">
-                <div class="box-title">
-                    更新密码
-                </div>
-            </div>
-            <div class="box-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label>旧密码</label>
-                            <input class="form-control" type="password" v-model="oldPassword" placeholder="旧密码">
-                        </div>
+        <div class="box-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>用户名</label>
+                        <input class="form-control" type="text" readonly :value="userName">
                     </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label>新密码</label>
-                            <input class="form-control" type="password" v-model="newPassword" placeholder="新密码">
-                        </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>邮箱</label>
+                        <input class="form-control" type="text" v-model="email" placeholder="邮箱">
                     </div>
                 </div>
             </div>
-            <!-- /.box-body -->
-            <div class="box-footer clearfix">
-                <button type="button" class="btn btn-default btn-sm" @@click="changePassword()">更新</button>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>电话</label>
+                        <input class="form-control" type="text" v-model="phoneNumber" placeholder="电话">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>公司电话</label>
+                        <input class="form-control" type="text" v-model="officePhone" placeholder="公司电话">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>性别</label>
+                        <input class="form-control" type="text" v-model="sex" placeholder="性别">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>职位</label>
+                        <input class="form-control" type="text" v-model="title" placeholder="职位">
+                    </div>
+                </div>
             </div>
         </div>
-        <!-- /.box -->
+        <!-- /.box-body -->
+        <div class="box-footer clearfix">
+            <button type="button" class="btn btn-default btn-sm" @@click="update()">更新</button>
+        </div>
     </div>
-</section>
-<!-- /.content -->
+    <!-- /.box -->
+</div>
+<div class="col-xs-12">
+    <div class="box">
+        <div class="box-header">
+            <div class="box-title">
+                更新密码
+            </div>
+        </div>
+        <div class="box-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>旧密码</label>
+                        <input class="form-control" type="password" v-model="oldPassword" placeholder="旧密码">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>新密码</label>
+                        <input class="form-control" type="password" v-model="newPassword" placeholder="新密码">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.box-body -->
+        <div class="box-footer clearfix">
+            <button type="button" class="btn btn-default btn-sm" @@click="changePassword()">更新</button>
+        </div>
+    </div>
+    <!-- /.box -->
+</div>
 
 @section scripts{
     <environment names="Development">
