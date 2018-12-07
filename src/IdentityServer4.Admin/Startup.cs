@@ -3,7 +3,6 @@ using System.Reflection;
 using IdentityServer4.Admin.Entities;
 using IdentityServer4.Admin.Infrastructure;
 using IdentityServer4.Admin.Infrastructure.Entity;
-using IdentityServer4.Admin.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -11,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
 
@@ -93,20 +91,8 @@ namespace IdentityServer4.Admin
                     options.EnableTokenCleanup = true;
                 });
 
-            // Add Repository
-            services.AddScoped(typeof(IRepository<,>), typeof(Repository<,>));
-            
-            // Add extra repository
-            AddExtraRepository(services);
-
             // Add EF uow
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-        }
-
-        private void AddExtraRepository(IServiceCollection services)
-        {
-            services.AddScoped<ClientRepository>();
-            services.AddScoped<ApiResourceRepository>();
         }
 
         private void RegisterLogService(IServiceCollection services, bool debug)

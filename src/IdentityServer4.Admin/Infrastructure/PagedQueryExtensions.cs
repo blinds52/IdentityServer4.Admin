@@ -6,15 +6,15 @@ using IdentityServer4.Admin.Infrastructure.Entity;
 
 namespace IdentityServer4.Admin.Infrastructure
 {
-    public static class DbContextExtensions
+    public static class PagedQueryExtensions
     {
-        public static PaginationQueryResult PageList<TEntity, TKey, TOrderBy>(this IQueryable<TEntity> dbSet,
+        public static PaginationQueryResult<TEntity> PagedQuery<TEntity, TKey, TOrderBy>(this IQueryable<TEntity> dbSet,
             PaginationQuery input,
             Expression<Func<TEntity, bool>> where = null,
             Expression<Func<TEntity, TOrderBy>> orderBy = null) where TEntity : class, IEntity<TKey>
             where TKey : IEquatable<TKey>
         {
-            var result = new PaginationQueryResult();
+            var result = new PaginationQueryResult<TEntity>();
             var entities = dbSet.AsQueryable();
             if (where != null)
             {
@@ -56,11 +56,11 @@ namespace IdentityServer4.Admin.Infrastructure
             return result;
         }
 
-        public static PaginationQueryResult PageList<TEntity>(this IQueryable<TEntity> dbSet,
+        public static PaginationQueryResult<TEntity> PagedQuery<TEntity>(this IQueryable<TEntity> dbSet,
             PaginationQuery input,
             Expression<Func<TEntity, bool>> where = null) where TEntity : class
         {
-            var result = new PaginationQueryResult();
+            var result = new PaginationQueryResult<TEntity>();
             var entities = dbSet.AsQueryable();
             if (where != null)
             {

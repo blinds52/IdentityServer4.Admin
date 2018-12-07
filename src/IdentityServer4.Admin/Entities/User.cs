@@ -11,19 +11,6 @@ namespace IdentityServer4.Admin.Entities
     /// </summary>
     public class User : IdentityUser<Guid>, IEntity<Guid>, ISoftDelete
     {
-        public User()
-        {
-        }
-
-
-        public User(string userName)
-            : this()
-        {
-            this.UserName = userName;
-        }
-
-        public List<UserPermission> UserPermissions { get; set; }
-        
         /// <summary>
         /// 是否删除
         /// </summary>
@@ -96,13 +83,13 @@ namespace IdentityServer4.Admin.Entities
         /// <summary>
         /// A random value that must change whenever a users credentials change (password changed, login removed)
         /// </summary>
-        [StringLength(40)]
+        [StringLength(36)]
         public override string SecurityStamp { get; set; }
 
         /// <summary>
         /// A random value that must change whenever a user is persisted to the store
         /// </summary>
-        [StringLength(40)]
+        [StringLength(36)]
         public override string ConcurrencyStamp { get; set; } = Guid.NewGuid().ToString();
 
         /// <summary>Gets or sets a telephone number for the user.</summary>
@@ -177,7 +164,7 @@ namespace IdentityServer4.Admin.Entities
         /// <returns>True, if this entity is transient</returns>
         public virtual bool IsTransient()
         {
-            if (EqualityComparer<Guid>.Default.Equals(Id, default(Guid)))
+            if (EqualityComparer<Guid>.Default.Equals(Id, default))
             {
                 return true;
             }

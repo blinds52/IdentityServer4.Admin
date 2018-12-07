@@ -1,15 +1,9 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer4.Admin.Controllers.API.Dtos;
-using IdentityServer4.Admin.Entities;
 using IdentityServer4.Admin.Infrastructure;
 using IdentityServer4.Admin.Infrastructure.Entity;
-using IdentityServer4.Admin.Repositories;
-using IdentityServer4.EntityFramework.DbContexts;
-using IdentityServer4.EntityFramework.Entities;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -21,29 +15,25 @@ namespace IdentityServer4.Admin.Controllers.API
     [SecurityHeaders]
     public class DashboardController : ApiControllerBase
     {
-        private readonly IRepository<User, Guid> _userRepository;
-        private readonly ClientRepository _clientRepository;
-        private readonly ApiResourceRepository _apiResourceRepository;
-        
-        public DashboardController(IRepository<User, Guid> userRepository,
-            ClientRepository  clientRepository,
-            ApiResourceRepository apiResourceRepository,
+        private readonly AdminDbContext _dbContext;
+
+        public DashboardController(AdminDbContext dbContext,
             IUnitOfWork unitOfWork,
             ILoggerFactory loggerFactory) : base(unitOfWork, loggerFactory)
         {
-            _userRepository = userRepository;
-            _clientRepository = clientRepository;
-            _apiResourceRepository = apiResourceRepository;
+            _dbContext = dbContext;
         }
 
         [HttpGet]
-        public async Task<IActionResult> Query([FromQuery] PaginationQuery input)
+        public async Task<IActionResult> Index()
         {
-            var output = new DashboardDto();
-            output.ApiResourceCount = await _apiResourceRepository.CountAsync();
-            output.ClientCount = await _clientRepository.CountAsync();
-            output.LockedUserCount = await _userRepository.CountAsync(u => u.LockoutEnd < DateTime.Now);
-            output.UserCount = await _userRepository.CountAsync();
+            var output = new DashboardDto
+            {
+                ApiResourceCount = await _dbContext.ApiResources.CountAsync(),
+                ClientCount = await _dbContext.Clients.CountAsync(),
+                LockedUserCount = await _dbContext.Users.CountAsync(u => u.LockoutEnd < DateTime.Now),
+                UserCount = await _dbContext.Users.CountAsync()
+            };
             return new ApiResult(output);
         }
     }

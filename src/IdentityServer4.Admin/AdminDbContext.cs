@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using IdentityServer4.Admin.Entities;
 using IdentityServer4.Admin.Infrastructure;
@@ -16,7 +15,6 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.Extensions.Configuration;
 
 namespace IdentityServer4.Admin
@@ -31,7 +29,9 @@ namespace IdentityServer4.Admin
 
         public DbSet<RolePermission> RolePermissions { get; set; }
 
-        public DbSet<UserPermission> UserPermissions { get; set; }
+        // public DbSet<UserPermission> UserPermissions { get; set; }
+        
+        public DbSet<UserPermissionKey> UserPermissionKeys { get; set; }
 
         /// <summary>
         /// Gets or sets the clients.
@@ -86,13 +86,7 @@ namespace IdentityServer4.Admin
 
             builder.Entity<Permission>().HasIndex(p => p.Name).IsUnique();
             builder.Entity<RolePermission>().HasIndex(p => new {p.RoleId, p.Permission}).IsUnique();
-            builder.Entity<RolePermission>().HasIndex(p => new {p.RoleId, p.PermissionId}).IsUnique();
-            builder.Entity<UserPermission>().HasIndex(p => new {p.UserId, p.Permission}).IsUnique();
-
-            builder.Entity<UserPermission>()
-                .HasOne(up => up.User)
-                .WithMany(u => u.UserPermissions)
-                .HasForeignKey(up => up.UserId);
+            builder.Entity<UserPermissionKey>().HasIndex(p => p.PermissionKey).IsUnique();
 
             base.OnModelCreating(builder);
         }
@@ -108,7 +102,7 @@ namespace IdentityServer4.Admin
 
         public override int SaveChanges()
         {
-            var userId = this.GetService<IHttpContextAccessor>()?.HttpContext?.User?.Identity.GetUserId();
+            var userId = this.GetService<IHttpContextAccessor>()?.HttpContext?.User?.Identity?.GetUserId();
 
             foreach (var entry in ChangeTracker.Entries().ToList())
             {

@@ -11,24 +11,24 @@ namespace IdentityServer4.Admin.Entities
     /// </summary>
     public class Role<TKey> : IdentityRole<TKey>, IEntity<TKey> where TKey : IEquatable<TKey>
     {
-        public Role()
-        {
-        }
+        /// <summary>
+        /// 角色名
+        /// </summary>
+        [StringLength(256)]
+        [Required]
+        public override string Name { get; set; }
 
-        public Role(string roleName)
-            : this()
-        {
-            Name = roleName;
-        }
-
-        [StringLength(256)] [Required] public override string Name { get; set; }
-
-        [StringLength(256)] [Required] public override string NormalizedName { get; set; }
+        /// <summary>
+        /// 标准化后的角色名
+        /// </summary>
+        [StringLength(256)]
+        [Required]
+        public override string NormalizedName { get; set; }
 
         /// <summary>
         /// A random value that should change whenever a role is persisted to the store
         /// </summary>
-        [StringLength(40)]
+        [StringLength(36)]
         public override string ConcurrencyStamp { get; set; } = Guid.NewGuid().ToString();
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace IdentityServer4.Admin.Entities
         /// Creator of this entity.
         /// </summary>
         public string CreatorUserId { get; set; }
-        
+
         /// <summary>
         /// Checks if this entity is transient (it has not an Id).
         /// </summary>

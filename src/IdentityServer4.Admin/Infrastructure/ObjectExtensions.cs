@@ -82,7 +82,7 @@ namespace IdentityServer4.Admin.Infrastructure
             {
                 return CastTo<T>(value);
             }
-            catch (System.Exception)
+            catch (Exception)
             {
                 return defaultValue;
             }
@@ -168,7 +168,7 @@ namespace IdentityServer4.Admin.Infrastructure
             if (typeof(T).HasAttribute<SerializableAttribute>())
             {
                 throw new NotSupportedException(
-                    "当前对象未标记特性“{0}”，无法进行DeepClone操作".FormatWith(typeof(SerializableAttribute)));
+                    string.Format("当前对象未标记特性“{0}”，无法进行DeepClone操作", typeof(SerializableAttribute)));
             }
 
             BinaryFormatter formatter = new BinaryFormatter();
@@ -190,23 +190,6 @@ namespace IdentityServer4.Admin.Infrastructure
             where T : class
         {
             return (T) obj;
-        }
-
-        /// <summary>
-        /// Converts given object to a value type using <see cref="Convert.ChangeType(object,System.TypeCode)"/> method.
-        /// </summary>
-        /// <param name="obj">Object to be converted</param>
-        /// <typeparam name="T">Type of the target object</typeparam>
-        /// <returns>Converted object</returns>
-        public static T To<T>(this object obj)
-            where T : struct
-        {
-            if (typeof(T) == typeof(Guid))
-            {
-                return (T) TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(obj.ToString());
-            }
-
-            return (T) Convert.ChangeType(obj, typeof(T), CultureInfo.InvariantCulture);
         }
 
         #endregion

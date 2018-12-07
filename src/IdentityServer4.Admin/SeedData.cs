@@ -7,10 +7,8 @@ using IdentityModel;
 using IdentityServer4.Admin.Entities;
 using IdentityServer4.Admin.Infrastructure;
 using IdentityServer4.Admin.Infrastructure.Entity;
-using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
 using IdentityServer4.Models;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,8 +32,8 @@ namespace IdentityServer4.Admin
 
                 await scope.ServiceProvider.GetRequiredService<IUnitOfWork>().CommitAsync();
                 
-                var repository = scope.ServiceProvider.GetRequiredService<IRepository<User, Guid>>();
-                if (await repository.CountAsync() == 0)
+                var dbContext = (AdminDbContext)scope.ServiceProvider.GetRequiredService<IDbContext>();
+                if (await dbContext.Users.CountAsync() == 0)
                 {
                     await AddPermissions(scope.ServiceProvider);
                     await AddAdminRole(scope.ServiceProvider);
@@ -53,23 +51,22 @@ namespace IdentityServer4.Admin
 
         private static async Task AddAdminRole(IServiceProvider serviceProvider)
         {
-            var permissionRepository = serviceProvider.GetRequiredService<IRepository<Permission, Guid>>();
-            var rolePermissionRepository = serviceProvider.GetRequiredService<IRepository<RolePermission, Guid>>();
+            var context = (AdminDbContext) serviceProvider.GetRequiredService<IDbContext>();
 
             var role = await AddRole(serviceProvider, AdminConsts.AdminName, "Super admin");
-            var permission = await permissionRepository.FirstOrDefaultAsync(p => p.Name == AdminConsts.AdminName);
-            await rolePermissionRepository.InsertAsync(new RolePermission
+            var permission = await context.Permissions.FirstOrDefaultAsync(p => p.Name == AdminConsts.AdminName);
+            await context.RolePermissions.AddAsync(new RolePermission
                 {Permission = AdminConsts.AdminName, RoleId = role.Id, PermissionId = permission.Id});
             await CommitAsync(serviceProvider);
         }
 
         private static async Task AddPermissions(IServiceProvider serviceProvider)
         {
-            var permissionRepository = serviceProvider.GetRequiredService<IRepository<Permission, Guid>>();
+            var context = (AdminDbContext) serviceProvider.GetRequiredService<IDbContext>();
 
             var permission = new Permission
                 {Name = AdminConsts.AdminName, Description = "Super admin permission"};
-            await permissionRepository.InsertAsync(permission);
+            await context.Permissions.AddAsync(permission);
             await CommitAsync(serviceProvider);
         }
 
