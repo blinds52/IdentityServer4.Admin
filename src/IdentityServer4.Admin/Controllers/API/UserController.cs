@@ -93,13 +93,7 @@ namespace IdentityServer4.Admin.Controllers.API
                 });
             }
 
-            return new ApiResult(new PaginationQueryResult
-            {
-                Total = queryResult.Total,
-                Size = queryResult.Size,
-                Page = queryResult.Page,
-                Result = userDtos
-            });
+            return new ApiResult(queryResult.ToResult(userDtos));
         }
 
         [HttpGet("{userId}")]
@@ -171,7 +165,7 @@ namespace IdentityServer4.Admin.Controllers.API
         #region User Permission
 
         [HttpGet("{userId}/permission")]
-        public IActionResult FindRolePermission([FromQuery] PaginationQuery input)
+        public IActionResult FindUserPermission([FromQuery] PaginationQuery input)
         {
             var output = _dbContext.UserPermissions.PageList(input);
             var userPermissions = (IEnumerable<UserPermission>) output.Result;

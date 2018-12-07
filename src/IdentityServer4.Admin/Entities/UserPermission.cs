@@ -14,18 +14,17 @@ namespace IdentityServer4.Admin.Entities
         /// </summary>
         [Required]
         public Guid UserId { get; set; }
-                        
+
         /// <summary>
         /// 权限编号
         /// </summary>
         [Required]
         public Guid PermissionId { get; set; }
 
-        /// <summary>
-        /// 用户权限
-        /// </summary>
-        [Required]
-        [StringLength(256)]
-        public string Permission { get; set; }  
+        public string Permission { get; set; }
+        
+        public Permission P { get; set; }
+        
+        public User User { get; set; }
     }
 }

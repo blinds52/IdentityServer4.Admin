@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using IdentityServer4.Admin.Entities;
 using IdentityServer4.Admin.Infrastructure;
@@ -15,6 +16,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.Extensions.Configuration;
 
 namespace IdentityServer4.Admin
@@ -76,6 +78,25 @@ namespace IdentityServer4.Admin
             _operationalStoreOptions = operationalStoreOptions;
         }
 
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            builder.ConfigureClientContext(_configurationStoreOptions);
+            builder.ConfigureResourcesContext(_configurationStoreOptions);
+            builder.ConfigurePersistedGrantContext(_operationalStoreOptions);
+
+            builder.Entity<Permission>().HasIndex(p => p.Name).IsUnique();
+            builder.Entity<RolePermission>().HasIndex(p => new {p.RoleId, p.Permission}).IsUnique();
+            builder.Entity<RolePermission>().HasIndex(p => new {p.RoleId, p.PermissionId}).IsUnique();
+            builder.Entity<UserPermission>().HasIndex(p => new {p.UserId, p.Permission}).IsUnique();
+
+            builder.Entity<UserPermission>()
+                .HasOne(up => up.User)
+                .WithMany(u => u.UserPermissions)
+                .HasForeignKey(up => up.UserId);
+
+            base.OnModelCreating(builder);
+        }
+
         /// <summary>
         /// Saves the changes.
         /// </summary>
@@ -128,7 +149,7 @@ namespace IdentityServer4.Admin
             {
                 creationAudited.CreationTime = DateTime.Now;
             }
- 
+
             if (creationAudited.CreatorUserId != null)
             {
                 //CreatorUserId is already set
@@ -152,7 +173,7 @@ namespace IdentityServer4.Admin
             {
                 modificationAudited.LastModificationTime = DateTime.Now;
             }
- 
+
             if (modificationAudited.LastModifierUserId != null)
             {
                 //CreatorUserId is already set
@@ -176,7 +197,7 @@ namespace IdentityServer4.Admin
             {
                 softDelete.DeletionTime = DateTime.Now;
             }
- 
+
             if (softDelete.DeleterUserId != null)
             {
                 //CreatorUserId is already set
@@ -217,20 +238,6 @@ namespace IdentityServer4.Admin
                     entity.Id = CombGuid.NewGuid();
                 }
             }
-        }
-
-        protected override void OnModelCreating(ModelBuilder builder)
-        {
-            builder.ConfigureClientContext(_configurationStoreOptions);
-            builder.ConfigureResourcesContext(_configurationStoreOptions);
-            builder.ConfigurePersistedGrantContext(_operationalStoreOptions);
-
-            builder.Entity<Permission>().HasIndex(p => p.Name).IsUnique();
-            builder.Entity<RolePermission>().HasIndex(p => new {p.RoleId, p.Permission}).IsUnique();
-            builder.Entity<RolePermission>().HasIndex(p => new {p.RoleId, p.PermissionId}).IsUnique();
-            builder.Entity<UserPermission>().HasIndex(p => new {p.UserId, p.Permission}).IsUnique();
-
-            base.OnModelCreating(builder);
         }
 
         public AdminDbContext CreateDbContext(string[] args)

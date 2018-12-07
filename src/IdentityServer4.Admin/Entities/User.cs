@@ -22,6 +22,8 @@ namespace IdentityServer4.Admin.Entities
             this.UserName = userName;
         }
 
+        public List<UserPermission> UserPermissions { get; set; }
+        
         /// <summary>
         /// 是否删除
         /// </summary>

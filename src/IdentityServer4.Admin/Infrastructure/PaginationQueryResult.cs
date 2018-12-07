@@ -8,6 +8,17 @@ namespace IdentityServer4.Admin.Infrastructure
         public int Page { get; set; }
         public int Size { get; set; }
         public List<TEntity> Result { get; set; }
+
+        public PaginationQueryResult ToResult(object dtoResult)
+        {
+            return new PaginationQueryResult
+            {
+                Total = Total,
+                Page = Page,
+                Size = Size,
+                Result = dtoResult
+            };
+        }
     }
 
     public class PaginationQueryResult

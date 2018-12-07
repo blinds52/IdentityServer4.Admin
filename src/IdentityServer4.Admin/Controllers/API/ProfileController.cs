@@ -19,13 +19,11 @@ namespace IdentityServer4.Admin.Controllers.API
     public class ProfileController : ApiControllerBase
     {
         private readonly UserManager<User> _userManager;
-        private readonly AdminDbContext _dbContext;
 
-        public ProfileController(UserManager<User> userManager, AdminDbContext dbContext, IUnitOfWork unitOfWork,
+        public ProfileController(UserManager<User> userManager, IUnitOfWork unitOfWork,
             ILoggerFactory loggerFactory) : base(unitOfWork, loggerFactory)
         {
             _userManager = userManager;
-            _dbContext = dbContext;
         }
 
         [Route("{userId}/profile")]

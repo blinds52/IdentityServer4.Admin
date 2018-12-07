@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using IdentityServer4.Admin.Infrastructure.Entity;
 
@@ -18,7 +19,7 @@ namespace IdentityServer4.Admin.Entities
         /// A brief description for this permission.
         /// </summary>
         [StringLength(500)]
-        public string Description { get; set; }
+        public string Description { get; set; }       
 
         public override string ToString()
         {
