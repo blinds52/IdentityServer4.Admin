@@ -1,4 +1,5 @@
-using IdentityServer4.Admin.Common;
+using System;
+using IdentityServer4.Admin.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -50,7 +51,7 @@ namespace IdentityServer4.Admin.Controllers.UI
         }
 
         [HttpGet("[controller]/{userId}/profile")]
-        public IActionResult Profile(int userId)
+        public IActionResult Profile(Guid userId)
         {
             if (User.FindFirst("sub")?.Value != userId.ToString())
                 return RedirectToAction("AccessDenied", "Account");

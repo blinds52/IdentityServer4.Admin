@@ -5,8 +5,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using IdentityServer4.Admin.Common;
-using IdentityServer4.Admin.Models.Grants;
+using IdentityServer4.Admin.ViewModels.Grants;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Authorization;

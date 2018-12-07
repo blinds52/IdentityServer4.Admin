@@ -1,3 +1,5 @@
+using System;
+
 namespace IdentityServer4.Admin.Controllers.API.Dtos
 {
     /// <summary>
@@ -8,7 +10,7 @@ namespace IdentityServer4.Admin.Controllers.API.Dtos
         /// <summary>
         /// 用户编号
         /// </summary>
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// 邮件

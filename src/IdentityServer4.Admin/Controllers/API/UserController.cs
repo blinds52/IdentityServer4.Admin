@@ -1,13 +1,16 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using IdentityServer4.Admin.Common;
 using IdentityServer4.Admin.Controllers.API.Dtos;
-using IdentityServer4.Admin.Data;
+using IdentityServer4.Admin.Entities;
+using IdentityServer4.Admin.Infrastructure;
+using IdentityServer4.Admin.Infrastructure.Entity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace IdentityServer4.Admin.Controllers.API
 {
@@ -18,11 +21,16 @@ namespace IdentityServer4.Admin.Controllers.API
     {
         private readonly UserManager<User> _userManager;
         private readonly AdminDbContext _dbContext;
+        private readonly IRepository<User, Guid> _userRepository;
 
-        public UserController(UserManager<User> userManager, AdminDbContext dbContext)
+        public UserController(UserManager<User> userManager,
+            IRepository<User, Guid> userRepository,
+            AdminDbContext dbContext, IUnitOfWork unitOfWork,
+            ILoggerFactory loggerFactory) : base(unitOfWork, loggerFactory)
         {
             _userManager = userManager;
             _dbContext = dbContext;
+            _userRepository = userRepository;
         }
 
         #region User
@@ -58,19 +66,19 @@ namespace IdentityServer4.Admin.Controllers.API
         [HttpGet]
         public async Task<IActionResult> Find([FromQuery] QueryUserDto input)
         {
-            PaginationQueryResult output;
+            PaginationQueryResult<User> queryResult;
             if (string.IsNullOrWhiteSpace(input.Keyword))
             {
-                output = _userManager.Users.PageList(input);
+                queryResult = _userRepository.PagedQuery(input);
             }
             else
             {
-                output = _userManager.Users.PageList(input,
+                queryResult = _userRepository.PagedQuery(input,
                     u => u.Email.Contains(input.Keyword) || u.UserName.Contains(input.Keyword) ||
                          u.PhoneNumber.Contains(input.Keyword));
             }
 
-            var users = (IEnumerable<User>) output.Result;
+            var users = (IEnumerable<User>) queryResult.Result;
             var userDtos = new List<UserDto>();
             foreach (var user in users)
             {
@@ -85,12 +93,17 @@ namespace IdentityServer4.Admin.Controllers.API
                 });
             }
 
-            output.Result = userDtos;
-            return new ApiResult(output);
+            return new ApiResult(new PaginationQueryResult
+            {
+                Total = queryResult.Total,
+                Size = queryResult.Size,
+                Page = queryResult.Page,
+                Result = userDtos
+            });
         }
 
         [HttpGet("{userId}")]
-        public async Task<IActionResult> FindFirst(int userId)
+        public async Task<IActionResult> FindFirst(Guid userId)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId && u.IsDeleted == false);
             var dto = new UserDto();
@@ -107,7 +120,7 @@ namespace IdentityServer4.Admin.Controllers.API
         }
 
         [HttpPut("{userId}")]
-        public async Task<IActionResult> Update(int userId, [FromBody] UpdateUserDto dto)
+        public async Task<IActionResult> Update(Guid userId, [FromBody] UpdateUserDto dto)
         {
             dto.PhoneNumber = dto.PhoneNumber.Trim();
             dto.Email = dto.Email.Trim();
@@ -129,20 +142,19 @@ namespace IdentityServer4.Admin.Controllers.API
         }
 
         [HttpDelete("{userId}")]
-        public async Task<IActionResult> Delete(int userId)
+        public async Task<IActionResult> Delete(Guid userId)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId && u.IsDeleted == false);
             if (user == null) return new ApiResult(ApiResult.Error, "用户不存在或已经删除");
             if (user.UserName == AdminConsts.AdminName)
                 return new ApiResult(ApiResult.Error, "管理员用户不能删除");
-            user.IsDeleted = true;
             user.LockoutEnabled = true;
-            await _userManager.UpdateAsync(user);
+            await _userManager.DeleteAsync(user);
             return ApiResult.Ok;
         }
 
         [HttpPut("{userId}/changePassword")]
-        public async Task<IActionResult> ChangePassword(int userId, [FromBody] ChangePasswordDto dto)
+        public async Task<IActionResult> ChangePassword(Guid userId, [FromBody] ChangePasswordDto dto)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null) return new ApiResult(ApiResult.Error, "用户不存在");
@@ -180,7 +192,7 @@ namespace IdentityServer4.Admin.Controllers.API
         }
 
         [HttpPost("{userId}/permission/{permissionId}")]
-        public async Task<IActionResult> CreateUserPermission(int userId, int permissionId)
+        public async Task<IActionResult> CreateUserPermission(Guid userId, Guid permissionId)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(p => p.Id == userId);
             if (user == null) return new ApiResult(ApiResult.Error, "用户不存在");
@@ -206,7 +218,7 @@ namespace IdentityServer4.Admin.Controllers.API
         }
 
         [HttpDelete("{userId}/permission/{permissionId}")]
-        public async Task<IActionResult> DeleteUserPermission(int userId, int permissionId)
+        public async Task<IActionResult> DeleteUserPermission(Guid userId, Guid permissionId)
         {
             var userPermission =
                 await _dbContext.UserPermissions.FirstOrDefaultAsync(p =>
@@ -222,7 +234,7 @@ namespace IdentityServer4.Admin.Controllers.API
         #region User Role
 
         [HttpPost("{userId}/role/{roleId}")]
-        public async Task<IActionResult> CreateUserRole(int userId, int roleId)
+        public async Task<IActionResult> CreateUserRole(Guid userId, Guid roleId)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null) return new ApiResult(ApiResult.Error, "用户不存在");
@@ -240,7 +252,7 @@ namespace IdentityServer4.Admin.Controllers.API
         }
 
         [HttpGet("{userId}/role")]
-        public async Task<IActionResult> FindUserRole(int userId)
+        public async Task<IActionResult> FindUserRole(Guid userId)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null) return new ApiResult(ApiResult.Error, "用户不存在");
@@ -256,7 +268,7 @@ namespace IdentityServer4.Admin.Controllers.API
         }
 
         [HttpDelete("{userId}/role/{roleId}")]
-        public async Task<IActionResult> DeleteUserRole(int userId, int roleId)
+        public async Task<IActionResult> DeleteUserRole(Guid userId, Guid roleId)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null) return new ApiResult(ApiResult.Error, "用户不存在");

@@ -1,12 +1,15 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
-using IdentityServer4.Admin.Common;
 using IdentityServer4.Admin.Controllers.API.Dtos;
-using IdentityServer4.Admin.Data;
+using IdentityServer4.Admin.Entities;
+using IdentityServer4.Admin.Infrastructure;
+using IdentityServer4.Admin.Infrastructure.Entity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace IdentityServer4.Admin.Controllers.API
 {
@@ -18,14 +21,15 @@ namespace IdentityServer4.Admin.Controllers.API
         private readonly UserManager<User> _userManager;
         private readonly AdminDbContext _dbContext;
 
-        public ProfileController(UserManager<User> userManager, AdminDbContext dbContext)
+        public ProfileController(UserManager<User> userManager, AdminDbContext dbContext, IUnitOfWork unitOfWork,
+            ILoggerFactory loggerFactory) : base(unitOfWork, loggerFactory)
         {
             _userManager = userManager;
             _dbContext = dbContext;
         }
 
         [Route("{userId}/profile")]
-        public async Task<IActionResult> GetProfile(int userId)
+        public async Task<IActionResult> GetProfile(Guid userId)
         {
             if (User.FindFirst("sub")?.Value != userId.ToString())
                 return new ApiResult(ApiResult.Error, "验证失败");
@@ -45,7 +49,7 @@ namespace IdentityServer4.Admin.Controllers.API
         }
 
         [HttpPut("{userId}/profile")]
-        public async Task<IActionResult> Update(int userId, [FromBody] UpdateProfileDto dto)
+        public async Task<IActionResult> Update(Guid userId, [FromBody] UpdateProfileDto dto)
         {
             dto.PhoneNumber = dto.PhoneNumber.Trim();
             dto.Email = dto.Email.Trim();
@@ -65,14 +69,14 @@ namespace IdentityServer4.Admin.Controllers.API
         }
 
         [HttpPut("{userId}/password")]
-        public async Task<IActionResult> ChangePassword(int userId, [FromBody] ChangeSelfPasswordDto dto)
-        {            
+        public async Task<IActionResult> ChangePassword(Guid userId, [FromBody] ChangeSelfPasswordDto dto)
+        {
             if (User.FindFirst("sub")?.Value != userId.ToString())
                 return new ApiResult(ApiResult.Error, "验证失败");
-            
+
             dto.NewPassword = dto.NewPassword.Trim();
             dto.OldPassword = dto.OldPassword?.Trim();
-            
+
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null) return new ApiResult(ApiResult.Error, "用户不存在");
 

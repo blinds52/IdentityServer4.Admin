@@ -21,7 +21,7 @@ namespace IdentityServer4.Admin
             var host = CreateWebHostBuilder(args).Build();
             if (seed)
             {
-                SeedData.EnsureSeedData(host.Services);
+                SeedData.EnsureSeedData(host.Services).ConfigureAwait(true);
             }
 
             host.Run();

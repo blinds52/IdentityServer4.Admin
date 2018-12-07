@@ -1,13 +1,16 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using IdentityServer4.Admin.Common;
 using IdentityServer4.Admin.Controllers.API.Dtos;
-using IdentityServer4.Admin.Data;
+using IdentityServer4.Admin.Entities;
+using IdentityServer4.Admin.Infrastructure;
+using IdentityServer4.Admin.Infrastructure.Entity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.Logging;
 
 namespace IdentityServer4.Admin.Controllers.API
 {
@@ -18,7 +21,8 @@ namespace IdentityServer4.Admin.Controllers.API
     {
         private readonly AdminDbContext _dbContext;
 
-        public PermissionController(AdminDbContext dbContext)
+        public PermissionController(AdminDbContext dbContext, IUnitOfWork unitOfWork,
+            ILoggerFactory loggerFactory) : base(unitOfWork, loggerFactory)
         {
             _dbContext = dbContext;
         }
@@ -65,7 +69,7 @@ namespace IdentityServer4.Admin.Controllers.API
         }
 
         [HttpGet("{permissionId}")]
-        public async Task<IActionResult> FindFirst(int permissionId)
+        public async Task<IActionResult> FindFirst(Guid permissionId)
         {
             var permission = await _dbContext.Permissions.FirstOrDefaultAsync(p => p.Id == permissionId);
             var dto = new PermissionDto();
@@ -79,7 +83,7 @@ namespace IdentityServer4.Admin.Controllers.API
         }
 
         [HttpPut("{permissionId}")]
-        public async Task<IActionResult> Update(int permissionId, [FromBody] UpdatePermissionDto dto)
+        public async Task<IActionResult> Update(Guid permissionId, [FromBody] UpdatePermissionDto dto)
         {
             dto.Name = dto.Name.Trim();
             dto.Description = dto.Description?.Trim();
@@ -100,7 +104,7 @@ namespace IdentityServer4.Admin.Controllers.API
         }
 
         [HttpDelete("{permissionId}")]
-        public async Task<IActionResult> Delete(int permissionId)
+        public async Task<IActionResult> Delete(Guid permissionId)
         {
             var permission = await _dbContext.Permissions.FirstOrDefaultAsync(p => p.Id == permissionId);
             if (permission == null) return new ApiResult(ApiResult.Error, "权限不存在");

@@ -1,4 +1,4 @@
-using IdentityServer4.Admin.Common;
+using IdentityServer4.Admin.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

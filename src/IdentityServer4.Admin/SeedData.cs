@@ -1,12 +1,15 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using IdentityModel;
-using IdentityServer4.Admin.Common;
-using IdentityServer4.Admin.Data;
+using IdentityServer4.Admin.Entities;
+using IdentityServer4.Admin.Infrastructure;
+using IdentityServer4.Admin.Infrastructure.Entity;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
+using IdentityServer4.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -16,72 +19,143 @@ namespace IdentityServer4.Admin
 {
     internal static class SeedData
     {
-        public static void EnsureSeedData(IServiceProvider serviceProvider)
+        public static async Task EnsureSeedData(IServiceProvider serviceProvider)
         {
             Console.WriteLine("Seeding database...");
 
             using (IServiceScope scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
-                var hostEnv = scope.ServiceProvider.GetService<IHostingEnvironment>();
-                var configurationDbContext = scope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
-                if (!hostEnv.IsDevelopment())
+                // Add client
+                await AddClients(scope.ServiceProvider);
+                // Add identityResource
+                await AddIdentityResources(scope.ServiceProvider);
+                // Add apiResource
+                await AddApiResources(scope.ServiceProvider);
+
+                await scope.ServiceProvider.GetRequiredService<IUnitOfWork>().CommitAsync();
+                
+                var repository = scope.ServiceProvider.GetRequiredService<IRepository<User, Guid>>();
+                if (await repository.CountAsync() == 0)
                 {
-                    scope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();
-                    configurationDbContext.Database.Migrate();
+                    await AddPermissions(scope.ServiceProvider);
+                    await AddAdminRole(scope.ServiceProvider);
+                    await AddRoles(scope.ServiceProvider);
+                    await AddAdmin(scope.ServiceProvider);
+                    await AddUsers(scope.ServiceProvider);
                 }
 
-                EnsureSeedData(configurationDbContext);
-
-                var context = scope.ServiceProvider.GetService<AdminDbContext>();
-                if (!hostEnv.IsDevelopment())
-                {
-                    context.Database.Migrate();
-                }
-
-                if (!context.Users.Any())
-                {
-                    AddAdmin(scope).ConfigureAwait(true);
-                    AddRoles(scope).ConfigureAwait(true);
-                    AddUsers(scope).ConfigureAwait(true);
-                }
+                await CommitAsync(serviceProvider);
             }
 
             Console.WriteLine("Done seeding database.");
             Console.WriteLine();
         }
 
-        private static async Task AddAdmin(IServiceScope scope)
+        private static async Task AddAdminRole(IServiceProvider serviceProvider)
         {
-            var dbContext = scope.ServiceProvider.GetService<AdminDbContext>();
+            var permissionRepository = serviceProvider.GetRequiredService<IRepository<Permission, Guid>>();
+            var rolePermissionRepository = serviceProvider.GetRequiredService<IRepository<RolePermission, Guid>>();
+
+            var role = await AddRole(serviceProvider, AdminConsts.AdminName, "Super admin");
+            var permission = await permissionRepository.FirstOrDefaultAsync(p => p.Name == AdminConsts.AdminName);
+            await rolePermissionRepository.InsertAsync(new RolePermission
+                {Permission = AdminConsts.AdminName, RoleId = role.Id, PermissionId = permission.Id});
+            await CommitAsync(serviceProvider);
+        }
+
+        private static async Task AddPermissions(IServiceProvider serviceProvider)
+        {
+            var permissionRepository = serviceProvider.GetRequiredService<IRepository<Permission, Guid>>();
+
             var permission = new Permission
                 {Name = AdminConsts.AdminName, Description = "Super admin permission"};
-            await dbContext.Permissions.AddAsync(permission);
-            var role = await AddRole(scope, AdminConsts.AdminName, "Super admin");
-            await dbContext.RolePermissions.AddAsync(new RolePermission
-                {Permission = AdminConsts.AdminName, RoleId = role.Id, PermissionId = permission.Id});
-            await AddUser(scope, AdminConsts.AdminName, "1qazZAQ!", "zlzforever@163.com", "18721696556",
+            await permissionRepository.InsertAsync(permission);
+            await CommitAsync(serviceProvider);
+        }
+
+        private static async Task CommitAsync(IServiceProvider serviceProvider)
+        {
+            await serviceProvider.GetRequiredService<IUnitOfWork>().CommitAsync();
+        }
+        
+        private static async Task AddApiResources(IServiceProvider serviceProvider)
+        {
+            var context = (AdminDbContext) serviceProvider.GetRequiredService<IDbContext>();
+            if (!await context.ApiResources.AnyAsync())
+            {
+                Console.WriteLine("ApiResources being populated");
+                foreach (var resource in GetApiResources().ToList())
+                {
+                    await context.ApiResources.AddAsync(resource.ToEntity());
+                }
+            }
+            else
+            {
+                Console.WriteLine("ApiResources already populated");
+            }
+        }
+
+        private static async Task AddIdentityResources(IServiceProvider serviceProvider)
+        {
+            var context = (AdminDbContext) serviceProvider.GetRequiredService<IDbContext>();
+            if (!await context.IdentityResources.AnyAsync())
+            {
+                Console.WriteLine("IdentityResources being populated");
+                foreach (var resource in GetIdentityResources().ToList())
+                {
+                    await context.IdentityResources.AddAsync(resource.ToEntity());
+                }
+            }
+            else
+            {
+                Console.WriteLine("IdentityResources already populated");
+            }
+        }
+
+        private static async Task AddClients(IServiceProvider serviceProvider)
+        {
+            var context = (AdminDbContext) serviceProvider.GetRequiredService<IDbContext>();
+            if (!await context.Clients.AnyAsync())
+            {
+                Console.WriteLine("Clients being populated");
+                foreach (var client in GetClients().ToList())
+                {
+                    await context.Clients.AddAsync(client.ToEntity());
+                }
+            }
+            else
+            {
+                Console.WriteLine("Clients already populated");
+            }
+        }
+
+        private static async Task AddAdmin(IServiceProvider serviceProvider)
+        {
+            await AddUser(serviceProvider, AdminConsts.AdminName, "1qazZAQ!", "zlzforever@163.com", "18721696556",
                 AdminConsts.AdminName);
         }
 
-        private static async Task AddUsers(IServiceScope scope)
+        private static async Task AddUsers(IServiceProvider serviceProvider)
         {
-            await AddUser(scope, "songzhiyun", "1qazZAQ!", "songzhiyun@163.com", "18721696556", "expert",
+            await AddUser(serviceProvider, "songzhiyun", "1qazZAQ!", "songzhiyun@163.com", "18721696556", "expert",
                 "expert-admin");
-            await AddUser(scope, "shunyin", "1qazZAQ!", "shunyin@163.com", "18721696556", "expert", "expert-admin");
-            await AddUser(scope, "dingjiaoyi", "1qazZAQ!", "dingjiaoyi@163.com", "18721696556", "expert",
+            await AddUser(serviceProvider, "shunyin", "1qazZAQ!", "shunyin@163.com", "18721696556", "expert",
+                "expert-admin");
+            await AddUser(serviceProvider, "dingjiaoyi", "1qazZAQ!", "dingjiaoyi@163.com", "18721696556", "expert",
                 "expert-leader");
-            await AddUser(scope, "yangjun", "1qazZAQ!", "yangjun@163.com", "18721696556", "expert", "expert-qc",
+            await AddUser(serviceProvider, "yangjun", "1qazZAQ!", "yangjun@163.com", "18721696556", "expert",
+                "expert-qc",
                 "expert-op");
-            await AddUser(scope, "wangliang", "1qazZAQ!", "wangliang@163.com", "18721696556", "expert");
-            await AddUser(scope, "zousong", "1qazZAQ!", "zousong@163.com", "18721696556", "expert");
-            await AddUser(scope, "shengwei", "1qazZAQ!", "shengwei@163.com", "18721696556", "expert");
+            await AddUser(serviceProvider, "wangliang", "1qazZAQ!", "wangliang@163.com", "18721696556", "expert");
+            await AddUser(serviceProvider, "zousong", "1qazZAQ!", "zousong@163.com", "18721696556", "expert");
+            await AddUser(serviceProvider, "shengwei", "1qazZAQ!", "shengwei@163.com", "18721696556", "expert");
         }
 
-        private static async Task AddUser(IServiceScope scope, string name, string password, string email,
+        private static async Task AddUser(IServiceProvider serviceProvider, string name, string password, string email,
             string phone,
             params string[] roles)
         {
-            var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+            var userMgr = serviceProvider.GetRequiredService<UserManager<User>>();
             var user = new User
             {
                 UserName = name,
@@ -103,9 +177,9 @@ namespace IdentityServer4.Admin
             }
         }
 
-        private static async Task<Role> AddRole(IServiceScope scope, string name, string description)
+        private static async Task<Role> AddRole(IServiceProvider serviceProvider, string name, string description)
         {
-            var roleMgr = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
+            var roleMgr = serviceProvider.GetRequiredService<RoleManager<Role>>();
 
             var role = await roleMgr.FindByNameAsync(name);
             if (role == null)
@@ -115,68 +189,67 @@ namespace IdentityServer4.Admin
                     Name = name,
                     Description = description
                 };
-                await roleMgr.CreateAsync(role);
-                return role;
+                var result = await roleMgr.CreateAsync(role);
+                return result.Succeeded ? role : null;
             }
 
             return null;
         }
 
-        private static async Task AddRoles(IServiceScope scope)
+        private static async Task AddRoles(IServiceProvider serviceProvider)
         {
-            await AddRole(scope, "expert", "A member of expert group");
-            await AddRole(scope, "expert-qc", "The quality controller of expert team");
-            await AddRole(scope, "expert-admin", "The admin of expert group");
-            await AddRole(scope, "expert-op", "The operator of expert group");
-            await AddRole(scope, "expert-leader", "The leader of a expert team");
+            await AddRole(serviceProvider, "expert", "A member of expert group");
+            await AddRole(serviceProvider, "expert-qc", "The quality controller of expert team");
+            await AddRole(serviceProvider, "expert-admin", "The admin of expert group");
+            await AddRole(serviceProvider, "expert-op", "The operator of expert group");
+            await AddRole(serviceProvider, "expert-leader", "The leader of a expert team");
+            await CommitAsync(serviceProvider);
         }
 
-        private static void EnsureSeedData(ConfigurationDbContext context)
+        // scopes define the resources in your system
+        private static IEnumerable<IdentityResource> GetIdentityResources()
         {
-            if (!context.Clients.Any())
+            var profile = new IdentityResources.Profile();
+            profile.UserClaims.Add("role");
+            return new List<IdentityResource>
             {
-                Console.WriteLine("Clients being populated");
-                foreach (var client in Config.GetClients().ToList())
+                new IdentityResources.OpenId(),
+                profile
+            };
+        }
+
+        private static IEnumerable<ApiResource> GetApiResources()
+        {
+            return new List<ApiResource>
+            {
+                new ApiResource("expert-api", "Expert Api"),
+            };
+        }
+
+        // clients want to access resources (aka scopes)
+        private static IEnumerable<Client> GetClients()
+        {
+            // client credentials client
+            return new List<Client>
+            {
+                new Client
                 {
-                    context.Clients.Add(client.ToEntity());
+                    ClientId = "expert-web",
+                    ClientName = "Expert Web",
+                    AllowedGrantTypes = GrantTypes.Implicit,
+                    AllowAccessTokensViaBrowser = true,
+                    AllowedCorsOrigins = {"http://localhost:6568"},
+                    RedirectUris = {"http://localhost:6568/account/ssocallback"},
+                    PostLogoutRedirectUris = {"http://localhost:6568"},
+                    RequireConsent = true,
+                    AllowedScopes =
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        "expert-api"
+                    }
                 }
-
-                context.SaveChanges();
-            }
-            else
-            {
-                Console.WriteLine("Clients already populated");
-            }
-
-            if (!context.IdentityResources.Any())
-            {
-                Console.WriteLine("IdentityResources being populated");
-                foreach (var resource in Config.GetIdentityResources().ToList())
-                {
-                    context.IdentityResources.Add(resource.ToEntity());
-                }
-
-                context.SaveChanges();
-            }
-            else
-            {
-                Console.WriteLine("IdentityResources already populated");
-            }
-
-            if (!context.ApiResources.Any())
-            {
-                Console.WriteLine("ApiResources being populated");
-                foreach (var resource in Config.GetApiResources().ToList())
-                {
-                    context.ApiResources.Add(resource.ToEntity());
-                }
-
-                context.SaveChanges();
-            }
-            else
-            {
-                Console.WriteLine("ApiResources already populated");
-            }
+            };
         }
     }
 }

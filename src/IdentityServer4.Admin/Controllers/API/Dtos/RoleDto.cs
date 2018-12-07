@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace IdentityServer4.Admin.Controllers.API.Dtos
@@ -10,7 +11,7 @@ namespace IdentityServer4.Admin.Controllers.API.Dtos
         /// <summary>
         /// 角色编号
         /// </summary>
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         
         /// <summary>
         /// 角色名称

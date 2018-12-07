@@ -345,5 +345,209 @@ namespace IdentityServer4.Admin {
                 return ResourceManager.GetString("NoPersonalDataProtector", resourceCulture);
             }
         }
+        
+        public static string AnyRadixConvert_CharacterIsNotValid {
+            get {
+                return ResourceManager.GetString("AnyRadixConvert_CharacterIsNotValid", resourceCulture);
+            }
+        }
+        
+        public static string AnyRadixConvert_Overflow {
+            get {
+                return ResourceManager.GetString("AnyRadixConvert_Overflow", resourceCulture);
+            }
+        }
+        
+        public static string Caching_CacheNotInitialized {
+            get {
+                return ResourceManager.GetString("Caching_CacheNotInitialized", resourceCulture);
+            }
+        }
+        
+        public static string ConfigFile_ItemKeyDefineRepeated {
+            get {
+                return ResourceManager.GetString("ConfigFile_ItemKeyDefineRepeated", resourceCulture);
+            }
+        }
+        
+        public static string ConfigFile_NameToTypeIsNull {
+            get {
+                return ResourceManager.GetString("ConfigFile_NameToTypeIsNull", resourceCulture);
+            }
+        }
+        
+        public static string Context_BuildServicesFirst {
+            get {
+                return ResourceManager.GetString("Context_BuildServicesFirst", resourceCulture);
+            }
+        }
+        
+        public static string DbContextInitializerConfig_InitializerNotExists {
+            get {
+                return ResourceManager.GetString("DbContextInitializerConfig_InitializerNotExists", resourceCulture);
+            }
+        }
+        
+        public static string Filter_GroupOperateError {
+            get {
+                return ResourceManager.GetString("Filter_GroupOperateError", resourceCulture);
+            }
+        }
+        
+        public static string Filter_RuleFieldInTypeNotFound {
+            get {
+                return ResourceManager.GetString("Filter_RuleFieldInTypeNotFound", resourceCulture);
+            }
+        }
+        
+        public static string IocInitializerBase_TypeNotIRepositoryType {
+            get {
+                return ResourceManager.GetString("IocInitializerBase_TypeNotIRepositoryType", resourceCulture);
+            }
+        }
+        
+        public static string IocInitializerBase_TypeNotIUnitOfWorkType {
+            get {
+                return ResourceManager.GetString("IocInitializerBase_TypeNotIUnitOfWorkType", resourceCulture);
+            }
+        }
+        
+        public static string Ioc_CannotResolveService {
+            get {
+                return ResourceManager.GetString("Ioc_CannotResolveService", resourceCulture);
+            }
+        }
+        
+        public static string Ioc_FrameworkNotInitialized {
+            get {
+                return ResourceManager.GetString("Ioc_FrameworkNotInitialized", resourceCulture);
+            }
+        }
+        
+        public static string Ioc_ImplementationTypeNotFound {
+            get {
+                return ResourceManager.GetString("Ioc_ImplementationTypeNotFound", resourceCulture);
+            }
+        }
+        
+        public static string Ioc_NoConstructorMatch {
+            get {
+                return ResourceManager.GetString("Ioc_NoConstructorMatch", resourceCulture);
+            }
+        }
+        
+        public static string Ioc_TryAddIndistinguishableTypeToEnumerable {
+            get {
+                return ResourceManager.GetString("Ioc_TryAddIndistinguishableTypeToEnumerable", resourceCulture);
+            }
+        }
+        
+        public static string Logging_CreateLogInstanceReturnNull {
+            get {
+                return ResourceManager.GetString("Logging_CreateLogInstanceReturnNull", resourceCulture);
+            }
+        }
+        
+        public static string Map_MapperIsNull {
+            get {
+                return ResourceManager.GetString("Map_MapperIsNull", resourceCulture);
+            }
+        }
+        
+        public static string Mef_HttpContextItems_NotFoundRequestContainer {
+            get {
+                return ResourceManager.GetString("Mef_HttpContextItems_NotFoundRequestContainer", resourceCulture);
+            }
+        }
+        
+        public static string ObjectExtensions_PropertyNameNotExistsInType {
+            get {
+                return ResourceManager.GetString("ObjectExtensions_PropertyNameNotExistsInType", resourceCulture);
+            }
+        }
+        
+        public static string ObjectExtensions_PropertyNameNotFixedType {
+            get {
+                return ResourceManager.GetString("ObjectExtensions_PropertyNameNotFixedType", resourceCulture);
+            }
+        }
+        
+        public static string ParameterCheck_Between {
+            get {
+                return ResourceManager.GetString("ParameterCheck_Between", resourceCulture);
+            }
+        }
+        
+        public static string ParameterCheck_BetweenNotEqual {
+            get {
+                return ResourceManager.GetString("ParameterCheck_BetweenNotEqual", resourceCulture);
+            }
+        }
+        
+        public static string ParameterCheck_DirectoryNotExists {
+            get {
+                return ResourceManager.GetString("ParameterCheck_DirectoryNotExists", resourceCulture);
+            }
+        }
+        
+        public static string ParameterCheck_FileNotExists {
+            get {
+                return ResourceManager.GetString("ParameterCheck_FileNotExists", resourceCulture);
+            }
+        }
+        
+        public static string ParameterCheck_NotEmpty_Guid {
+            get {
+                return ResourceManager.GetString("ParameterCheck_NotEmpty_Guid", resourceCulture);
+            }
+        }
+        
+        public static string ParameterCheck_NotGreaterThan {
+            get {
+                return ResourceManager.GetString("ParameterCheck_NotGreaterThan", resourceCulture);
+            }
+        }
+        
+        public static string ParameterCheck_NotGreaterThanOrEqual {
+            get {
+                return ResourceManager.GetString("ParameterCheck_NotGreaterThanOrEqual", resourceCulture);
+            }
+        }
+        
+        public static string ParameterCheck_NotLessThan {
+            get {
+                return ResourceManager.GetString("ParameterCheck_NotLessThan", resourceCulture);
+            }
+        }
+        
+        public static string ParameterCheck_NotLessThanOrEqual {
+            get {
+                return ResourceManager.GetString("ParameterCheck_NotLessThanOrEqual", resourceCulture);
+            }
+        }
+        
+        public static string ParameterCheck_NotNull {
+            get {
+                return ResourceManager.GetString("ParameterCheck_NotNull", resourceCulture);
+            }
+        }
+        
+        public static string ParameterCheck_NotNullOrEmpty_Collection {
+            get {
+                return ResourceManager.GetString("ParameterCheck_NotNullOrEmpty_Collection", resourceCulture);
+            }
+        }
+        
+        public static string ParameterCheck_NotNullOrEmpty_String {
+            get {
+                return ResourceManager.GetString("ParameterCheck_NotNullOrEmpty_String", resourceCulture);
+            }
+        }
+        
+        public static string QueryCacheExtensions_TypeNotEntityType {
+            get {
+                return ResourceManager.GetString("QueryCacheExtensions_TypeNotEntityType", resourceCulture);
+            }
+        }
     }
 }

@@ -5,8 +5,8 @@
 using System.Linq;
 using System.Threading.Tasks;
 using IdentityModel;
-using IdentityServer4.Admin.Common;
-using IdentityServer4.Admin.Models.Consent;
+using IdentityServer4.Admin.Infrastructure;
+using IdentityServer4.Admin.ViewModels.Consent;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;

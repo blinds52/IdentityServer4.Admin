@@ -1,10 +1,13 @@
 using System.Threading.Tasks;
-using IdentityServer4.Admin.Common;
+using IdentityServer4.Admin.Infrastructure;
+using IdentityServer4.Admin.Infrastructure.Entity;
+using IdentityServer4.Admin.Repositories;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace IdentityServer4.Admin.Controllers.API
 {
@@ -13,25 +16,26 @@ namespace IdentityServer4.Admin.Controllers.API
     [SecurityHeaders]
     public class ApiResourceController : ApiControllerBase
     {
-        private readonly ConfigurationDbContext _dbContext;
+        private readonly  ApiResourceRepository _apiResourceRepository;
 
-        public ApiResourceController(ConfigurationDbContext dbContext)
+        public ApiResourceController( ApiResourceRepository apiResourceRepository, IUnitOfWork unitOfWork,
+            ILoggerFactory loggerFactory) : base(unitOfWork, loggerFactory)
         {
-            _dbContext = dbContext;
+            _apiResourceRepository = apiResourceRepository;
         }
 
         [HttpGet]
         public IActionResult Query([FromQuery] PaginationQuery input)
         {
-            var output = _dbContext.ApiResources.PageList(input);
+            var output = _apiResourceRepository.PagedQuery(input);
             return new ApiResult(output);
         }
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] ApiResource resource)
         {
-            await _dbContext.ApiResources.AddAsync(resource.ToEntity());
-            await _dbContext.SaveChangesAsync();
+            await _apiResourceRepository.InsertAsync(resource.ToEntity());
+            await UnitOfWork.CommitAsync();
             return ApiResult.Ok;
         }
     }

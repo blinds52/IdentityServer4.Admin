@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace IdentityServer4.Admin.Controllers.API.Dtos
@@ -7,7 +8,7 @@ namespace IdentityServer4.Admin.Controllers.API.Dtos
     /// </summary>
     public class PermissionDto
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         
         [Required]
         [StringLength(256)]

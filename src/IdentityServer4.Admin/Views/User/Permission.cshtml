@@ -10,7 +10,6 @@
             <table class="table table-bordered">
                 <tbody>
                 <tr>
-                    <th>编号</th>
                     <th>权限</th>
                     <th>操作</th>
                 </tr>
@@ -18,9 +17,6 @@
                     <td colspan="3">没有数据</td>
                 </tr>
                 <tr v-for="el in els">
-                    <td>
-                        <span v-text="el.id"></span>
-                    </td>
                     <td>
                         <span v-text="el.permission"></span>
                     </td>

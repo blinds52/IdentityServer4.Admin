@@ -1,35 +1,42 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
-using IdentityServer4.Admin.Common;
-using IdentityServer4.Admin.Data;
+using IdentityServer4.Admin.Entities;
+using IdentityServer4.Admin.Infrastructure;
+using IdentityServer4.Admin.Infrastructure.Entity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace IdentityServer4.Admin.Controllers.API
 {
     [Route("api/user")]
     [Authorize]
     [SecurityHeaders]
+    [AllowAnonymous]
     public class PermissionCheckController : ApiControllerBase
     {
         private readonly UserManager<User> _userManager;
         private readonly AdminDbContext _dbContext;
 
-        public PermissionCheckController(UserManager<User> userManager, AdminDbContext dbContext)
+        public PermissionCheckController(UserManager<User> userManager, AdminDbContext dbContext,
+            IUnitOfWork unitOfWork,
+            ILoggerFactory loggerFactory) : base(unitOfWork, loggerFactory)
         {
             _userManager = userManager;
             _dbContext = dbContext;
         }
 
         [HttpHead("{userId}/permission/{permission}")]
-        public async Task<IActionResult> IsGrantAsync(int userId, string permission)
+        public async Task<IActionResult> IsGrantAsync(Guid userId, string permission)
         {
             //TODO: 优化性能
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null) return new ApiResult(ApiResult.Error, "用户不存在");
-            if (!(HttpContext.User.Identity.Name == AdminConsts.AdminName || user.UserName == HttpContext.User.Identity.Name))
+            if (!(HttpContext.User.Identity.Name == AdminConsts.AdminName ||
+                  user.UserName == HttpContext.User.Identity.Name))
                 return new ApiResult(ApiResult.Error, "禁止访问");
             var isGrant =
                 await _dbContext.UserPermissions.AnyAsync(up => up.UserId == userId && up.Permission == permission);

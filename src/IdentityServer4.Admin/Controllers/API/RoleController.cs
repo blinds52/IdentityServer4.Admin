@@ -1,13 +1,16 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using IdentityServer4.Admin.Common;
 using IdentityServer4.Admin.Controllers.API.Dtos;
-using IdentityServer4.Admin.Data;
+using IdentityServer4.Admin.Entities;
+using IdentityServer4.Admin.Infrastructure;
+using IdentityServer4.Admin.Infrastructure.Entity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace IdentityServer4.Admin.Controllers.API
 {
@@ -19,7 +22,8 @@ namespace IdentityServer4.Admin.Controllers.API
         private readonly AdminDbContext _dbContext;
         private readonly RoleManager<Role> _roleManager;
 
-        public RoleController(RoleManager<Role> roleManager, AdminDbContext dbContext)
+        public RoleController(RoleManager<Role> roleManager, AdminDbContext dbContext, IUnitOfWork unitOfWork,
+            ILoggerFactory loggerFactory) : base(unitOfWork, loggerFactory)
         {
             _roleManager = roleManager;
             _dbContext = dbContext;
@@ -68,7 +72,7 @@ namespace IdentityServer4.Admin.Controllers.API
         }
 
         [HttpGet("{roleId}")]
-        public async Task<IActionResult> FindFirst(int roleId)
+        public async Task<IActionResult> FindFirst(Guid roleId)
         {
             var role = await _roleManager.Roles.FirstOrDefaultAsync(p => p.Id == roleId);
             if (role == null) return new ApiResult(ApiResult.Error, "角色不存在");
@@ -78,7 +82,7 @@ namespace IdentityServer4.Admin.Controllers.API
         }
 
         [HttpPut("{roleId}")]
-        public async Task<IActionResult> Update(int roleId, [FromBody] UpdateRoleDto dto)
+        public async Task<IActionResult> Update(Guid roleId, [FromBody] UpdateRoleDto dto)
         {
             dto.Name = dto.Name.Trim();
             dto.Description = dto.Description?.Trim();
@@ -96,7 +100,7 @@ namespace IdentityServer4.Admin.Controllers.API
         }
 
         [HttpDelete("{roleId}")]
-        public async Task<IActionResult> Delete(int roleId)
+        public async Task<IActionResult> Delete(Guid roleId)
         {
             var role = await _roleManager.Roles.FirstOrDefaultAsync(p => p.Id == roleId);
             if (role == null) return new ApiResult(ApiResult.Error, "角色不存在");
@@ -112,7 +116,7 @@ namespace IdentityServer4.Admin.Controllers.API
         #region Role Permission
 
         [HttpPost("{roleId}/permission/{permissionId}")]
-        public async Task<IActionResult> CreateRolePermission(int roleId, int permissionId)
+        public async Task<IActionResult> CreateRolePermission(Guid roleId, Guid permissionId)
         {
             var role = await _roleManager.Roles.FirstOrDefaultAsync(p => p.Id == roleId);
             if (role == null) return new ApiResult(ApiResult.Error, "角色不存在");
@@ -155,7 +159,7 @@ namespace IdentityServer4.Admin.Controllers.API
         }
 
         [HttpDelete("{roleId}/permission/{permissionId}")]
-        public async Task<IActionResult> DeleteRolePermission(int roleId, int permissionId)
+        public async Task<IActionResult> DeleteRolePermission(Guid roleId, Guid permissionId)
         {
             var rolePermission = await _dbContext.RolePermissions.FirstOrDefaultAsync(p =>
                 p.RoleId == roleId && p.PermissionId == permissionId);

@@ -4,8 +4,7 @@
 
 using System.Linq;
 using System.Threading.Tasks;
-using IdentityServer4.Admin.Common;
-using IdentityServer4.Admin.Models.Diagnostics;
+using IdentityServer4.Admin.ViewModels.Diagnostics;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
