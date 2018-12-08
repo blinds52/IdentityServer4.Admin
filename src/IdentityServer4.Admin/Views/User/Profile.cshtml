@@ -7,44 +7,77 @@
         </div>
         <div class="box-body">
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-3">
                     <div class="form-group">
                         <label>用户名</label>
-                        <input class="form-control" type="text" readonly :value="userName">
+                        <input class="form-control" type="text" v-model="userName" placeholder="用户名">
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-3">
                     <div class="form-group">
                         <label>邮箱</label>
                         <input class="form-control" type="text" v-model="email" placeholder="邮箱">
                     </div>
                 </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>姓</label>
+                        <input class="form-control" type="text" v-model="firstName" placeholder="姓">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>名</label>
+                        <input class="form-control" type="text" v-model="lastName" placeholder="名">
+                    </div>
+                </div>
             </div>
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-3">
                     <div class="form-group">
                         <label>电话</label>
                         <input class="form-control" type="text" v-model="phoneNumber" placeholder="电话">
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-3">
                     <div class="form-group">
                         <label>公司电话</label>
-                        <input class="form-control" type="text" v-model="officePhone" placeholder="公司电话">
+                        <input class="form-control" type="text" v-model="officePhone" placeholder="电话">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>性别</label>
+                        <select id="sex" class="form-control select2" style="width: 100%;">
+                            <option value="Male" selected="selected">男</option>
+                            <option value="Female">女</option>
+                        </select>
                     </div>
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-3">
                     <div class="form-group">
-                        <label>性别</label>
-                        <input class="form-control" type="text" v-model="sex" placeholder="性别">
+                        <label>团队</label>
+                        <select id="group" class="form-control select2" style="width: 100%;">
+                            <option value="无">无</option>
+                            @foreach (var group in (HashSet<string>) ViewData["Group"])
+                            {
+                                <option value="@group">@group</option>
+                            }
+                        </select>
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-3">
                     <div class="form-group">
                         <label>职位</label>
-                        <input class="form-control" type="text" v-model="title" placeholder="职位">
+                        <select id="title" class="form-control select2" style="width: 100%;">
+                            <option value="无">无</option>
+                            @foreach (var title in (HashSet<string>) ViewData["Title"])
+                            {
+                                <option value="@title">@title</option>
+                            }
+                        </select>
                     </div>
                 </div>
             </div>
@@ -65,13 +98,13 @@
         </div>
         <div class="box-body">
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-3">
                     <div class="form-group">
                         <label>旧密码</label>
                         <input class="form-control" type="password" v-model="oldPassword" placeholder="旧密码">
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-3">
                     <div class="form-group">
                         <label>新密码</label>
                         <input class="form-control" type="password" v-model="newPassword" placeholder="新密码">

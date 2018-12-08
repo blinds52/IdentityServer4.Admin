@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 
 namespace IdentityServer4.Admin.Controllers.API
@@ -20,15 +22,15 @@ namespace IdentityServer4.Admin.Controllers.API
     public class UserController : ApiControllerBase
     {
         private readonly UserManager<User> _userManager;
-        private readonly AdminDbContext _dbContext;
+        private readonly IDbContext _dbContext;
         private readonly IServiceProvider _serviceProvider;
         private readonly RoleManager<Role> _roleManager;
 
         public UserController(UserManager<User> userManager,
             RoleManager<Role> roleManager,
-            AdminDbContext dbContext, IUnitOfWork unitOfWork,
+            IDbContext dbContext,
             IServiceProvider serviceProvider,
-            ILoggerFactory loggerFactory) : base(unitOfWork, loggerFactory)
+            ILoggerFactory loggerFactory) : base(loggerFactory)
         {
             _userManager = userManager;
             _dbContext = dbContext;
@@ -45,6 +47,12 @@ namespace IdentityServer4.Admin.Controllers.API
             dto.Email = dto.Email.Trim();
             dto.PhoneNumber = dto.PhoneNumber.Trim();
             dto.UserName = dto.UserName.Trim();
+            dto.FirstName = dto.FirstName?.Trim();
+            dto.LastName = dto.LastName?.Trim();
+            dto.Title = dto.Title?.Trim();
+            dto.Level = dto.Level?.Trim();
+            dto.Group = dto.Group?.Trim();
+            dto.OfficePhone = dto.OfficePhone?.Trim();
             string normalizedName =
                 _serviceProvider.ProtectPersonalData(_userManager.NormalizeKey(dto.UserName),
                     _userManager.Options);
@@ -58,7 +66,14 @@ namespace IdentityServer4.Admin.Controllers.API
             {
                 UserName = dto.UserName,
                 Email = dto.Email,
-                PhoneNumber = dto.PhoneNumber
+                PhoneNumber = dto.PhoneNumber,
+                FirstName = dto.FirstName,
+                LastName = dto.LastName,
+                Title = dto.Title,
+                Level = dto.Level,
+                Group = dto.Group,
+                OfficePhone = dto.OfficePhone,
+                Sex = dto.Sex
             }, dto.Password);
             if (result.Succeeded)
             {
@@ -94,6 +109,13 @@ namespace IdentityServer4.Admin.Controllers.API
                     Email = user.Email,
                     PhoneNumber = user.PhoneNumber,
                     IsDelete = user.IsDeleted,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Title = user.Title,
+                    Level = user.Level,
+                    Group = user.Group,
+                    OfficePhone = user.OfficePhone,
+                    Sex = user.Sex,
                     Roles = string.Join(",", await _userManager.GetRolesAsync(user))
                 });
             }
@@ -112,6 +134,13 @@ namespace IdentityServer4.Admin.Controllers.API
                 dto.Email = user.Email;
                 dto.UserName = user.UserName;
                 dto.Id = user.Id;
+                dto.FirstName = user.FirstName;
+                dto.LastName = user.LastName;
+                dto.Title = user.Title;
+                dto.Level = user.Level;
+                dto.Group = user.Group;
+                dto.OfficePhone = user.OfficePhone;
+                dto.Sex = user.Sex;
                 dto.Roles = string.Join(",", await _userManager.GetRolesAsync(user));
             }
 
@@ -121,9 +150,15 @@ namespace IdentityServer4.Admin.Controllers.API
         [HttpPut("{userId}")]
         public async Task<IActionResult> UpdateAsync(Guid userId, [FromBody] UpdateUserDto dto)
         {
-            dto.PhoneNumber = dto.PhoneNumber.Trim();
             dto.Email = dto.Email.Trim();
+            dto.PhoneNumber = dto.PhoneNumber.Trim();
             dto.UserName = dto.UserName.Trim();
+            dto.FirstName = dto.FirstName?.Trim();
+            dto.LastName = dto.LastName?.Trim();
+            dto.Title = dto.Title?.Trim();
+            dto.Level = dto.Level?.Trim();
+            dto.Group = dto.Group?.Trim();
+            dto.OfficePhone = dto.OfficePhone?.Trim();
 
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null) return new ApiResult(ApiResult.Error, "用户不存在");
@@ -136,6 +171,14 @@ namespace IdentityServer4.Admin.Controllers.API
             user.UserName = dto.UserName;
             user.Email = dto.Email;
             user.PhoneNumber = dto.PhoneNumber;
+            user.FirstName = dto.FirstName;
+            user.LastName = dto.LastName;
+            user.Title = dto.Title;
+            user.Level = dto.Level;
+            user.Group = dto.Group;
+            user.OfficePhone = dto.OfficePhone;
+            user.Sex = dto.Sex;
+
             var result = await _userManager.UpdateAsync(user);
             return result.Succeeded ? ApiResult.Ok : new ApiResult(ApiResult.Error, result.Errors.First().Description);
         }
@@ -167,6 +210,32 @@ namespace IdentityServer4.Admin.Controllers.API
 
         #endregion
 
+        #region User Permission	
+
+        [HttpGet("{userId}/permission")]
+        public async Task<IActionResult> FindUserPermission(Guid userId, PaginationQuery query)
+        {
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId && u.IsDeleted == false);
+            if (user == null) return new ApiResult(ApiResult.Error, "用户不存在或已经删除");
+
+            var queryResult = _dbContext.UserRoles.Where(ur => ur.UserId == userId)
+                .Join(_dbContext.Roles, userRole => userRole.RoleId, role => role.Id,
+                    (userRole, role) => new {RoleId = role.Id, RoleName = role.Name})
+                .Join(_dbContext.RolePermissions, role => role.RoleId, rolePermission => rolePermission.RoleId,
+                    (role, rolePermission) => new {role.RoleId, role.RoleName, rolePermission.PermissionId})
+                .Join(_dbContext.Permissions, rolePermission => rolePermission.PermissionId,
+                    permission => permission.Id,
+                    (rolePermission, permission) => new
+                    {
+                        rolePermission.RoleId, rolePermission.RoleName, rolePermission.PermissionId, permission.Name,
+                        permission.Description
+                    }).PagedQuery(query);
+
+            return new ApiResult(queryResult);
+        }
+
+        #endregion
+
         #region User Role
 
         [HttpPost("{userId}/role/{role}")]
@@ -190,13 +259,14 @@ namespace IdentityServer4.Admin.Controllers.API
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId && u.IsDeleted == false);
             if (user == null) return new ApiResult(ApiResult.Error, "用户不存在或已经删除");
 
-            var roles = _dbContext.UserRoles.Join(_dbContext.Roles, ur => ur.RoleId, r => r.Id, (ur, r) =>
-                    new RoleDto
-                    {
-                        Id = r.Id,
-                        Name = r.Name,
-                        Description = r.Description
-                    })
+            var roles = _dbContext.UserRoles.Where(ur => ur.UserId == userId).Join(_dbContext.Roles, ur => ur.RoleId,
+                    r => r.Id, (ur, r) =>
+                        new RoleDto
+                        {
+                            Id = r.Id,
+                            Name = r.Name,
+                            Description = r.Description
+                        })
                 .ToList();
 
             return new ApiResult(roles);

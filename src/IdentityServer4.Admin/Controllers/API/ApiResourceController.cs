@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
+using IdentityServer4.Admin.Entities;
 using IdentityServer4.Admin.Infrastructure;
-using IdentityServer4.Admin.Infrastructure.Entity;
 using IdentityServer4.EntityFramework.Mappers;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -14,10 +14,10 @@ namespace IdentityServer4.Admin.Controllers.API
     [SecurityHeaders]
     public class ApiResourceController : ApiControllerBase
     {
-        private readonly AdminDbContext _dbContext;
+        private readonly IDbContext _dbContext;
 
-        public ApiResourceController(AdminDbContext dbContext, IUnitOfWork unitOfWork,
-            ILoggerFactory loggerFactory) : base(unitOfWork, loggerFactory)
+        public ApiResourceController(IDbContext dbContext,  
+            ILoggerFactory loggerFactory) : base( loggerFactory)
         {
             _dbContext = dbContext;
         }
@@ -33,7 +33,7 @@ namespace IdentityServer4.Admin.Controllers.API
         public async Task<IActionResult> Create([FromBody] ApiResource resource)
         {
             await _dbContext.ApiResources.AddAsync(resource.ToEntity());
-            await UnitOfWork.CommitAsync();
+            await _dbContext.SaveChangesAsync();
             return ApiResult.Ok;
         }
     }

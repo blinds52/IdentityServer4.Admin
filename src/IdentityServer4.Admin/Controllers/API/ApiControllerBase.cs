@@ -10,12 +10,10 @@ namespace IdentityServer4.Admin.Controllers.API
 {
     public class ApiControllerBase : Controller
     {
-        protected IUnitOfWork UnitOfWork { get; }
         protected ILogger Logger { get; }
 
-        protected ApiControllerBase(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory)
+        protected ApiControllerBase(ILoggerFactory loggerFactory)
         {
-            UnitOfWork = unitOfWork;
             Logger = loggerFactory.CreateLogger<ApiControllerBase>();
         }
 

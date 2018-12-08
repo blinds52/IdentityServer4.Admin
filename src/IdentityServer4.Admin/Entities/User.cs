@@ -27,6 +27,24 @@ namespace IdentityServer4.Admin.Entities
         /// </summary>
         [StringLength(256)]
         public string LastName { get; set; }
+        
+        /// <summary>
+        /// 职位
+        /// </summary>
+        [StringLength(256)]
+        public string Title { get; set; }
+        
+        /// <summary>
+        /// 团队
+        /// </summary>
+        [StringLength(256)]
+        public string Group { get; set; }
+        
+        /// <summary>
+        /// 职级
+        /// </summary>
+        [StringLength(256)]
+        public string Level { get; set; }
 
         /// <summary>
         /// 性别

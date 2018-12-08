@@ -176,5 +176,5 @@ app.formatDate = function (time, format = 'YY-MM-DD hh:mm:ss') {
 $(function () {
     $('#btnLogout').click(function () {
         $('#logoutForm').submit();
-    })
-})
+    });
+});

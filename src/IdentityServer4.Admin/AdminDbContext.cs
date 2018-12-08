@@ -9,6 +9,7 @@ using IdentityServer4.EntityFramework.Extensions;
 using IdentityServer4.EntityFramework.Interfaces;
 using IdentityServer4.EntityFramework.Options;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -19,8 +20,9 @@ using Microsoft.Extensions.Configuration;
 
 namespace IdentityServer4.Admin
 {
-    public class AdminDbContext : IdentityDbContext<User, Role, Guid>, IDbContext,
-        IDesignTimeDbContextFactory<AdminDbContext>, IConfigurationDbContext, IPersistedGrantDbContext
+    public class AdminDbContext : IdentityDbContext<User, Role, Guid>,
+        IDbContext,
+        IDesignTimeDbContextFactory<AdminDbContext>
     {
         private readonly ConfigurationStoreOptions _configurationStoreOptions;
         private readonly OperationalStoreOptions _operationalStoreOptions;
@@ -29,8 +31,6 @@ namespace IdentityServer4.Admin
 
         public DbSet<RolePermission> RolePermissions { get; set; }
 
-        // public DbSet<UserPermission> UserPermissions { get; set; }
-        
         public DbSet<UserPermissionKey> UserPermissionKeys { get; set; }
 
         /// <summary>
@@ -65,6 +65,14 @@ namespace IdentityServer4.Admin
         /// </value>
         public DbSet<PersistedGrant> PersistedGrants { get; set; }
 
+        /// <summary>
+        /// Gets or sets the device codes.
+        /// </summary>
+        /// <value>
+        /// The device codes.
+        /// </value>
+        public DbSet<DeviceFlowCodes> DeviceFlowCodes { get; set; }
+        
         public AdminDbContext()
         {
         }
@@ -97,7 +105,26 @@ namespace IdentityServer4.Admin
         /// <returns></returns>
         public Task<int> SaveChangesAsync()
         {
+            var userId = this.GetService<IHttpContextAccessor>()?.HttpContext?.User?.Identity?.GetUserId();
+
+            foreach (var entry in ChangeTracker.Entries().ToList())
+            {
+                ApplyAbpConcepts(entry, userId);
+            }
+
             return base.SaveChangesAsync();
+        }
+
+        int IConfigurationDbContext.SaveChanges()
+        {
+            var userId = this.GetService<IHttpContextAccessor>()?.HttpContext?.User?.Identity?.GetUserId();
+
+            foreach (var entry in ChangeTracker.Entries().ToList())
+            {
+                ApplyAbpConcepts(entry, userId);
+            }
+            
+            return SaveChanges();
         }
 
         public override int SaveChanges()
@@ -151,7 +178,7 @@ namespace IdentityServer4.Admin
             }
 
             //Finally, set CreatorUserId!
-            creationAudited.CreatorUserId = userId.ToString();
+            creationAudited.CreatorUserId = userId;
         }
 
         protected virtual void ApplyAbpConceptsForModifiedEntity(EntityEntry entry, string userId)

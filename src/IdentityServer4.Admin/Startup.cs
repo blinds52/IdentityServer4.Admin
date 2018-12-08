@@ -3,6 +3,7 @@ using System.Reflection;
 using IdentityServer4.Admin.Entities;
 using IdentityServer4.Admin.Infrastructure;
 using IdentityServer4.Admin.Infrastructure.Entity;
+using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -90,9 +91,6 @@ namespace IdentityServer4.Admin
                     // this enables automatic token cleanup. this is optional.
                     options.EnableTokenCleanup = true;
                 });
-
-            // Add EF uow
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
         }
 
         private void RegisterLogService(IServiceCollection services, bool debug)

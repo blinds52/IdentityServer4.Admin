@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using IdentityServer4.Admin.Controllers.API.Dtos;
+using IdentityServer4.Admin.Entities;
 using IdentityServer4.Admin.Infrastructure;
 using IdentityServer4.Admin.Infrastructure.Entity;
 using Microsoft.AspNetCore.Authorization;
@@ -15,11 +16,10 @@ namespace IdentityServer4.Admin.Controllers.API
     [SecurityHeaders]
     public class DashboardController : ApiControllerBase
     {
-        private readonly AdminDbContext _dbContext;
+        private readonly IDbContext _dbContext;
 
-        public DashboardController(AdminDbContext dbContext,
-            IUnitOfWork unitOfWork,
-            ILoggerFactory loggerFactory) : base(unitOfWork, loggerFactory)
+        public DashboardController(IDbContext dbContext,
+            ILoggerFactory loggerFactory) : base( loggerFactory)
         {
             _dbContext = dbContext;
         }

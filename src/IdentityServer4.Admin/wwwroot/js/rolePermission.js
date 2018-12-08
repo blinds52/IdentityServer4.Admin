@@ -51,6 +51,9 @@ $(function () {
         let url = '/api/role/' + app.getPathPart(window.location.href, 1) + '/permission';
         app.get(url, function (result) {
             vue.$data.els = result.data.result;
+            vue.$data.total = result.data.total;
+            vue.$data.page = result.data.page;
+            vue.$data.size = result.data.size;
         });
         let getRoleUrl = '/api/permission?page=1&size=1000';
         app.get(getRoleUrl, function (result) {

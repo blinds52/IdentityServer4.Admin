@@ -1,4 +1,5 @@
 using System;
+using IdentityServer4.Admin.Entities;
 
 namespace IdentityServer4.Admin.Controllers.API.Dtos
 {
@@ -31,6 +32,23 @@ namespace IdentityServer4.Admin.Controllers.API.Dtos
         /// 用户拥有的角色
         /// </summary>
         public string Roles { get; set; }
+
+        public string FirstName { get; set; }
+
+        public string LastName { get; set; }
+        
+        public string Title { get; set; }
+        
+        public string Group { get; set; }
+        
+        public string Level { get; set; }
+        
+        public string OfficePhone { get; set; }
+        
+        /// <summary>
+        /// 性别
+        /// </summary>
+        public Sex Sex { get; set; } 
         
         /// <summary>
         /// 是否删除

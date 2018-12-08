@@ -16,11 +16,10 @@ namespace IdentityServer4.Admin.Controllers.API
     public class PermissionCheckController : ApiControllerBase
     {
         private readonly UserManager<User> _userManager;
-        private readonly AdminDbContext _dbContext;
+        private readonly IDbContext _dbContext;
 
-        public PermissionCheckController(UserManager<User> userManager, AdminDbContext dbContext,
-            IUnitOfWork unitOfWork,
-            ILoggerFactory loggerFactory) : base(unitOfWork, loggerFactory)
+        public PermissionCheckController(UserManager<User> userManager, IDbContext dbContext,
+            ILoggerFactory loggerFactory) : base( loggerFactory)
         {
             _userManager = userManager;
             _dbContext = dbContext;

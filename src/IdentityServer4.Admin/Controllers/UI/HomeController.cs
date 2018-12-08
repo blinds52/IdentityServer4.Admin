@@ -15,6 +15,11 @@ namespace IdentityServer4.Admin.Controllers.UI
             _interaction = interaction;
         }
 
+        public IActionResult Test()
+        {
+            return View();
+        }
+        
         [Authorize]
         public IActionResult Index()
         {

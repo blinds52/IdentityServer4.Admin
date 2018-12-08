@@ -51,8 +51,8 @@
                     <td>
                         <a class="btn btn-default btn-sm" :href="'/user/' + el.id + '/edit'" v-show="el.isDelete != true">编辑</a>
                         <a class="btn btn-default btn-sm" @@click="remove(el.id)" v-show="el.roles != 'admin' && el.isDelete != true">删除</a>
-                        <a class="btn btn-default btn-sm" :href="'/user/' + el.id + '/permission'" v-show="el.roles != 'admin' && el.isDelete != true">权限</a>
-                        <a class="btn btn-default btn-sm" :href="'/user/' + el.id + '/role'" v-show="el.roles != 'admin' && el.isDelete != true">角色</a>
+                        <a class="btn btn-default btn-sm" :href="'/user/' + el.id + '/permission'" v-show="el.isDelete != true">权限</a>
+                        <a class="btn btn-default btn-sm" :href="'/user/' + el.id + '/role'" v-show="el.isDelete != true">角色</a>
                         <a class="btn btn-default btn-sm" :href="'/user/' +el.id + '/changepassword'" v-show="el.roles != 'admin' && el.isDelete != true">更新密码</a>
                     </td>
                 </tr>

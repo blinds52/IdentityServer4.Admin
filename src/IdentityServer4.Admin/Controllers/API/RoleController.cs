@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using IdentityServer4.Admin.Controllers.API.Dtos;
 using IdentityServer4.Admin.Entities;
 using IdentityServer4.Admin.Infrastructure;
-using IdentityServer4.Admin.Infrastructure.Entity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -20,13 +19,12 @@ namespace IdentityServer4.Admin.Controllers.API
     public class RoleController : ApiControllerBase
     {
         private readonly RoleManager<Role> _roleManager;
-        private readonly AdminDbContext _dbContext;
+        private readonly IDbContext _dbContext;
 
         public RoleController(UserManager<User> userManager,
             RoleManager<Role> roleManager,
-            AdminDbContext dbContext,
-            IUnitOfWork unitOfWork,
-            ILoggerFactory loggerFactory) : base(unitOfWork, loggerFactory)
+            IDbContext dbContext,
+            ILoggerFactory loggerFactory) : base(loggerFactory)
         {
             _roleManager = roleManager;
             _dbContext = dbContext;
@@ -112,7 +110,7 @@ namespace IdentityServer4.Admin.Controllers.API
 
             _dbContext.UserRoles.RemoveRange(_dbContext.UserRoles.Where(ur => ur.RoleId == roleId));
             var result = await _roleManager.DeleteAsync(role);
-            await UnitOfWork.CommitAsync();
+            await _dbContext.SaveChangesAsync();
             return result.Succeeded ? ApiResult.Ok : new ApiResult(ApiResult.Error, result.Errors.First().Description);
         }
 
@@ -139,14 +137,14 @@ namespace IdentityServer4.Admin.Controllers.API
                 PermissionId = permissionId,
                 RoleId = roleId
             });
-            await UnitOfWork.CommitAsync();
+            await _dbContext.SaveChangesAsync();
             return ApiResult.Ok;
         }
 
         [HttpGet("{roleId}/permission")]
-        public IActionResult FindRolePermission([FromQuery] PaginationQuery input)
+        public IActionResult FindRolePermission(Guid roleId, [FromQuery] PaginationQuery input)
         {
-            var queryResult = _dbContext.RolePermissions.PagedQuery(input);
+            var queryResult = _dbContext.RolePermissions.Where(rp => rp.RoleId == roleId).PagedQuery(input);
             var rolePermissionDtos = new List<RolePermissionDto>();
             foreach (var rolePermission in queryResult.Result)
             {
@@ -170,7 +168,7 @@ namespace IdentityServer4.Admin.Controllers.API
             if (rolePermission == null) return new ApiResult(ApiResult.Error, "数据不存在");
 
             _dbContext.RolePermissions.Remove(rolePermission);
-            await UnitOfWork.CommitAsync();
+            await _dbContext.SaveChangesAsync();
             return ApiResult.Ok;
         }
 

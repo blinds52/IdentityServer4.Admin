@@ -30,7 +30,7 @@ namespace IdentityServer4.Admin
                 // Add apiResource
                 await AddApiResources(scope.ServiceProvider);
 
-                await scope.ServiceProvider.GetRequiredService<IUnitOfWork>().CommitAsync();
+                await scope.ServiceProvider.GetRequiredService<IDbContext>().SaveChangesAsync();
                 
                 var dbContext = (AdminDbContext)scope.ServiceProvider.GetRequiredService<IDbContext>();
                 if (await dbContext.Users.CountAsync() == 0)
@@ -72,7 +72,7 @@ namespace IdentityServer4.Admin
 
         private static async Task CommitAsync(IServiceProvider serviceProvider)
         {
-            await serviceProvider.GetRequiredService<IUnitOfWork>().CommitAsync();
+            await serviceProvider.GetRequiredService<IDbContext>().SaveChangesAsync();
         }
         
         private static async Task AddApiResources(IServiceProvider serviceProvider)
