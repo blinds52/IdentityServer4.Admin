@@ -19,6 +19,10 @@ trigger:
 pool:
   vmImage: 'Ubuntu 16.04'
 
+- task: DotNetCoreInstaller@0
+  inputs:
+    version: '2.2.100'
+  
 variables:
   buildConfiguration: 'Release'
   
