@@ -4,10 +4,10 @@ $(function () {
         data: {
             activeMenu: 'API 资源管理',
             menus: menus,
-            module: 'API 资源',
+            module: '添加 API 资源',
             moduleDescription: '',
             breadcrumb: [{
-                name: 'API 资源',
+                name: 'API 资源管理',
                 href: '/apiResource'
             }, {
                 name: '创建',
@@ -17,77 +17,34 @@ $(function () {
                 name: '',
                 displayName: '',
                 description: '',
-                enabled: true,
-                secrets: [],
-                scopes: [],
+                enabled: 'True',
                 userClaims: ''
-            },
-            scope: {
-                name: '',
-                displayName: '',
-                description: '',
-                required: false,
-                emphasize: false,
-                showInDiscoveryDocument: true,
-                userClaims: ''
-            },
-            secret: {
-                value: '',
-                description: '',
-                expiration: '',
-                type: ''
             }
         },
-        created: function () {
+        watch: {
+            enabled: function (val) {
+                $("#enabled").val(val).trigger('change');
+            }
+        },
+        mounted: function () {
+            let that = this;
             $('.select2').select2({
                 minimumResultsForSearch: Infinity
             });
-            $('#scopeRequired').val('False');
-            $('#scopeEmphasize').val('False');
-            $('#scopeSidd').val('True');
+            $("#enabled").on('change', function (e) {
+                that.el.enabled = $("#enabled").val();
+            });
         },
         methods: {
-            addSecret: function () {
-                this.$data.el.secrets.push({
-                    value: this.$data.secret.value.trim(),
-                    description: this.$data.secret.description.trim(),
-                    expiration: this.$data.secret.expiration,
-                    type: this.$data.secret.type.trim()
-                });
-                this.$data.secret = {};
-            },
-            removeSecret: function (secret) {
-                for (let i = 0; i < this.$data.el.secrets.length; ++i) {
-                    if (this.$data.el.secrets[i].value === secret.value) {
-                        this.$data.el.secrets.splice(i, 1);
-                        return;
-                    }
-                }
-            },
-            addScope: function () {
-                this.$data.el.scopes.push({
-                    name: this.$data.scope.name.trim(),
-                    displayName: this.$data.scope.displayName.trim(),
-                    description: this.$data.scope.description.trim(),
-                    required: $('#scopeRequired').val(),
-                    emphasize: $('#scopeEmphasize').val(),
-                    showInDiscoveryDocument: $('#scopeSidd').val(),
-                    userClaims: this.$data.scope.userClaims.trim().split(';')
-                });
-                this.$data.scope = {};
-            },
-            removeScope: function (scope) {
-                for (let i = 0; i < this.$data.el.scopes.length; ++i) {
-                    if (this.$data.el.scopes[i].name === scope.name) {
-                        this.$data.el.scopes.splice(i, 1);
-                        return;
-                    }
-                }
-            },
             create: function () {
                 const apiResource = this.$data.el;
                 const url = "/api/apiResource";
-                apiResource.userClaims = apiResource.userClaims.split(';');
+                if (apiResource.userClaims) {
+                    apiResource.userClaims = apiResource.userClaims.split(';');
+                } else {
+                    apiResource.userClaims = [];
+                }
+                apiResource.enabled = apiResource.enabled === 'True';
                 app.post(url, apiResource, function () {
                     window.location.href = '/apiResource';
                 });

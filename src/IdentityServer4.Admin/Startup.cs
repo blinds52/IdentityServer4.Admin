@@ -62,20 +62,20 @@ namespace IdentityServer4.Admin
 
             // Add DbContext            
             Action<DbContextOptionsBuilder> dbContextOptionsBuilder;
-//            if (HostingEnvironment.IsDevelopment() || debug)
-//            {
-//                dbContextOptionsBuilder = b => b.UseInMemoryDatabase("IDS4");
-//            }
-//            else
-//            {
-//                var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
-//                dbContextOptionsBuilder = b =>
-//                    b.UseSqlServer(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
-//            }
+            if (HostingEnvironment.IsDevelopment() || debug)
+            {
+                dbContextOptionsBuilder = b => b.UseInMemoryDatabase("IDS4");
+            }
+            else
+            {
+                var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
+                dbContextOptionsBuilder = b =>
+                    b.UseSqlServer(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
+            }
 
-            var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
+/*            var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
             dbContextOptionsBuilder = b =>
-                b.UseSqlServer(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
+                b.UseSqlServer(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));*/
 
             services.AddDbContext<IDbContext, AdminDbContext>(dbContextOptionsBuilder);
 
@@ -104,7 +104,7 @@ namespace IdentityServer4.Admin
         {
             Mapper.Initialize(cfg =>
             {
-                cfg.CreateMap<CreateOrUpdateUserDto, User>();
+                cfg.CreateMap<CreateUserDto, User>();
                 cfg.CreateMap<Permission, PermissionDto>();
                 cfg.CreateMap<PermissionDto, Permission>();
                 cfg.CreateMap<Role, RoleDto>();

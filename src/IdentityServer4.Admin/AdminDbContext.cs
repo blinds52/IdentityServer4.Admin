@@ -28,11 +28,20 @@ namespace IdentityServer4.Admin
         private readonly OperationalStoreOptions _operationalStoreOptions;
         private IDbContext _dbContextImplementation;
 
+        /// <summary>
+        /// 权限
+        /// </summary>
         public DbSet<Permission> Permissions { get; set; }
 
+        /// <summary>
+        /// 角色权限映射
+        /// </summary>
         public DbSet<RolePermission> RolePermissions { get; set; }
 
-        public DbSet<UserPermissionKey> UserPermissionKeys { get; set; }
+        /// <summary>
+        /// 用户权限缓存
+        /// </summary>
+        public DbSet<UserPermission> UserPermissionKeys { get; set; }
 
         /// <summary>
         /// Gets or sets the clients.
@@ -103,7 +112,7 @@ namespace IdentityServer4.Admin
 
             builder.Entity<Permission>().HasIndex(p => p.Name).IsUnique();
             builder.Entity<RolePermission>().HasIndex(p => new {p.PermissionId, p.RoleId}).IsUnique();
-            builder.Entity<UserPermissionKey>().HasIndex(p => p.PermissionKey);
+            builder.Entity<UserPermission>().HasIndex(p => p.Permission);
 
             base.OnModelCreating(builder);
         }

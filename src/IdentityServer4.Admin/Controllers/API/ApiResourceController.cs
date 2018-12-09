@@ -1,10 +1,12 @@
 using System.Threading.Tasks;
+using IdentityServer4.Admin.Controllers.API.Dtos;
 using IdentityServer4.Admin.Entities;
 using IdentityServer4.Admin.Infrastructure;
 using IdentityServer4.EntityFramework.Mappers;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace IdentityServer4.Admin.Controllers.API
@@ -16,10 +18,30 @@ namespace IdentityServer4.Admin.Controllers.API
     {
         private readonly IDbContext _dbContext;
 
-        public ApiResourceController(IDbContext dbContext,  
-            ILoggerFactory loggerFactory) : base( loggerFactory)
+        public ApiResourceController(IDbContext dbContext,
+            ILoggerFactory loggerFactory) : base(loggerFactory)
         {
             _dbContext = dbContext;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateAsync([FromBody] CreateApiResourceDto dto)
+        {
+            if (await _dbContext.ApiResources.AnyAsync(u => u.Name == dto.Name))
+            {
+                return new ApiResult(ApiResult.Error, "资源名已经存在");
+            }
+
+            var apiResource = new ApiResource();
+            apiResource.Enabled = dto.Enabled;
+            apiResource.Name = dto.Name;
+            apiResource.DisplayName = dto.DisplayName;
+            apiResource.Description = dto.Description;
+            apiResource.UserClaims = dto.UserClaims;
+            
+            await _dbContext.ApiResources.AddAsync( apiResource.ToEntity());
+            await _dbContext.SaveChangesAsync();
+            return ApiResult.Ok;
         }
 
         [HttpGet]
@@ -29,10 +51,14 @@ namespace IdentityServer4.Admin.Controllers.API
             return new ApiResult(output);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateAsync([FromBody] ApiResource resource)
+        [HttpDelete("{apiResourceId}")]
+        public async Task<IActionResult> DeleteAsync(int apiResourceId)
         {
-            await _dbContext.ApiResources.AddAsync(resource.ToEntity());
+            var apiResource = await _dbContext.ApiResources.FirstOrDefaultAsync(u => u.Id == apiResourceId);
+            if (apiResource == null) return new ApiResult(ApiResult.Error, "API 资源不存在或已经删除");
+
+            //TODO: 确认其它表数据一并删除
+            _dbContext.ApiResources.Remove(apiResource);
             await _dbContext.SaveChangesAsync();
             return ApiResult.Ok;
         }

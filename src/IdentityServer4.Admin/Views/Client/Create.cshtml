@@ -1,0 +1,110 @@
+﻿<div class="col-xs-12">
+    <div class="box">
+        <div class="box-body">
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label>标识</label>
+                        <input class="form-control" type="text" v-model="el.clientId" placeholder="标识">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label>名称</label>
+                        <input class="form-control" type="text" v-model="el.clientName" placeholder="名称">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label>浏览器授权</label>
+                        <select id="allowAccessTokensViaBrowser" class="form-control select2" style="width: 100%;">
+                            <option value="True" selected="selected">True</option>
+                            <option value="False">False</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label>授权询问</label>
+                        <select id="requireConsent" class="form-control select2" style="width: 100%;">
+                            <option value="True" selected="selected">True</option>
+                            <option value="False">False</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>授权类型</label>
+                        <select id="allowedGrantTypes" class="form-control select2" style="width: 100%;">
+                            <option value="Code">Code</option>
+                            <option value="Hybrid">Hybrid</option>
+                            <option value="Implicit">Implicit</option>
+                            <option value="ClientCredentials">ClientCredentials</option>
+                            <option value="DeviceFlow">DeviceFlow</option>
+                            <option value="ResourceOwnerPassword">ResourceOwnerPassword</option>
+                            <option value="CodeAndClientCredentials">CodeAndClientCredentials</option>
+                            <option value="HybridAndClientCredentials">HybridAndClientCredentials</option>
+                            <option value="ImplicitAndClientCredentials">ImplicitAndClientCredentials</option>
+                            <option value="ResourceOwnerPasswordAndClientCredentials">ResourceOwnerPasswordAndClientCredentials</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label>跨域访问<small class="text-muted"> 以 ; 分隔</small></label>
+                        <input class="form-control" type="text" v-model="el.allowedCorsOrigins" placeholder="跨域访问">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label>回调地址<small class="text-muted"> 以 ; 分隔</small></label>
+                        <input class="form-control" type="text" v-model="el.redirectUris" placeholder="回调地址">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label>退出回调地址<small class="text-muted"> 以 ; 分隔</small></label>
+                        <input class="form-control" type="text" v-model="el.postLogoutRedirectUris" placeholder="退出回调地址">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label>授权范围<small class="text-muted"> 以 ; 分隔</small></label>
+                        <input class="form-control" type="text" v-model="el.allowedScopes" placeholder="授权范围">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label>描述</label>
+                        <input class="form-control" type="text" v-model="el.description" placeholder="描述">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.box-body -->
+        <div class="box-footer clearfix">
+            <button type="button" class="btn btn-default btn-sm" @@click="create()">提交</button>
+            <a class="btn btn-default btn-sm" href="/client">取消</a>
+        </div>
+    </div>
+    <!-- /.box -->
+</div>
+
+@section scripts{
+    <environment names="Development">
+        <script src="~/js/createClient.js" asp-append-version="true"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="~/js/createClient.min.js" asp-append-version="true"></script>
+    </environment>
+}

@@ -2,7 +2,7 @@
     <div class="box">
         <div class="box-header">
             <div class="box-title">
-                <a class="btn btn-default btn-sm" href="/apiResource/create">创建 API 资源</a>
+                <a class="btn btn-default btn-sm" href="/client/create">添加客户端</a>
             </div>
         </div>
         <!-- /.box-header -->
@@ -10,31 +10,32 @@
             <table class="table table-bordered">
                 <tbody>
                 <tr>
+                    <th>标识</th>
                     <th>名称</th>
-                    <th>显示名称</th>
-                    <th>启用</th>
-                    <th>描述</th>
+                    <th>授权类型</th>
+                    <th>授权范围</th>
                     <th>操作</th>
                 </tr>
                 <tr v-show="els.length==0">
-                    <td colspan="13">
-                        没有数据
+                    <td colspan="5">
+                        无数据
                     </td>
                 </tr>
                 <tr v-for="el in els">
                     <td>
-                        <span v-text="el.name"></span>
+                        <span v-text="el.clientId"></span>
                     </td>
                     <td>
-                        <span v-text="el.displayName"></span>
+                        <span v-text="el.clientName"></span>
                     </td>
                     <td>
-                        <span v-text="el.enabled"></span>
+                        <span v-text="el.allowedGrantTypes"></span>
                     </td>
                     <td>
-                        <span v-text="el.description"></span>
+                        <span v-text="el.allowedScopes"></span>
                     </td>
                     <td>
+                        <a class="btn btn-default btn-sm" >详情</a>
                         <a class="btn btn-default btn-sm" @@click="remove(el.id)">删除</a>
                     </td>
                 </tr>
@@ -52,9 +53,9 @@
 
 @section scripts{
     <environment names="Development">
-        <script src="~/js/apiResource.js" asp-append-version="true"></script>
+        <script src="~/js/client.js" asp-append-version="true"></script>
     </environment>
     <environment names="Staging,Production">
-        <script src="~/js/apiResource.min.js" asp-append-version="true"></script>
+        <script src="~/js/client.min.js" asp-append-version="true"></script>
     </environment>
 }

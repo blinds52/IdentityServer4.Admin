@@ -4,14 +4,14 @@ using IdentityServer4.Admin.Infrastructure.Entity;
 
 namespace IdentityServer4.Admin.Entities
 {
-    public class UserPermissionKey : ICreationAudited
+    public class UserPermission : ICreationAudited
     {
         /// <summary>
         /// 用户权限索引: md5(USERID_PERMISSION)
         /// </summary>
         [Key]
         [StringLength(256)]
-        public string PermissionKey { get; set; }
+        public string Permission { get; set; }
 
         /// <summary>
         /// Creation time of this entity.
@@ -25,18 +25,13 @@ namespace IdentityServer4.Admin.Entities
         
         public override bool Equals(object obj)
         {
-            if (obj == null)
-            {
-                return false;
-            }
-
-            var other = obj as UserPermissionKey;
+            var other = obj as UserPermission;
             if (other == null)
             {
                 return false;
             }
 
-            return PermissionKey.Equals(other.PermissionKey);
+            return Permission.Equals(other.Permission);
         }
 
         /// <summary>
@@ -49,12 +44,12 @@ namespace IdentityServer4.Admin.Entities
         /// </returns>
         public override int GetHashCode()
         {
-            if (PermissionKey == null)
+            if (Permission == null)
             {
                 return 0;
             }
 
-            return PermissionKey.GetHashCode();
+            return Permission.GetHashCode();
         }
     }
 }

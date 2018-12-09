@@ -47,6 +47,7 @@ namespace IdentityServer4.Admin.Controllers.API
                 dto.Title = user.Title;
                 dto.FirstName = user.FirstName;
                 dto.LastName = user.LastName;
+                dto.OfficePhone = user.OfficePhone;
                 dto.Roles = string.Join(",", await _userManager.GetRolesAsync(user));
             }
 

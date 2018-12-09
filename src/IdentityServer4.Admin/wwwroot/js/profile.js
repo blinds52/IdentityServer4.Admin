@@ -18,6 +18,7 @@ $(function () {
             lastName: '',
             firstName: '',
             officePhone: '',
+            roles: '',
             sex: 'Male',
             title: '',
             group: '',
@@ -121,6 +122,7 @@ $(function () {
             vue.$data.group = result.data.group;
             vue.$data.title = result.data.title;
             vue.$data.level = result.data.level;
+            vue.$data.roles = result.data.roles;
         });
     }
 });

@@ -29,7 +29,7 @@ namespace IdentityServer4.Admin.Entities
 
         DbSet<RolePermission> RolePermissions { get; set; }
 
-        DbSet<UserPermissionKey> UserPermissionKeys { get; set; }
+        DbSet<UserPermission> UserPermissionKeys { get; set; }
 
         /// <summary>
         /// Gets or sets the <see cref="T:Microsoft.EntityFrameworkCore.DbSet`1" /> of Users.

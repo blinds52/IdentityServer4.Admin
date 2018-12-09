@@ -1,10 +1,8 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer4.Admin.Entities;
 using IdentityServer4.Admin.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -34,7 +32,7 @@ namespace IdentityServer4.Admin.Controllers.API
             var key = $"{userId}_{permission}";
 
             var isGrant =
-                await _dbContext.UserPermissionKeys.AnyAsync(up => up.PermissionKey == key);
+                await _dbContext.UserPermissionKeys.AnyAsync(up => up.Permission == key);
 
             return isGrant ? (IActionResult) new OkResult() : new NotFoundResult();
         }

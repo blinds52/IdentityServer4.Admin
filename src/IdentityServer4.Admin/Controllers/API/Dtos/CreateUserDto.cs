@@ -3,7 +3,7 @@ using IdentityServer4.Admin.Entities;
 
 namespace IdentityServer4.Admin.Controllers.API.Dtos
 {
-    public class CreateOrUpdateUserDto
+    public class CreateUserDto
     {        
         [Required]
         [StringLength(32)]

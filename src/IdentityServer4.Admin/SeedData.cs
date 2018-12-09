@@ -11,6 +11,7 @@ using IdentityServer4.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using GrantTypes = IdentityServer4.Models.GrantTypes;
 
 namespace IdentityServer4.Admin
 {
@@ -232,7 +233,7 @@ namespace IdentityServer4.Admin
                 {
                     ClientId = "expert-web",
                     ClientName = "Expert Web",
-                    AllowedGrantTypes = GrantTypes.Implicit,
+                    AllowedGrantTypes =  GrantTypes.Implicit,
                     AllowAccessTokensViaBrowser = true,
                     AllowedCorsOrigins = {"http://localhost:6568"},
                     RedirectUris = {"http://localhost:6568/account/ssocallback"},

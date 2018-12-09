@@ -39,6 +39,17 @@
     "sourceMap": false
   },
   {
+    "outputFileName": "wwwroot/js/client.min.js",
+    "inputFiles": [
+      "wwwroot/js/client.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
     "outputFileName": "wwwroot/js/consent.min.js",
     "inputFiles": [
       "wwwroot/js/consent.js"
@@ -53,6 +64,17 @@
     "outputFileName": "wwwroot/js/createApiResource.min.js",
     "inputFiles": [
       "wwwroot/js/createApiResource.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/createClient.min.js",
+    "inputFiles": [
+      "wwwroot/js/createClient.js"
     ],
     "minify": {
       "enabled": true,

@@ -39,7 +39,7 @@ namespace IdentityServer4.Admin.Controllers.API
         #region User
 
         [HttpPost]
-        public async Task<IActionResult> CreateAsync([FromBody] CreateOrUpdateUserDto dto)
+        public async Task<IActionResult> CreateAsync([FromBody] CreateUserDto dto)
         {
             var user = Mapper.Map<User>(dto);
             string normalizedName =
@@ -103,7 +103,7 @@ namespace IdentityServer4.Admin.Controllers.API
         }
 
         [HttpPut("{userId}")]
-        public async Task<IActionResult> UpdateAsync(Guid userId, [FromBody] CreateOrUpdateUserDto dto)
+        public async Task<IActionResult> UpdateAsync(Guid userId, [FromBody] UpdateUserDto dto)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId && u.IsDeleted == false);
             if (user == null) return new ApiResult(ApiResult.Error, "用户不存在或已经删除");
@@ -208,7 +208,7 @@ namespace IdentityServer4.Admin.Controllers.API
             foreach (var permission in permissions)
             {
                 var key = $"{userId}_{permission}";
-                await _dbContext.UserPermissionKeys.AddAsync(new UserPermissionKey {PermissionKey = key});
+                await _dbContext.UserPermissionKeys.AddAsync(new UserPermission {Permission = key});
             }
 
             var result = await _userManager.AddToRoleAsync(user, role);
@@ -252,7 +252,7 @@ namespace IdentityServer4.Admin.Controllers.API
             {
                 var key = $"{userId}_{permission}";
                 _dbContext.UserPermissionKeys.RemoveRange(
-                    _dbContext.UserPermissionKeys.Where(up => up.PermissionKey == key));
+                    _dbContext.UserPermissionKeys.Where(up => up.Permission == key));
             }
 
             var result = await _userManager.RemoveFromRoleAsync(user, role.Name);
