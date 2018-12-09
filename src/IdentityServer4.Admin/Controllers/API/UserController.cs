@@ -2,16 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using IdentityServer4.Admin.Controllers.API.Dtos;
 using IdentityServer4.Admin.Entities;
 using IdentityServer4.Admin.Infrastructure;
-using IdentityServer4.Admin.Infrastructure.Entity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 
 namespace IdentityServer4.Admin.Controllers.API
@@ -41,20 +39,11 @@ namespace IdentityServer4.Admin.Controllers.API
         #region User
 
         [HttpPost]
-        public async Task<IActionResult> CreateAsync([FromBody] CreateUserDto dto)
+        public async Task<IActionResult> CreateAsync([FromBody] CreateOrUpdateUserDto dto)
         {
-            dto.Password = dto.Password.Trim();
-            dto.Email = dto.Email.Trim();
-            dto.PhoneNumber = dto.PhoneNumber.Trim();
-            dto.UserName = dto.UserName.Trim();
-            dto.FirstName = dto.FirstName?.Trim();
-            dto.LastName = dto.LastName?.Trim();
-            dto.Title = dto.Title?.Trim();
-            dto.Level = dto.Level?.Trim();
-            dto.Group = dto.Group?.Trim();
-            dto.OfficePhone = dto.OfficePhone?.Trim();
+            var user = Mapper.Map<User>(dto);
             string normalizedName =
-                _serviceProvider.ProtectPersonalData(_userManager.NormalizeKey(dto.UserName),
+                _serviceProvider.ProtectPersonalData(_userManager.NormalizeKey(user.UserName),
                     _userManager.Options);
             // NormalizedUserName 有唯一索引, 应该用它做查询
             if (await _userManager.Users.AnyAsync(u => u.NormalizedUserName == normalizedName && u.IsDeleted == false))
@@ -62,19 +51,7 @@ namespace IdentityServer4.Admin.Controllers.API
                 return new ApiResult(ApiResult.Error, "用户名已经存在");
             }
 
-            var result = await _userManager.CreateAsync(new User
-            {
-                UserName = dto.UserName,
-                Email = dto.Email,
-                PhoneNumber = dto.PhoneNumber,
-                FirstName = dto.FirstName,
-                LastName = dto.LastName,
-                Title = dto.Title,
-                Level = dto.Level,
-                Group = dto.Group,
-                OfficePhone = dto.OfficePhone,
-                Sex = dto.Sex
-            }, dto.Password);
+            var result = await _userManager.CreateAsync(user, dto.Password);
             if (result.Succeeded)
             {
                 return ApiResult.Ok;
@@ -85,39 +62,27 @@ namespace IdentityServer4.Admin.Controllers.API
         }
 
         [HttpGet]
-        public async Task<IActionResult> FindAsync([FromQuery] QueryUserDto input)
+        public async Task<IActionResult> FindAsync([FromQuery] QueryUserInputDto input)
         {
             PaginationQueryResult<User> queryResult;
             if (string.IsNullOrWhiteSpace(input.Keyword))
             {
-                queryResult = _userManager.Users.PagedQuery(input);
+                queryResult = _userManager.Users.PagedQuery(input, u => u.IsDeleted == false);
             }
             else
             {
                 queryResult = _userManager.Users.PagedQuery(input,
-                    u => u.Email.Contains(input.Keyword) || u.UserName.Contains(input.Keyword) ||
-                         u.PhoneNumber.Contains(input.Keyword));
+                    u => u.IsDeleted == false &&
+                         (u.Email.Contains(input.Keyword) || u.UserName.Contains(input.Keyword) ||
+                          u.PhoneNumber.Contains(input.Keyword)));
             }
 
-            var userDtos = new List<UserDto>();
+            var userDtos = new List<UserOutputDto>();
             foreach (var user in queryResult.Result)
             {
-                userDtos.Add(new UserDto
-                {
-                    Id = user.Id,
-                    UserName = user.UserName,
-                    Email = user.Email,
-                    PhoneNumber = user.PhoneNumber,
-                    IsDelete = user.IsDeleted,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                    Title = user.Title,
-                    Level = user.Level,
-                    Group = user.Group,
-                    OfficePhone = user.OfficePhone,
-                    Sex = user.Sex,
-                    Roles = string.Join(",", await _userManager.GetRolesAsync(user))
-                });
+                var dto = Mapper.Map<UserOutputDto>(user);
+                dto.Roles = string.Join(",", await _userManager.GetRolesAsync(user));
+                userDtos.Add(dto);
             }
 
             return new ApiResult(queryResult.ToResult(userDtos));
@@ -127,46 +92,36 @@ namespace IdentityServer4.Admin.Controllers.API
         public async Task<IActionResult> FirstAsync(Guid userId)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId && u.IsDeleted == false);
-            var dto = new UserDto();
             if (user != null)
             {
-                dto.PhoneNumber = user.PhoneNumber;
-                dto.Email = user.Email;
-                dto.UserName = user.UserName;
-                dto.Id = user.Id;
-                dto.FirstName = user.FirstName;
-                dto.LastName = user.LastName;
-                dto.Title = user.Title;
-                dto.Level = user.Level;
-                dto.Group = user.Group;
-                dto.OfficePhone = user.OfficePhone;
-                dto.Sex = user.Sex;
+                var dto = Mapper.Map<UserOutputDto>(user);
                 dto.Roles = string.Join(",", await _userManager.GetRolesAsync(user));
+                return new ApiResult(dto);
             }
 
-            return new ApiResult(dto);
+            return new ApiResult();
         }
 
         [HttpPut("{userId}")]
-        public async Task<IActionResult> UpdateAsync(Guid userId, [FromBody] UpdateUserDto dto)
+        public async Task<IActionResult> UpdateAsync(Guid userId, [FromBody] CreateOrUpdateUserDto dto)
         {
-            dto.Email = dto.Email.Trim();
-            dto.PhoneNumber = dto.PhoneNumber.Trim();
-            dto.UserName = dto.UserName.Trim();
-            dto.FirstName = dto.FirstName?.Trim();
-            dto.LastName = dto.LastName?.Trim();
-            dto.Title = dto.Title?.Trim();
-            dto.Level = dto.Level?.Trim();
-            dto.Group = dto.Group?.Trim();
-            dto.OfficePhone = dto.OfficePhone?.Trim();
-
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            if (user == null) return new ApiResult(ApiResult.Error, "用户不存在");
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId && u.IsDeleted == false);
+            if (user == null) return new ApiResult(ApiResult.Error, "用户不存在或已经删除");
             if (user.UserName == AdminConsts.AdminName && dto.UserName != AdminConsts.AdminName)
                 return new ApiResult(ApiResult.Error, "管理员用户名不能修改");
 
             if (user.UserName != AdminConsts.AdminName && dto.UserName == AdminConsts.AdminName)
                 return new ApiResult(ApiResult.Error, $"用户名不能是 {AdminConsts.AdminName}");
+
+            string normalizedName =
+                _serviceProvider.ProtectPersonalData(_userManager.NormalizeKey(user.UserName),
+                    _userManager.Options);
+            // NormalizedUserName 有唯一索引, 应该用它做查询
+            if (await _userManager.Users.AnyAsync(u =>
+                u.Id != userId && u.NormalizedUserName == normalizedName && u.IsDeleted == false))
+            {
+                return new ApiResult(ApiResult.Error, "用户名已经存在");
+            }
 
             user.UserName = dto.UserName;
             user.Email = dto.Email;
@@ -196,11 +151,11 @@ namespace IdentityServer4.Admin.Controllers.API
         }
 
         [HttpPut("{userId}/changePassword")]
-        public async Task<IActionResult> ChangePasswordAsync(Guid userId, [FromBody] ChangePasswordDto dto)
+        public async Task<IActionResult> ChangePasswordAsync(Guid userId, [FromBody] ChangePasswordInputDto dto)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId && u.IsDeleted == false);
             if (user == null) return new ApiResult(ApiResult.Error, "用户不存在或已经删除");
-            if (user.UserName == AdminConsts.AdminName) return new ApiResult(ApiResult.Error, "管理员密码请通过 Profile 入口修改");
+            if (user.UserName == AdminConsts.AdminName) return new ApiResult(ApiResult.Error, "管理员密码请通过个人信息入口修改");
             var result = await _userManager.RemovePasswordAsync(user);
             if (!result.Succeeded) return new ApiResult(ApiResult.Error, result.Errors.First().Description);
 
@@ -213,7 +168,7 @@ namespace IdentityServer4.Admin.Controllers.API
         #region User Permission	
 
         [HttpGet("{userId}/permission")]
-        public async Task<IActionResult> FindUserPermission(Guid userId, PaginationQuery query)
+        public async Task<IActionResult> FindUserPermissionAsync(Guid userId, PaginationQuery query)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId && u.IsDeleted == false);
             if (user == null) return new ApiResult(ApiResult.Error, "用户不存在或已经删除");
@@ -246,6 +201,15 @@ namespace IdentityServer4.Admin.Controllers.API
 
             if (await _userManager.IsInRoleAsync(user, AdminConsts.AdminName))
                 return new ApiResult(ApiResult.Error, "管理员不能添加角色");
+
+            // 添加用户权限记录，用于权限校验接口
+            var permissions = _dbContext.RolePermissions.Join(_dbContext.Permissions, rp => rp.PermissionId,
+                p => p.Id, (rp, p) => new {p.Name});
+            foreach (var permission in permissions)
+            {
+                var key = $"{userId}_{permission}";
+                await _dbContext.UserPermissionKeys.AddAsync(new UserPermissionKey {PermissionKey = key});
+            }
 
             var result = await _userManager.AddToRoleAsync(user, role);
             return result.Succeeded
@@ -280,6 +244,16 @@ namespace IdentityServer4.Admin.Controllers.API
 
             var role = await _roleManager.FindByIdAsync(roleId.ToString());
             if (role == null) return new ApiResult(ApiResult.Error, "角色不存在");
+
+            // 先删除用户权限记录
+            var permissions = _dbContext.RolePermissions.Join(_dbContext.Permissions, rp => rp.PermissionId,
+                p => p.Id, (rp, p) => new {p.Name});
+            foreach (var permission in permissions)
+            {
+                var key = $"{userId}_{permission}";
+                _dbContext.UserPermissionKeys.RemoveRange(
+                    _dbContext.UserPermissionKeys.Where(up => up.PermissionKey == key));
+            }
 
             var result = await _userManager.RemoveFromRoleAsync(user, role.Name);
             return result.Succeeded

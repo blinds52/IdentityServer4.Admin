@@ -34,6 +34,7 @@ namespace IdentityServer4.Admin.Infrastructure.Entity
         /// <summary>
         /// Last modifier user of this entity.
         /// </summary>
+        [StringLength(36)]
         public string LastModifierUserId { get; set; }
 
         /// <summary>
@@ -44,6 +45,7 @@ namespace IdentityServer4.Admin.Infrastructure.Entity
         /// <summary>
         /// Creator of this entity.
         /// </summary>
+        [StringLength(36)]
         public string CreatorUserId { get; set; }
 
         /// <summary>

@@ -3,26 +3,32 @@ using IdentityServer4.Admin.Entities;
 
 namespace IdentityServer4.Admin.Controllers.API.Dtos
 {
-    public class CreateUserDto
-    {        
+    /// <summary>
+    /// 更新用户 DTO
+    /// </summary>
+    public class UpdateProfileInputDto
+    {
+        /// <summary>
+        /// 用户名
+        /// </summary>
         [Required]
-        [StringLength(32)]
+        [StringLength(50)]
         [MinLength(4)]
         public string UserName { get; set; }
-        
-        [StringLength(256)]
+
+        /// <summary>
+        /// 邮件
+        /// </summary>
+        [StringLength(50)]
         [EmailAddress]
         [Required]
         public string Email { get; set; }
-        
-        [StringLength(24)]
-        [MinLength(6)]
-        [Required]
-        public string Password { get; set; }
-        
+
+        /// <summary>
+        /// 电话号码
+        /// </summary>
         [Required]
         [Phone]
-        [StringLength(50)]
         public string PhoneNumber { get; set; }
         
         /// <summary>
@@ -47,13 +53,7 @@ namespace IdentityServer4.Admin.Controllers.API.Dtos
         /// 团队
         /// </summary>
         [StringLength(50)]
-        public string Group { get; set; }
-        
-        /// <summary>
-        /// 职级
-        /// </summary>
-        [StringLength(50)]
-        public string Level { get; set; }
+        public string Group { get; set; }        
 
         /// <summary>
         /// 性别

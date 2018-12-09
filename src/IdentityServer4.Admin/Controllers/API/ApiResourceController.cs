@@ -23,14 +23,14 @@ namespace IdentityServer4.Admin.Controllers.API
         }
 
         [HttpGet]
-        public IActionResult Query([FromQuery] PaginationQuery input)
+        public IActionResult Find([FromQuery] PaginationQuery input)
         {
             var output = _dbContext.ApiResources.PagedQuery(input);
             return new ApiResult(output);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] ApiResource resource)
+        public async Task<IActionResult> CreateAsync([FromBody] ApiResource resource)
         {
             await _dbContext.ApiResources.AddAsync(resource.ToEntity());
             await _dbContext.SaveChangesAsync();

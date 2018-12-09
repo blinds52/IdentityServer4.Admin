@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using IdentityServer4.Admin.Controllers.API.Dtos;
 using IdentityServer4.Admin.Entities;
 using IdentityServer4.Admin.Infrastructure;
-using IdentityServer4.Admin.Infrastructure.Entity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -25,9 +24,9 @@ namespace IdentityServer4.Admin.Controllers.API
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> FindAsync()
         {
-            var output = new DashboardDto
+            var output = new DashboardOutputDto
             {
                 ApiResourceCount = await _dbContext.ApiResources.CountAsync(),
                 ClientCount = await _dbContext.Clients.CountAsync(),

@@ -29,13 +29,13 @@ namespace IdentityServer4.Admin.Controllers.API
         }
 
         [Route("{userId}/profile")]
-        public async Task<IActionResult> GetProfile(Guid userId)
+        public async Task<IActionResult> GetProfileAsync(Guid userId)
         {
             if (User.FindFirst("sub")?.Value != userId.ToString())
                 return new ApiResult(ApiResult.Error, "验证失败");
 
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId && u.IsDeleted == false);
-            var dto = new UserDto();
+            var dto = new UserOutputDto();
             if (user != null)
             {
                 dto.PhoneNumber = user.PhoneNumber;
@@ -54,7 +54,7 @@ namespace IdentityServer4.Admin.Controllers.API
         }
 
         [HttpPut("{userId}/profile")]
-        public async Task<IActionResult> Update(Guid userId, [FromBody] UpdateProfileDto dto)
+        public async Task<IActionResult> UpdateAsync(Guid userId, [FromBody] UpdateProfileInputDto dto)
         {
             dto.Email = dto.Email.Trim();
             dto.PhoneNumber = dto.PhoneNumber.Trim();
@@ -102,7 +102,7 @@ namespace IdentityServer4.Admin.Controllers.API
         }
 
         [HttpPut("{userId}/password")]
-        public async Task<IActionResult> ChangePassword(Guid userId, [FromBody] ChangeSelfPasswordDto dto)
+        public async Task<IActionResult> ChangePasswordAsync(Guid userId, [FromBody] ChangeSelfPasswordInputDto dto)
         {
             if (User.FindFirst("sub")?.Value != userId.ToString())
                 return new ApiResult(ApiResult.Error, "验证失败");

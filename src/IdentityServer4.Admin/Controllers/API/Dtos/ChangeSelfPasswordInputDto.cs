@@ -3,21 +3,21 @@ using System.ComponentModel.DataAnnotations;
 namespace IdentityServer4.Admin.Controllers.API.Dtos
 {
     /// <summary>
-    /// 更新权限 DTO
+    /// 修改密码 DTO
     /// </summary>
-    public class UpdatePermissionDto
+    public class ChangeSelfPasswordInputDto
     {
         /// <summary>
-        /// 权限名称
+        /// 新密码
         /// </summary>
+        [StringLength(24)]
+        [MinLength(6)]
         [Required]
-        [StringLength(255)]
-        public string Name { get; set; }
+        public string NewPassword { get; set; }
 
         /// <summary>
-        /// 权限描述
+        /// 旧密码
         /// </summary>
-        [StringLength(500)]
-        public string Description { get; set; }
+        public string OldPassword { get; set; }
     }
 }

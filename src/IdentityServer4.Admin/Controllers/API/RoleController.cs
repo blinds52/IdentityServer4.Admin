@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using IdentityServer4.Admin.Controllers.API.Dtos;
 using IdentityServer4.Admin.Entities;
 using IdentityServer4.Admin.Infrastructure;
@@ -38,17 +39,16 @@ namespace IdentityServer4.Admin.Controllers.API
         /// <param name="dto">角色 DTO</param>
         /// <returns>创建结果</returns>
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] RoleDto dto)
+        public async Task<IActionResult> CreateAsync([FromBody] RoleDto dto)
         {
-            dto.Name = dto.Name.Trim();
-            dto.Description = dto.Description?.Trim();
-
-            var newRole = new Role
+            var role = Mapper.Map<Role>(dto);
+            string normalizedName = _roleManager.NormalizeKey(role.Name);
+            if (await _roleManager.Roles.AnyAsync(u => u.NormalizedName == normalizedName))
             {
-                Name = dto.Name,
-                Description = dto.Description
-            };
-            var result = await _roleManager.CreateAsync(newRole);
+                return new ApiResult(ApiResult.Error, "角色已经存在");
+            }
+
+            var result = await _roleManager.CreateAsync(role);
             return result.Succeeded ? ApiResult.Ok : new ApiResult(ApiResult.Error, result.Errors.First().Description);
         }
 
@@ -56,36 +56,21 @@ namespace IdentityServer4.Admin.Controllers.API
         public IActionResult Find([FromQuery] PaginationQuery input)
         {
             var queryResult = _roleManager.Roles.PagedQuery(input);
-            var roleDtos = new List<RoleDto>();
-            foreach (var role in queryResult.Result)
-            {
-                roleDtos.Add(new RoleDto
-                {
-                    Id = role.Id,
-                    Name = role.Name,
-                    Description = role.Description
-                });
-            }
-
-            return new ApiResult(queryResult.ToResult(roleDtos));
+            var dtos = Mapper.Map<List<RoleDto>>(queryResult.Result);
+            return new ApiResult(queryResult.ToResult(dtos));
         }
 
         [HttpGet("{roleId}")]
-        public async Task<IActionResult> FindFirst(Guid roleId)
+        public async Task<IActionResult> FindFirstAsync(Guid roleId)
         {
             var role = await _roleManager.FindByIdAsync(roleId.ToString());
             if (role == null) return new ApiResult(ApiResult.Error, "角色不存在");
-
-            var dto = new RoleDto {Name = role.Name, Description = role.Description};
-            return new ApiResult(dto);
+            return new ApiResult(Mapper.Map<RoleDto>(role));
         }
 
         [HttpPut("{roleId}")]
-        public async Task<IActionResult> Update(Guid roleId, [FromBody] UpdateRoleDto dto)
+        public async Task<IActionResult> UpdateAsync(Guid roleId, [FromBody] RoleDto dto)
         {
-            dto.Name = dto.Name.Trim();
-            dto.Description = dto.Description?.Trim();
-
             var role = await _roleManager.FindByIdAsync(roleId.ToString());
             if (role == null) return new ApiResult(ApiResult.Error, "角色不存在");
 
@@ -95,6 +80,14 @@ namespace IdentityServer4.Admin.Controllers.API
             if (role.Name != AdminConsts.AdminName && dto.Name == AdminConsts.AdminName)
                 return new ApiResult(ApiResult.Error, $"角色名不能是 {AdminConsts.AdminName}");
 
+            string normalizedName = _roleManager.NormalizeKey(role.Name);
+
+            if (await _roleManager.Roles.AnyAsync(u =>
+                u.Id != roleId && u.NormalizedName == normalizedName))
+            {
+                return new ApiResult(ApiResult.Error, "角色名已经存在");
+            }
+
             role.Name = dto.Name;
             role.Description = dto.Description;
             var result = await _roleManager.UpdateAsync(role);
@@ -102,13 +95,16 @@ namespace IdentityServer4.Admin.Controllers.API
         }
 
         [HttpDelete("{roleId}")]
-        public async Task<IActionResult> Delete(Guid roleId)
+        public async Task<IActionResult> DeleteAsync(Guid roleId)
         {
             var role = await _roleManager.FindByIdAsync(roleId.ToString());
             if (role == null) return new ApiResult(ApiResult.Error, "角色不存在");
             if (role.Name == AdminConsts.AdminName) return new ApiResult(ApiResult.Error, "管理员角色不允许删除");
 
+            // 删除所有用户角色映射
             _dbContext.UserRoles.RemoveRange(_dbContext.UserRoles.Where(ur => ur.RoleId == roleId));
+            // 删除所有角色权限映射
+            _dbContext.RolePermissions.RemoveRange(_dbContext.RolePermissions.Where(rp => rp.RoleId == roleId));
             var result = await _roleManager.DeleteAsync(role);
             await _dbContext.SaveChangesAsync();
             return result.Succeeded ? ApiResult.Ok : new ApiResult(ApiResult.Error, result.Errors.First().Description);
@@ -119,11 +115,11 @@ namespace IdentityServer4.Admin.Controllers.API
         #region Role Permission
 
         [HttpPost("{roleId}/permission/{permissionId}")]
-        public async Task<IActionResult> CreateRolePermission(Guid roleId, Guid permissionId)
+        public async Task<IActionResult> CreateRolePermissionAsync(Guid roleId, Guid permissionId)
         {
             var role = await _roleManager.Roles.FirstOrDefaultAsync(p => p.Id == roleId);
             if (role == null) return new ApiResult(ApiResult.Error, "角色不存在");
-            if (role.Name == AdminConsts.AdminName) return new ApiResult(ApiResult.Error, "管理员角色不允许修改");
+            if (role.Name == AdminConsts.AdminName) return new ApiResult(ApiResult.Error, "管理员角色不允许修改权限");
             var permission = await _dbContext.Permissions.FirstOrDefaultAsync(p => p.Id == permissionId);
             if (permission == null) return new ApiResult(ApiResult.Error, "权限不存在");
 
@@ -131,12 +127,12 @@ namespace IdentityServer4.Admin.Controllers.API
                     rp.RoleId == roleId && rp.PermissionId == permissionId) != null)
                 return new ApiResult(ApiResult.Error, "权限已经存在");
 
-            await _dbContext.RolePermissions.AddAsync(new RolePermission
-            {
-                Permission = permission.Name,
-                PermissionId = permissionId,
-                RoleId = roleId
-            });
+            await _dbContext.RolePermissions.AddAsync(
+                new RolePermission
+                {
+                    PermissionId = permissionId,
+                    RoleId = roleId
+                });
             await _dbContext.SaveChangesAsync();
             return ApiResult.Ok;
         }
@@ -144,24 +140,24 @@ namespace IdentityServer4.Admin.Controllers.API
         [HttpGet("{roleId}/permission")]
         public IActionResult FindRolePermission(Guid roleId, [FromQuery] PaginationQuery input)
         {
-            var queryResult = _dbContext.RolePermissions.Where(rp => rp.RoleId == roleId).PagedQuery(input);
-            var rolePermissionDtos = new List<RolePermissionDto>();
-            foreach (var rolePermission in queryResult.Result)
-            {
-                rolePermissionDtos.Add(new RolePermissionDto
-                {
-                    Id = rolePermission.Id,
-                    Permission = rolePermission.Permission,
-                    RoleId = rolePermission.RoleId,
-                    PermissionId = rolePermission.PermissionId
-                });
-            }
+            var queryResult = _dbContext.RolePermissions.Where(rp => rp.RoleId == roleId)
+                .Join(_dbContext.Permissions,
+                    rolePermission => rolePermission.PermissionId, permission => permission.Id,
+                    (rolePermission, permission) => new RolePermissionOutputDto
+                    {
+                        Id = rolePermission.Id,
+                        PermissionId = rolePermission.PermissionId,
+                        RoleId = rolePermission.RoleId,
+                        Permission = permission.Name,
+                        PermissionDescription = permission.Description
+                    }
+                ).PagedQuery(input);
 
-            return new ApiResult(queryResult.ToResult(rolePermissionDtos));
+            return new ApiResult(queryResult);
         }
 
         [HttpDelete("{roleId}/permission/{permissionId}")]
-        public async Task<IActionResult> DeleteRolePermission(Guid roleId, Guid permissionId)
+        public async Task<IActionResult> DeleteRolePermissionAsync(Guid roleId, Guid permissionId)
         {
             var rolePermission = await _dbContext.RolePermissions.FirstOrDefaultAsync(p =>
                 p.RoleId == roleId && p.PermissionId == permissionId);

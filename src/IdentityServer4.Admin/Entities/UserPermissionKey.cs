@@ -1,15 +1,28 @@
+using System;
 using System.ComponentModel.DataAnnotations;
+using IdentityServer4.Admin.Infrastructure.Entity;
 
 namespace IdentityServer4.Admin.Entities
 {
-    public class UserPermissionKey
+    public class UserPermissionKey : ICreationAudited
     {
         /// <summary>
         /// 用户权限索引: md5(USERID_PERMISSION)
         /// </summary>
-        [Key] 
+        [Key]
+        [StringLength(256)]
         public string PermissionKey { get; set; }
 
+        /// <summary>
+        /// Creation time of this entity.
+        /// </summary>
+        public DateTime CreationTime { get; set; }
+
+        /// <summary>
+        /// Creator of this entity.
+        /// </summary>
+        public string CreatorUserId { get; set; }
+        
         public override bool Equals(object obj)
         {
             if (obj == null)

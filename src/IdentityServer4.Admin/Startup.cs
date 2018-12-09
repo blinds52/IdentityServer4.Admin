@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Reflection;
+using AutoMapper;
+using IdentityServer4.Admin.Controllers.API.Dtos;
 using IdentityServer4.Admin.Entities;
 using IdentityServer4.Admin.Infrastructure;
-using IdentityServer4.Admin.Infrastructure.Entity;
-using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -45,7 +45,7 @@ namespace IdentityServer4.Admin
 
             // Add Log
             var debug = Environment.CommandLine.Contains("/debug");
-            RegisterLogService(services, debug);
+            ConfigureService(debug);
 
             // Add aspnetcore identity
             IdentityBuilder idBuilder = services.AddIdentity<User, Role>(options =>
@@ -62,16 +62,20 @@ namespace IdentityServer4.Admin
 
             // Add DbContext            
             Action<DbContextOptionsBuilder> dbContextOptionsBuilder;
-            if (HostingEnvironment.IsDevelopment() || debug)
-            {
-                dbContextOptionsBuilder = b => b.UseInMemoryDatabase("IDS4");
-            }
-            else
-            {
-                var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
-                dbContextOptionsBuilder = b =>
-                    b.UseSqlServer(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
-            }
+//            if (HostingEnvironment.IsDevelopment() || debug)
+//            {
+//                dbContextOptionsBuilder = b => b.UseInMemoryDatabase("IDS4");
+//            }
+//            else
+//            {
+//                var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
+//                dbContextOptionsBuilder = b =>
+//                    b.UseSqlServer(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
+//            }
+
+            var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
+            dbContextOptionsBuilder = b =>
+                b.UseSqlServer(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
 
             services.AddDbContext<IDbContext, AdminDbContext>(dbContextOptionsBuilder);
 
@@ -85,15 +89,31 @@ namespace IdentityServer4.Admin
                     options.ResolveDbContextOptions = (provider, b) => dbContextOptionsBuilder(b);
                 })
                 // this adds the operational data from DB (codes, tokens, consents)
-                .AddOperationalStore(options =>
+                .AddOperationalStore<AdminDbContext>(options =>
                 {
                     options.ResolveDbContextOptions = (provider, b) => dbContextOptionsBuilder(b);
                     // this enables automatic token cleanup. this is optional.
                     options.EnableTokenCleanup = true;
                 });
+
+            // Configure AutoMapper
+            ConfigureAutoMapper();
         }
 
-        private void RegisterLogService(IServiceCollection services, bool debug)
+        private void ConfigureAutoMapper()
+        {
+            Mapper.Initialize(cfg =>
+            {
+                cfg.CreateMap<CreateOrUpdateUserDto, User>();
+                cfg.CreateMap<Permission, PermissionDto>();
+                cfg.CreateMap<PermissionDto, Permission>();
+                cfg.CreateMap<Role, RoleDto>();
+                cfg.CreateMap<RoleDto, Role>();
+                cfg.CreateMap<User, UserOutputDto>();
+            });
+        }
+
+        private void ConfigureService(bool debug)
         {
             if (HostingEnvironment.IsDevelopment() || debug)
             {
@@ -138,8 +158,8 @@ namespace IdentityServer4.Admin
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    "default",
+                    "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }

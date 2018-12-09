@@ -1,6 +1,5 @@
 using System.Linq;
 using IdentityServer4.Admin.Infrastructure;
-using IdentityServer4.Admin.Infrastructure.Entity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;

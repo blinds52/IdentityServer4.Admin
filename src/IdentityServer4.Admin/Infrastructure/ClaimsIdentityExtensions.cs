@@ -1,7 +1,6 @@
-using System;
-using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
+using IdentityModel;
 
 namespace IdentityServer4.Admin.Infrastructure
 {
@@ -20,7 +19,7 @@ namespace IdentityServer4.Admin.Infrastructure
             {
                 return null;
             }
-            return claimsIdentity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            return claimsIdentity.FindFirst(JwtClaimTypes.Subject)?.Value;
         }
     }
 }

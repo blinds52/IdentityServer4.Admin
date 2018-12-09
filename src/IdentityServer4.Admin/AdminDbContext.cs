@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using IdentityServer4.Admin.Entities;
 using IdentityServer4.Admin.Infrastructure;
@@ -9,7 +10,6 @@ using IdentityServer4.EntityFramework.Extensions;
 using IdentityServer4.EntityFramework.Interfaces;
 using IdentityServer4.EntityFramework.Options;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -26,6 +26,7 @@ namespace IdentityServer4.Admin
     {
         private readonly ConfigurationStoreOptions _configurationStoreOptions;
         private readonly OperationalStoreOptions _operationalStoreOptions;
+        private IDbContext _dbContextImplementation;
 
         public DbSet<Permission> Permissions { get; set; }
 
@@ -72,7 +73,7 @@ namespace IdentityServer4.Admin
         /// The device codes.
         /// </value>
         public DbSet<DeviceFlowCodes> DeviceFlowCodes { get; set; }
-        
+
         public AdminDbContext()
         {
         }
@@ -86,6 +87,14 @@ namespace IdentityServer4.Admin
             _operationalStoreOptions = operationalStoreOptions;
         }
 
+        public AdminDbContext CreateDbContext(string[] args)
+        {
+            var builder = new DbContextOptionsBuilder<AdminDbContext>();
+            builder.UseSqlServer(GetConnectionString(args.Length > 0 ? args[0] : "appsettings.json"));
+
+            return new AdminDbContext(builder.Options, new ConfigurationStoreOptions(), new OperationalStoreOptions());
+        }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.ConfigureClientContext(_configurationStoreOptions);
@@ -93,17 +102,13 @@ namespace IdentityServer4.Admin
             builder.ConfigurePersistedGrantContext(_operationalStoreOptions);
 
             builder.Entity<Permission>().HasIndex(p => p.Name).IsUnique();
-            builder.Entity<RolePermission>().HasIndex(p => new {p.RoleId, p.Permission}).IsUnique();
-            builder.Entity<UserPermissionKey>().HasIndex(p => p.PermissionKey).IsUnique();
+            builder.Entity<RolePermission>().HasIndex(p => new {p.PermissionId, p.RoleId}).IsUnique();
+            builder.Entity<UserPermissionKey>().HasIndex(p => p.PermissionKey);
 
             base.OnModelCreating(builder);
         }
 
-        /// <summary>
-        /// Saves the changes.
-        /// </summary>
-        /// <returns></returns>
-        public Task<int> SaveChangesAsync()
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             var userId = this.GetService<IHttpContextAccessor>()?.HttpContext?.User?.Identity?.GetUserId();
 
@@ -112,19 +117,7 @@ namespace IdentityServer4.Admin
                 ApplyAbpConcepts(entry, userId);
             }
 
-            return base.SaveChangesAsync();
-        }
-
-        int IConfigurationDbContext.SaveChanges()
-        {
-            var userId = this.GetService<IHttpContextAccessor>()?.HttpContext?.User?.Identity?.GetUserId();
-
-            foreach (var entry in ChangeTracker.Entries().ToList())
-            {
-                ApplyAbpConcepts(entry, userId);
-            }
-            
-            return SaveChanges();
+            return base.SaveChangesAsync(cancellationToken);
         }
 
         public override int SaveChanges()
@@ -137,6 +130,26 @@ namespace IdentityServer4.Admin
             }
 
             return base.SaveChanges();
+        }
+
+        int IConfigurationDbContext.SaveChanges()
+        {
+            return SaveChanges();
+        }
+
+        Task<int> IConfigurationDbContext.SaveChangesAsync()
+        {
+            return SaveChangesAsync();
+        }
+
+        Task<int> IPersistedGrantDbContext.SaveChangesAsync()
+        {
+            return SaveChangesAsync();
+        }
+
+        int IPersistedGrantDbContext.SaveChanges()
+        {
+            return SaveChanges();
         }
 
         protected virtual void ApplyAbpConcepts(EntityEntry entry, string userId)
@@ -162,18 +175,16 @@ namespace IdentityServer4.Admin
             var creationAudited = entry.Entity as ICreationAudited;
             if (creationAudited == null)
             {
-                //Object does not implement IHasCreationTime
                 return;
             }
 
-            if (creationAudited.CreationTime == default(DateTime))
+            if (creationAudited.CreationTime == default)
             {
                 creationAudited.CreationTime = DateTime.Now;
             }
 
             if (creationAudited.CreatorUserId != null)
             {
-                //CreatorUserId is already set
                 return;
             }
 
@@ -186,22 +197,10 @@ namespace IdentityServer4.Admin
             var modificationAudited = entry.Entity as IModificationAudited;
             if (modificationAudited == null)
             {
-                //Object does not implement IHasCreationTime
                 return;
             }
 
-            if (modificationAudited.LastModificationTime == default(DateTime))
-            {
-                modificationAudited.LastModificationTime = DateTime.Now;
-            }
-
-            if (modificationAudited.LastModifierUserId != null)
-            {
-                //CreatorUserId is already set
-                return;
-            }
-
-            //Finally, set CreatorUserId!
+            modificationAudited.LastModificationTime = DateTime.Now;
             modificationAudited.LastModifierUserId = userId;
         }
 
@@ -210,22 +209,10 @@ namespace IdentityServer4.Admin
             var softDelete = entry as ISoftDelete;
             if (softDelete == null)
             {
-                //Object does not implement IHasCreationTime
                 return;
             }
 
-            if (softDelete.DeletionTime == default(DateTime))
-            {
-                softDelete.DeletionTime = DateTime.Now;
-            }
-
-            if (softDelete.DeleterUserId != null)
-            {
-                //CreatorUserId is already set
-                return;
-            }
-
-            //Finally, set CreatorUserId!
+            softDelete.DeletionTime = DateTime.Now;
             softDelete.DeleterUserId = userId;
         }
 
@@ -259,14 +246,6 @@ namespace IdentityServer4.Admin
                     entity.Id = CombGuid.NewGuid();
                 }
             }
-        }
-
-        public AdminDbContext CreateDbContext(string[] args)
-        {
-            var builder = new DbContextOptionsBuilder<AdminDbContext>();
-            builder.UseSqlServer(GetConnectionString(args.Length > 0 ? args[0] : "appsettings.json"));
-
-            return new AdminDbContext(builder.Options, new ConfigurationStoreOptions(), new OperationalStoreOptions());
         }
 
         private string GetConnectionString(string config)

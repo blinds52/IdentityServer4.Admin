@@ -20,12 +20,5 @@ namespace IdentityServer4.Admin.Entities
         /// </summary>
         [Required]
         public Guid PermissionId { get; set; }
-        
-        /// <summary>
-        /// 角色权限
-        /// </summary>
-        [Required]
-        [StringLength(256)]
-        public string Permission { get; set; }
     }
 }

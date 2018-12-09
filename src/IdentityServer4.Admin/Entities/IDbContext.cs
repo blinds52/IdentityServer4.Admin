@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using IdentityServer4.EntityFramework.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -75,6 +76,6 @@ namespace IdentityServer4.Admin.Entities
         /// Saves the changes.
         /// </summary>
         /// <returns></returns>
-        Task<int> SaveChangesAsync();
+        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }

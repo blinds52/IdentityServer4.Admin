@@ -6,7 +6,7 @@ namespace IdentityServer4.Admin.Controllers.API.Dtos
     /// <summary>
     /// 用户 DTO
     /// </summary>
-    public class UserDto
+    public class UserOutputDto
     {
         /// <summary>
         /// 用户编号

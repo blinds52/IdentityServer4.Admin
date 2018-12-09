@@ -5,7 +5,7 @@ namespace IdentityServer4.Admin.Controllers.API.Dtos
     /// <summary>
     /// 角色权限 DTO
     /// </summary>
-    public class RolePermissionDto
+    public class RolePermissionOutputDto
     {
         /// <summary>
         /// 主键
@@ -26,5 +26,10 @@ namespace IdentityServer4.Admin.Controllers.API.Dtos
         /// 权限
         /// </summary>
         public string Permission { get; set; }
+        
+        /// <summary>
+        /// 权限描述
+        /// </summary>
+        public string PermissionDescription { get; set; }
     }
 }

@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using IdentityModel;
 using IdentityServer4.Admin.Entities;
 using IdentityServer4.Admin.Infrastructure;
-using IdentityServer4.Admin.Infrastructure.Entity;
 using IdentityServer4.EntityFramework.Mappers;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Identity;
@@ -56,7 +55,7 @@ namespace IdentityServer4.Admin
             var role = await AddRole(serviceProvider, AdminConsts.AdminName, "Super admin");
             var permission = await context.Permissions.FirstOrDefaultAsync(p => p.Name == AdminConsts.AdminName);
             await context.RolePermissions.AddAsync(new RolePermission
-                {Permission = AdminConsts.AdminName, RoleId = role.Id, PermissionId = permission.Id});
+                {RoleId = role.Id, PermissionId = permission.Id});
             await CommitAsync(serviceProvider);
         }
 

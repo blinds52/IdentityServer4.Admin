@@ -2,7 +2,7 @@ using IdentityServer4.Admin.Infrastructure;
 
 namespace IdentityServer4.Admin.Controllers.API.Dtos
 {
-    public class QueryUserDto : PaginationQuery
+    public class QueryUserInputDto : PaginationQuery
     {
         public string Keyword { get; set; }
     }

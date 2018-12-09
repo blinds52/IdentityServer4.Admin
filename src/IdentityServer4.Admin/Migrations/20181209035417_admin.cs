@@ -17,7 +17,11 @@ namespace IdentityServer4.Admin.Migrations
                     Enabled = table.Column<bool>(nullable: false),
                     Name = table.Column<string>(maxLength: 200, nullable: false),
                     DisplayName = table.Column<string>(maxLength: 200, nullable: true),
-                    Description = table.Column<string>(maxLength: 1000, nullable: true)
+                    Description = table.Column<string>(maxLength: 1000, nullable: true),
+                    Created = table.Column<DateTime>(nullable: false),
+                    Updated = table.Column<DateTime>(nullable: true),
+                    LastAccessed = table.Column<DateTime>(nullable: true),
+                    NonEditable = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -31,8 +35,12 @@ namespace IdentityServer4.Admin.Migrations
                     Id = table.Column<Guid>(nullable: false),
                     Name = table.Column<string>(maxLength: 256, nullable: false),
                     NormalizedName = table.Column<string>(maxLength: 256, nullable: false),
-                    ConcurrencyStamp = table.Column<string>(maxLength: 40, nullable: true),
-                    Description = table.Column<string>(maxLength: 500, nullable: true)
+                    ConcurrencyStamp = table.Column<string>(maxLength: 36, nullable: true),
+                    Description = table.Column<string>(maxLength: 500, nullable: true),
+                    LastModificationTime = table.Column<DateTime>(nullable: true),
+                    LastModifierUserId = table.Column<string>(nullable: true),
+                    CreationTime = table.Column<DateTime>(nullable: false),
+                    CreatorUserId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -47,6 +55,9 @@ namespace IdentityServer4.Admin.Migrations
                     IsDeleted = table.Column<bool>(nullable: false),
                     FirstName = table.Column<string>(maxLength: 256, nullable: true),
                     LastName = table.Column<string>(maxLength: 256, nullable: true),
+                    Title = table.Column<string>(maxLength: 256, nullable: true),
+                    Group = table.Column<string>(maxLength: 256, nullable: true),
+                    Level = table.Column<string>(maxLength: 256, nullable: true),
                     Sex = table.Column<int>(nullable: false),
                     OfficePhone = table.Column<string>(maxLength: 256, nullable: true),
                     UserName = table.Column<string>(maxLength: 256, nullable: false),
@@ -55,14 +66,20 @@ namespace IdentityServer4.Admin.Migrations
                     NormalizedEmail = table.Column<string>(maxLength: 256, nullable: true),
                     EmailConfirmed = table.Column<bool>(nullable: false),
                     PasswordHash = table.Column<string>(nullable: true),
-                    SecurityStamp = table.Column<string>(maxLength: 40, nullable: true),
-                    ConcurrencyStamp = table.Column<string>(maxLength: 40, nullable: true),
+                    SecurityStamp = table.Column<string>(maxLength: 36, nullable: true),
+                    ConcurrencyStamp = table.Column<string>(maxLength: 36, nullable: true),
                     PhoneNumber = table.Column<string>(maxLength: 256, nullable: true),
                     PhoneNumberConfirmed = table.Column<bool>(nullable: false),
                     TwoFactorEnabled = table.Column<bool>(nullable: false),
                     LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
                     LockoutEnabled = table.Column<bool>(nullable: false),
-                    AccessFailedCount = table.Column<int>(nullable: false)
+                    AccessFailedCount = table.Column<int>(nullable: false),
+                    LastModificationTime = table.Column<DateTime>(nullable: true),
+                    LastModifierUserId = table.Column<string>(nullable: true),
+                    CreationTime = table.Column<DateTime>(nullable: false),
+                    CreatorUserId = table.Column<string>(nullable: true),
+                    DeleterUserId = table.Column<string>(nullable: true),
+                    DeletionTime = table.Column<DateTime>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -108,11 +125,35 @@ namespace IdentityServer4.Admin.Migrations
                     IncludeJwtId = table.Column<bool>(nullable: false),
                     AlwaysSendClientClaims = table.Column<bool>(nullable: false),
                     ClientClaimsPrefix = table.Column<string>(maxLength: 200, nullable: true),
-                    PairWiseSubjectSalt = table.Column<string>(maxLength: 200, nullable: true)
+                    PairWiseSubjectSalt = table.Column<string>(maxLength: 200, nullable: true),
+                    Created = table.Column<DateTime>(nullable: false),
+                    Updated = table.Column<DateTime>(nullable: true),
+                    LastAccessed = table.Column<DateTime>(nullable: true),
+                    UserSsoLifetime = table.Column<int>(nullable: true),
+                    UserCodeType = table.Column<string>(maxLength: 100, nullable: true),
+                    DeviceCodeLifetime = table.Column<int>(nullable: false),
+                    NonEditable = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Clients", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DeviceCodes",
+                columns: table => new
+                {
+                    UserCode = table.Column<string>(maxLength: 200, nullable: false),
+                    DeviceCode = table.Column<string>(maxLength: 200, nullable: false),
+                    SubjectId = table.Column<string>(maxLength: 200, nullable: true),
+                    ClientId = table.Column<string>(maxLength: 200, nullable: false),
+                    CreationTime = table.Column<DateTime>(nullable: false),
+                    Expiration = table.Column<DateTime>(nullable: false),
+                    Data = table.Column<string>(maxLength: 50000, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DeviceCodes", x => x.UserCode);
                 });
 
             migrationBuilder.CreateTable(
@@ -127,7 +168,10 @@ namespace IdentityServer4.Admin.Migrations
                     Description = table.Column<string>(maxLength: 1000, nullable: true),
                     Required = table.Column<bool>(nullable: false),
                     Emphasize = table.Column<bool>(nullable: false),
-                    ShowInDiscoveryDocument = table.Column<bool>(nullable: false)
+                    ShowInDiscoveryDocument = table.Column<bool>(nullable: false),
+                    Created = table.Column<DateTime>(nullable: false),
+                    Updated = table.Column<DateTime>(nullable: true),
+                    NonEditable = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -139,6 +183,10 @@ namespace IdentityServer4.Admin.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
+                    LastModificationTime = table.Column<DateTime>(nullable: true),
+                    LastModifierUserId = table.Column<string>(maxLength: 36, nullable: true),
+                    CreationTime = table.Column<DateTime>(nullable: false),
+                    CreatorUserId = table.Column<string>(maxLength: 36, nullable: true),
                     Name = table.Column<string>(maxLength: 256, nullable: false),
                     Description = table.Column<string>(maxLength: 500, nullable: true)
                 },
@@ -169,9 +217,12 @@ namespace IdentityServer4.Admin.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
+                    LastModificationTime = table.Column<DateTime>(nullable: true),
+                    LastModifierUserId = table.Column<string>(maxLength: 36, nullable: true),
+                    CreationTime = table.Column<DateTime>(nullable: false),
+                    CreatorUserId = table.Column<string>(maxLength: 36, nullable: true),
                     RoleId = table.Column<Guid>(nullable: false),
-                    PermissionId = table.Column<Guid>(nullable: false),
-                    Permission = table.Column<string>(maxLength: 256, nullable: false)
+                    PermissionId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -179,17 +230,16 @@ namespace IdentityServer4.Admin.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserPermissions",
+                name: "UserPermissionKeys",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    UserId = table.Column<Guid>(nullable: false),
-                    PermissionId = table.Column<Guid>(nullable: false),
-                    Permission = table.Column<string>(maxLength: 256, nullable: false)
+                    PermissionKey = table.Column<string>(maxLength: 256, nullable: false),
+                    CreationTime = table.Column<DateTime>(nullable: false),
+                    CreatorUserId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserPermissions", x => x.Id);
+                    table.PrimaryKey("PK_UserPermissionKeys", x => x.PermissionKey);
                 });
 
             migrationBuilder.CreateTable(
@@ -206,6 +256,27 @@ namespace IdentityServer4.Admin.Migrations
                     table.PrimaryKey("PK_ApiClaims", x => x.Id);
                     table.ForeignKey(
                         name: "FK_ApiClaims_ApiResources_ApiResourceId",
+                        column: x => x.ApiResourceId,
+                        principalTable: "ApiResources",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ApiProperties",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Key = table.Column<string>(maxLength: 250, nullable: false),
+                    Value = table.Column<string>(maxLength: 2000, nullable: false),
+                    ApiResourceId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ApiProperties", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ApiProperties_ApiResources_ApiResourceId",
                         column: x => x.ApiResourceId,
                         principalTable: "ApiResources",
                         principalColumn: "Id",
@@ -244,9 +315,10 @@ namespace IdentityServer4.Admin.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Description = table.Column<string>(maxLength: 1000, nullable: true),
-                    Value = table.Column<string>(maxLength: 2000, nullable: true),
+                    Value = table.Column<string>(maxLength: 4000, nullable: false),
                     Expiration = table.Column<DateTime>(nullable: true),
-                    Type = table.Column<string>(maxLength: 250, nullable: true),
+                    Type = table.Column<string>(maxLength: 250, nullable: false),
+                    Created = table.Column<DateTime>(nullable: false),
                     ApiResourceId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -535,9 +607,10 @@ namespace IdentityServer4.Admin.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Description = table.Column<string>(maxLength: 2000, nullable: true),
-                    Value = table.Column<string>(maxLength: 2000, nullable: false),
+                    Value = table.Column<string>(maxLength: 4000, nullable: false),
                     Expiration = table.Column<DateTime>(nullable: true),
-                    Type = table.Column<string>(maxLength: 250, nullable: true),
+                    Type = table.Column<string>(maxLength: 250, nullable: false),
+                    Created = table.Column<DateTime>(nullable: false),
                     ClientId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -572,6 +645,27 @@ namespace IdentityServer4.Admin.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "IdentityProperties",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Key = table.Column<string>(maxLength: 250, nullable: false),
+                    Value = table.Column<string>(maxLength: 2000, nullable: false),
+                    IdentityResourceId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_IdentityProperties", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_IdentityProperties_IdentityResources_IdentityResourceId",
+                        column: x => x.IdentityResourceId,
+                        principalTable: "IdentityResources",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ApiScopeClaims",
                 columns: table => new
                 {
@@ -594,6 +688,11 @@ namespace IdentityServer4.Admin.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_ApiClaims_ApiResourceId",
                 table: "ApiClaims",
+                column: "ApiResourceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ApiProperties_ApiResourceId",
+                table: "ApiProperties",
                 column: "ApiResourceId");
 
             migrationBuilder.CreateIndex(
@@ -713,8 +812,19 @@ namespace IdentityServer4.Admin.Migrations
                 column: "ClientId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_DeviceCodes_DeviceCode",
+                table: "DeviceCodes",
+                column: "DeviceCode",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_IdentityClaims_IdentityResourceId",
                 table: "IdentityClaims",
+                column: "IdentityResourceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_IdentityProperties_IdentityResourceId",
+                table: "IdentityProperties",
                 column: "IdentityResourceId");
 
             migrationBuilder.CreateIndex(
@@ -735,28 +845,24 @@ namespace IdentityServer4.Admin.Migrations
                 columns: new[] { "SubjectId", "ClientId", "Type" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_RolePermissions_RoleId_Permission",
+                name: "IX_RolePermissions_PermissionId_RoleId",
                 table: "RolePermissions",
-                columns: new[] { "RoleId", "Permission" },
+                columns: new[] { "PermissionId", "RoleId" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_RolePermissions_RoleId_PermissionId",
-                table: "RolePermissions",
-                columns: new[] { "RoleId", "PermissionId" },
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserPermissions_UserId_Permission",
-                table: "UserPermissions",
-                columns: new[] { "UserId", "Permission" },
-                unique: true);
+                name: "IX_UserPermissionKeys_PermissionKey",
+                table: "UserPermissionKeys",
+                column: "PermissionKey");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
                 name: "ApiClaims");
+
+            migrationBuilder.DropTable(
+                name: "ApiProperties");
 
             migrationBuilder.DropTable(
                 name: "ApiScopeClaims");
@@ -807,7 +913,13 @@ namespace IdentityServer4.Admin.Migrations
                 name: "ClientSecrets");
 
             migrationBuilder.DropTable(
+                name: "DeviceCodes");
+
+            migrationBuilder.DropTable(
                 name: "IdentityClaims");
+
+            migrationBuilder.DropTable(
+                name: "IdentityProperties");
 
             migrationBuilder.DropTable(
                 name: "Permissions");
@@ -819,7 +931,7 @@ namespace IdentityServer4.Admin.Migrations
                 name: "RolePermissions");
 
             migrationBuilder.DropTable(
-                name: "UserPermissions");
+                name: "UserPermissionKeys");
 
             migrationBuilder.DropTable(
                 name: "ApiScopes");
