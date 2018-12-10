@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using IdentityServer4.Admin.Infrastructure;
 using IdentityServer4.Admin.ViewModels;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -19,9 +20,21 @@ namespace IdentityServer4.Admin.Controllers.UI
         {
             return View();
         }
-        
+
         [Authorize]
         public IActionResult Index()
+        {
+            var userId = User.FindFirst("sub").Value;
+            if (HttpContext.User.IsInRole(AdminConsts.AdminName))
+            {
+                return Redirect("User");
+            }
+
+            return Redirect($"User/{userId}/profile");
+        }
+
+        [Authorize(Roles = AdminConsts.AdminName)]
+        public IActionResult Dashboard()
         {
             return View();
         }

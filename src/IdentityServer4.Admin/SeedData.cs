@@ -134,17 +134,17 @@ namespace IdentityServer4.Admin
 
         private static async Task AddUsers(IServiceProvider serviceProvider)
         {
-            await AddUser(serviceProvider, "songzhiyun", "1qazZAQ!", "songzhiyun@163.com", "18721696556", "expert",
+            await AddUser(serviceProvider, "songzhiyun", "1qazZAQ!", "songzhiyun@163.com", "18121696556", "expert",
                 "expert-admin");
-            await AddUser(serviceProvider, "shunyin", "1qazZAQ!", "shunyin@163.com", "18721696556", "expert",
+            await AddUser(serviceProvider, "shunyin", "1qazZAQ!", "shunyin@163.com", "18221696556", "expert",
                 "expert-admin");
-            await AddUser(serviceProvider, "dingjiaoyi", "1qazZAQ!", "dingjiaoyi@163.com", "18721696556", "expert",
+            await AddUser(serviceProvider, "dingjiaoyi", "1qazZAQ!", "dingjiaoyi@163.com", "18321696556", "expert",
                 "expert-leader");
-            await AddUser(serviceProvider, "yangjun", "1qazZAQ!", "yangjun@163.com", "18721696556", "expert",
+            await AddUser(serviceProvider, "yangjun", "1qazZAQ!", "yangjun@163.com", "18421696556", "expert",
                 "expert-qc",
                 "expert-op");
-            await AddUser(serviceProvider, "wangliang", "1qazZAQ!", "wangliang@163.com", "18721696556", "expert");
-            await AddUser(serviceProvider, "zousong", "1qazZAQ!", "zousong@163.com", "18721696556", "expert");
+            await AddUser(serviceProvider, "wangliang", "1qazZAQ!", "wangliang@163.com", "18521696556", "expert");
+            await AddUser(serviceProvider, "zousong", "1qazZAQ!", "zousong@163.com", "18621696556", "expert");
             await AddUser(serviceProvider, "shengwei", "1qazZAQ!", "shengwei@163.com", "18721696556", "expert");
         }
 

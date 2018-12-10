@@ -1,3 +1,14 @@
+@using IdentityServer4.Admin.Infrastructure
+@{
+    bool isAdmin = false;
+    if (!true.Equals(ViewData["signed-out"]))
+    {
+        if (Context.User != null)
+        {
+            isAdmin = Context.User.IsInRole(AdminConsts.AdminName);
+        }
+    }
+}
 <div class="col-xs-12">
     <div class="box">
         <div class="box-header">
@@ -10,13 +21,23 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label>用户名</label>
-                        <input class="form-control" type="text" v-model="userName" placeholder="用户名">
+                        <input class="form-control" type="text"
+                               @if (!isAdmin)
+                               {
+                                   @Html.Raw("readonly='readonly'")
+                               }
+                               v-model="userName" placeholder="用户名">
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
                         <label>邮箱</label>
-                        <input class="form-control" type="text" v-model="email" placeholder="邮箱">
+                        <input class="form-control" type="text"
+                               @if (!isAdmin)
+                               {
+                                   @Html.Raw("readonly='readonly'")
+                               }
+                               v-model="email" placeholder="邮箱">
                     </div>
                 </div>
                 <div class="col-md-3">
@@ -35,7 +56,7 @@
             <div class="row">
                 <div class="col-md-3">
                     <div class="form-group">
-                        <label>电话</label>
+                        <label>手机号码</label>
                         <input class="form-control" type="text" v-model="phoneNumber" placeholder="电话">
                     </div>
                 </div>
@@ -65,7 +86,12 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label>团队</label>
-                        <select id="group" class="form-control select2" style="width: 100%;">
+                        <select id="group" class="form-control select2"
+                                @if (!isAdmin)
+                                {
+                                    @Html.Raw("disabled='disabled'")
+                                }
+                                style="width: 100%;">
                             <option value="无">无</option>
                             @foreach (var group in (HashSet<string>) ViewData["Group"])
                             {
@@ -77,11 +103,33 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label>职位</label>
-                        <select id="title" class="form-control select2" style="width: 100%;">
+                        <select id="title" class="form-control select2"
+                                @if (!isAdmin)
+                                {
+                                    @Html.Raw("disabled='disabled'")
+                                }
+                                style="width: 100%;">
                             <option value="无">无</option>
                             @foreach (var title in (HashSet<string>) ViewData["Title"])
                             {
                                 <option value="@title">@title</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>职级</label>
+                        <select id="level" class="form-control select2"
+                                @if (!isAdmin)
+                                {
+                                    @Html.Raw("disabled='disabled'")
+                                }
+                                style="width: 100%;">
+                            <option value="无">无</option>
+                            @foreach (var level in (HashSet<string>) ViewData["Level"])
+                            {
+                                <option value="@level">@level</option>
                             }
                         </select>
                     </div>

@@ -63,13 +63,17 @@ $(function () {
             update: function () {
                 let data = this.$data;
                 app.put("/api/user/" + app.getPathPart(window.location.href, 1), data, function () {
-                    window.location.href = '/user';
+                    swal({
+                        title: "更新成功",
+                        type: "success",
+                        showCancelButton: false
+                    });
                 }, function (result) {
                     swal({
                         title: "更新失败",
                         type: "error",
                         text: result.msg,
-                        showCancelButton: true
+                        showCancelButton: false
                     });
                 });
             }

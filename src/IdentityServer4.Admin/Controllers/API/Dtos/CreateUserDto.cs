@@ -29,12 +29,14 @@ namespace IdentityServer4.Admin.Controllers.API.Dtos
         /// 姓
         /// </summary>
         [StringLength(50)]
+        [Required]
         public string FirstName { get; set; }
 
         /// <summary>
         /// 名
         /// </summary>
         [StringLength(50)]
+        [Required]
         public string LastName { get; set; }
         
         /// <summary>

@@ -22,7 +22,11 @@ $(function () {
         methods: {
             update: function () {
                 app.put("/api/permission/" + app.getPathPart(window.location.href, 1), this.$data, function () {
-                    window.location.href = '/permission';
+                    swal({
+                        title: "更新成功",
+                        type: "success",
+                        showCancelButton: false
+                    });
                 }, function (result) {
                     swal({
                         title: "更新失败",

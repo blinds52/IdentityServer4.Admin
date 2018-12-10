@@ -53,6 +53,6 @@ namespace IdentityServer4.Admin.Controllers.API.Dtos
         /// <summary>
         /// 是否删除
         /// </summary>
-        public bool IsDelete { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }
