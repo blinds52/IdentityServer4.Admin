@@ -178,3 +178,33 @@ $(function () {
         $('#logoutForm').submit();
     });
 });
+app.rangeCheck = function (v, min, max) {
+    if (v) {
+        return v >= min && v <= max;
+    }
+    return false;
+};
+app.minCheck = function (v, min) {
+    return app.rangeCheck(v, min, 65535);
+};
+app.maxCheck = function (v, max) {
+    return app.rangeCheck(v, -65535, max);
+};
+app.requireCheck = function (v) {
+    return !!v;
+};
+app.mobileCheck = function (v) {
+    let reg = /^1[3|4|5|7|8][0-9]{9}$/;
+    return reg.test(v);
+};
+app.phoneCheck = function (v) {
+    let reg = /([0-9]{3,4}-)?[0-9]{7,8}/;
+    return reg.test(v);
+};
+app.equalCheck = function (v1, v2) {
+    return v1 === v2;
+};
+app.emailCheck = function (mail) {
+    let reg = /^([a-za-z0-9]+[_|_|.]?)*[a-za-z0-9]+@([a-za-z0-9]+[_|_|.]?)*[a-za-z0-9]+.[a-za-z]{2,3}$/;
+    return reg.test(mail);
+};

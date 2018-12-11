@@ -1,29 +1,36 @@
 ﻿<div class="col-xs-12">
+    <div :class=" errors.length ? 'alert alert-danger alert-dismissible' : 'hidden'">
+        <h4>
+            <i :class="'icon fa fa-ban'"></i><span v-text="errors.length ? '错误' : ''"></span>
+        </h4>
+        <p v-for="error in errors" v-text="'* ' + error">
+        </p>
+    </div>
     <div class="box">
         <div class="box-body">
             <div class="row">
                 <div class="col-md-3">
                     <div class="form-group">
                         <label>用户名</label>
-                        <input class="form-control" autocomplete="false" type="text" v-model="userName" placeholder="用户名">
+                        <input class="form-control" autocomplete="false" type="text" v-model="el.userName" placeholder="用户名">
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
                         <label>邮箱</label>
-                        <input class="form-control" autocomplete="false" type="text" v-model="email" placeholder="邮箱">
+                        <input class="form-control" autocomplete="false" type="email" v-model="el.email" placeholder="邮箱">
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
                         <label>姓</label>
-                        <input class="form-control" autocomplete="false" type="text" v-model="firstName" placeholder="姓">
+                        <input class="form-control" autocomplete="false" type="text" v-model="el.firstName" placeholder="姓">
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
                         <label>名</label>
-                        <input class="form-control" autocomplete="false" type="text" v-model="lastName" placeholder="名">
+                        <input class="form-control" autocomplete="false" type="text" v-model="el.lastName" placeholder="名">
                     </div>
                 </div>
             </div>
@@ -31,19 +38,19 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label>密码</label>
-                        <input class="form-control" autocomplete="false" type="password" v-model="password" placeholder="密码">
+                        <input class="form-control" autocomplete="false" type="password" v-model="el.password" placeholder="密码">
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
                         <label>电话</label>
-                        <input class="form-control" autocomplete="false" type="text" v-model="phoneNumber" placeholder="电话">
+                        <input class="form-control" autocomplete="false" type="number" v-model="el.phoneNumber" placeholder="电话">
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
                         <label>公司电话</label>
-                        <input class="form-control" autocomplete="false" type="text" v-model="officePhone" placeholder="电话">
+                        <input class="form-control" autocomplete="false" type="text" v-model="el.officePhone" placeholder="电话">
                     </div>
                 </div>
                 <div class="col-md-3">

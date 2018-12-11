@@ -41,7 +41,12 @@ namespace IdentityServer4.Admin.Controllers.API
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] CreateUserDto dto)
         {
+            if (dto.UserName == AdminConsts.AdminName)
+                return new ApiResult(ApiResult.Error, $"用户名不能是 {AdminConsts.AdminName}");
+            
             var user = Mapper.Map<User>(dto);
+
+            // Check username exist
             string normalizedName =
                 _serviceProvider.ProtectPersonalData(_userManager.NormalizeKey(user.UserName),
                     _userManager.Options);
@@ -49,6 +54,12 @@ namespace IdentityServer4.Admin.Controllers.API
             if (await _userManager.Users.AnyAsync(u => u.NormalizedUserName == normalizedName && u.IsDeleted == false))
             {
                 return new ApiResult(ApiResult.Error, "用户名已经存在");
+            }
+            
+            // Check email exists
+            if (await _userManager.Users.AnyAsync(u => u.Email == user.Email && u.IsDeleted == false))
+            {
+                return new ApiResult(ApiResult.Error, "邮箱已经存在");
             }
 
             var result = await _userManager.CreateAsync(user, dto.Password);

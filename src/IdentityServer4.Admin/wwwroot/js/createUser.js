@@ -13,17 +13,20 @@ $(function () {
                 name: '创建',
                 href: '#'
             }],
-            userName: '',
-            email: '',
-            password: '',
-            phoneNumber: '',
-            officePhone: '',
-            firstName: '',
-            lastName: '',
-            sex: 'Male',
-            title: '',
-            group: '',
-            level: ''
+            el: {
+                userName: '',
+                email: '',
+                password: '',
+                phoneNumber: '',
+                officePhone: '',
+                firstName: '',
+                lastName: '',
+                sex: 'Male',
+                title: '',
+                group: '',
+                level: ''
+            },
+            errors: []
         },
         watch: {
             sex: function (val) {
@@ -45,23 +48,70 @@ $(function () {
                 minimumResultsForSearch: Infinity
             });
             $("#sex").on('change', function (e) {
-                that.sex = $("#sex").val();
+                that.el.sex = $("#sex").val();
             });
             $("#title").on('change', function (e) {
-                that.title = $("#title").val();
+                that.el.title = $("#title").val();
             });
             $("#group").on('change', function (e) {
-                that.group = $("#group").val();
+                that.el.group = $("#group").val();
             });
             $("#level").on('change', function (e) {
-                that.level = $("#level").val();
+                that.el.level = $("#level").val();
             });
         },
         methods: {
+            checkUser: function () {
+                this.errors = [];
+
+                if (!app.requireCheck(this.el.userName)) {
+                    this.errors.push("用户名不能为空");
+                }
+                else {
+                    if (!app.rangeCheck(this.el.userName.length, 4, 30)) {
+                        this.errors.push("用户名长度范围为 4-30");
+                    }
+                }
+                if (!app.emailCheck(this.el.email)) {
+                    this.errors.push("邮箱地址不正确");
+                }
+                if (!app.rangeCheck(this.el.password.length, 6, 24)) {
+                    this.errors.push("密码长度范围为 6-24");
+                }
+                if (!app.mobileCheck(this.el.phoneNumber)) {
+                    this.errors.push("手机号码不正确");
+                }
+                if (!app.phoneCheck(this.el.officePhone)) {
+                    this.errors.push("公司电话不正确");
+                }
+                if (!app.requireCheck(this.el.firstName)) {
+                    this.errors.push("姓 不能为空");
+                }
+                else {
+                    if (!app.rangeCheck(this.el.firstName.length, 1, 50)) {
+                        this.errors.push("姓 长度范围为 1-50");
+                    }
+                }
+                if (!app.requireCheck(this.el.lastName)) {
+                    this.errors.push("名 不能为空");
+                }
+                else {
+                    if (!app.rangeCheck(this.el.lastName.length, 1, 50)) {
+                        this.errors.push("名 长度范围为 1-50");
+                    }
+                }
+                return !this.errors.length
+            },
             create: function () {
-                app.post('/api/user', this.$data, function () {
-                    window.location.href = '/user';
-                });
+                let that = this;
+                if (that.checkUser()) {
+                    app.post('/api/user', this.$data.el, function () {
+                        window.location.href = '/user';
+                    }, function (result) {
+                        that.errors = [];
+                        that.errors.push(result.msg);
+                    });
+                }
             }
         }
     });
