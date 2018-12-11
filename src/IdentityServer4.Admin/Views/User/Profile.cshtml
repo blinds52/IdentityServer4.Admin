@@ -21,7 +21,7 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label>用户名</label>
-                        <input class="form-control" type="text"
+                        <input class="form-control" autocomplete="false" type="text"
                                @if (!isAdmin)
                                {
                                    @Html.Raw("readonly='readonly'")
@@ -32,7 +32,7 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label>邮箱</label>
-                        <input class="form-control" type="text"
+                        <input class="form-control" autocomplete="false" type="text"
                                @if (!isAdmin)
                                {
                                    @Html.Raw("readonly='readonly'")
@@ -43,13 +43,13 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label>姓</label>
-                        <input class="form-control" type="text" v-model="firstName" placeholder="姓">
+                        <input class="form-control" autocomplete="false" type="text" v-model="firstName" placeholder="姓">
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
                         <label>名</label>
-                        <input class="form-control" type="text" v-model="lastName" placeholder="名">
+                        <input class="form-control" autocomplete="false" type="text" v-model="lastName" placeholder="名">
                     </div>
                 </div>
             </div>
@@ -57,13 +57,13 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label>手机号码</label>
-                        <input class="form-control" type="text" v-model="phoneNumber" placeholder="电话">
+                        <input class="form-control" autocomplete="false" type="text" v-model="phoneNumber" placeholder="电话">
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
                         <label>公司电话</label>
-                        <input class="form-control" type="text" v-model="officePhone" placeholder="电话">
+                        <input class="form-control" autocomplete="false" type="text" v-model="officePhone" placeholder="电话">
                     </div>
                 </div>
                 <div class="col-md-3">
@@ -78,7 +78,7 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label>角色</label>
-                        <input class="form-control" readonly="readonly" type="text" v-model="roles">
+                        <input class="form-control" autocomplete="false" readonly="readonly" type="text" v-model="roles">
                     </div>
                 </div>
             </div>
@@ -155,13 +155,13 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label>旧密码</label>
-                        <input class="form-control" type="password" v-model="oldPassword" placeholder="旧密码">
+                        <input class="form-control" autocomplete="false" type="password" v-model="oldPassword" placeholder="旧密码">
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
                         <label>新密码</label>
-                        <input class="form-control" type="password" v-model="newPassword" placeholder="新密码">
+                        <input class="form-control" autocomplete="false" type="password" v-model="newPassword" placeholder="新密码">
                     </div>
                 </div>
             </div>
