@@ -19,7 +19,8 @@ $(function () {
                 description: '',
                 enabled: 'True',
                 userClaims: ''
-            }
+            },
+            errors: []
         },
         watch: {
             enabled: function (val) {

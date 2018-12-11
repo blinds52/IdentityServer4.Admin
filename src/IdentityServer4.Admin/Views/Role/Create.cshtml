@@ -1,8 +1,9 @@
 ﻿<div class="col-xs-12">
-    <div v-show="errors.length" class="alert alert-danger alert-dismissible">
-        <h4><i class="icon fa fa-ban"></i> 错误</h4>
-        <p v-for="error in errors">
-            * {{error}}
+    <div :class=" errors.length ? 'alert alert-danger alert-dismissible' : 'hidden'">
+        <h4>
+            <i :class="'icon fa fa-ban'"></i><span v-text="errors.length ? '错误' : ''"></span>
+        </h4>
+        <p v-for="error in errors" v-text="'* ' + error">
         </p>
     </div>
     <div class="box">

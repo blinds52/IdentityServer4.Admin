@@ -13,16 +13,19 @@ $(function () {
                 name: '编辑',
                 href: '#'
             }],
-            userName: '',
-            email: '',
-            phoneNumber: '',
-            lastName: '',
-            firstName: '',
-            officePhone: '',
-            sex: 'Male',
-            title: '',
-            group: '',
-            level: ''
+            el: {
+                userName: '',
+                email: '',
+                phoneNumber: '',
+                lastName: '',
+                firstName: '',
+                officePhone: '',
+                sex: 'Male',
+                title: '',
+                group: '',
+                level: ''
+            },
+            errors: []
         },
         watch: {
             sex: function (val) {
@@ -60,22 +63,61 @@ $(function () {
             });
         },
         methods: {
+            checkUser: function () {
+                this.errors = [];
+
+                if (!app.requireCheck(this.el.userName)) {
+                    this.errors.push("用户名不能为空");
+                }
+                else {
+                    if (!app.rangeCheck(this.el.userName.length, 4, 30)) {
+                        this.errors.push("用户名长度范围为 4-30");
+                    }
+                }
+                if (!app.emailCheck(this.el.email)) {
+                    this.errors.push("邮箱地址不正确");
+                }
+                if (!app.mobileCheck(this.el.phoneNumber)) {
+                    this.errors.push("手机号码不正确");
+                }
+                if (!app.phoneCheck(this.el.officePhone)) {
+                    this.errors.push("公司电话不正确");
+                }
+                if (!app.requireCheck(this.el.firstName)) {
+                    this.errors.push("姓 不能为空");
+                }
+                else {
+                    if (!app.rangeCheck(this.el.firstName.length, 1, 50)) {
+                        this.errors.push("姓 长度范围为 1-50");
+                    }
+                }
+                if (!app.requireCheck(this.el.lastName)) {
+                    this.errors.push("名 不能为空");
+                }
+                else {
+                    if (!app.rangeCheck(this.el.lastName.length, 1, 50)) {
+                        this.errors.push("名 长度范围为 1-50");
+                    }
+                }
+                return !this.errors.length
+            },
             update: function () {
-                let data = this.$data;
-                app.put("/api/user/" + app.getPathPart(window.location.href, 1), data, function () {
-                    swal({
-                        title: "更新成功",
-                        type: "success",
-                        showCancelButton: false
+                if (this.checkUser()) {
+                    app.put("/api/user/" + app.getPathPart(window.location.href, 1), this.$data.el, function () {
+                        swal({
+                            title: "更新成功",
+                            type: "success",
+                            showCancelButton: false
+                        });
+                    }, function (result) {
+                        swal({
+                            title: "更新失败",
+                            type: "error",
+                            text: result.msg,
+                            showCancelButton: false
+                        });
                     });
-                }, function (result) {
-                    swal({
-                        title: "更新失败",
-                        type: "error",
-                        text: result.msg,
-                        showCancelButton: false
-                    });
-                });
+                }
             }
         }
     });
@@ -83,16 +125,16 @@ $(function () {
     function loadView(vue) {
         const url = '/api/user/' + app.getPathPart(window.location.href, 1);
         app.get(url, function (result) {
-            vue.$data.userName = result.data.userName;
-            vue.$data.email = result.data.email;
-            vue.$data.phoneNumber = result.data.phoneNumber;
-            vue.$data.lastName = result.data.lastName;
-            vue.$data.firstName = result.data.firstName;
-            vue.$data.officePhone = result.data.officePhone;
-            vue.$data.sex = result.data.sex;
-            vue.$data.group = result.data.group;
-            vue.$data.title = result.data.title;
-            vue.$data.level = result.data.level;
+            vue.$data.el.userName = result.data.userName;
+            vue.$data.el.email = result.data.email;
+            vue.$data.el.phoneNumber = result.data.phoneNumber;
+            vue.$data.el.lastName = result.data.lastName;
+            vue.$data.el.firstName = result.data.firstName;
+            vue.$data.el.officePhone = result.data.officePhone;
+            vue.$data.el.sex = result.data.sex;
+            vue.$data.el.group = result.data.group;
+            vue.$data.el.title = result.data.title;
+            vue.$data.el.level = result.data.level;
         });
     }
 });

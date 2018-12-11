@@ -24,7 +24,8 @@ $(function () {
                 requireConsent: 'True',
                 allowedScopes: '',
                 description: ''
-            }
+            },
+            errors: []
         },
         watch: {
             allowAccessTokensViaBrowser: function (val) {
@@ -53,6 +54,9 @@ $(function () {
             });
         },
         methods: {
+            checkClient: function () {
+
+            },
             create: function () {
                 const client = this.$data.el;
                 const url = "/api/client";
