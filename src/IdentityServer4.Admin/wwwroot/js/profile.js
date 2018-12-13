@@ -26,6 +26,7 @@ $(function () {
             changePasswordDto: {
                 oldPassword: '',
                 newPassword: '',
+                repeatPassword: ''
             },
             errors: []
         },
@@ -105,19 +106,28 @@ $(function () {
             },
             checkPassword: function () {
                 this.errors = [];
-                if (!app.equalCheck(this.changePasswordDto.newPassword, this.changePasswordDto.oldPassword)) {
-                    this.errors.push("两次密码不一致");
+                if (!app.requireCheck(this.changePasswordDto.oldPassword)) {
+                    this.errors.push("旧密码不能为空");
                 }
-                else {
+                if (!app.requireCheck(this.changePasswordDto.newPassword)) {
+                    this.errors.push("新密码不能为空");
+                }
+                {
                     if (!app.rangeCheck(this.changePasswordDto.newPassword.length, 6, 24)) {
                         this.errors.push("密码长度范围为 6-24");
                     }
+                }
+                if (!app.equalCheck(this.changePasswordDto.newPassword, this.changePasswordDto.repeatPassword)) {
+                    this.errors.push("两次密码不一致");
                 }
                 return !this.errors.length
             },
             update: function () {
                 if (this.checkProfile()) {
-                    app.put("/api/user/" + app.getPathPart(window.location.href, 1) + '/profile', this.$data.el, function () {
+                    app.put("/api/user/" + app.getPathPart(window.location.href, 1) + '/profile', {
+                        oldPassword: this.$data.el.oldPassword,
+                        newPassword: this.$data.el.newPassword
+                    }, function () {
                         swal({
                             title: "更新成功",
                             type: "success",
@@ -134,7 +144,7 @@ $(function () {
                 }
             },
             changePassword: function () {
-                if(this.checkPassword()) {
+                if (this.checkPassword()) {
                     app.put("/api/user/" + app.getPathPart(window.location.href, 1) + '/password', this.$data.changePasswordDto, function () {
                         swal({
                             title: "更新成功",

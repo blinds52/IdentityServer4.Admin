@@ -114,6 +114,8 @@ namespace IdentityServer4.Admin
             builder.Entity<RolePermission>().HasIndex(p => new {p.PermissionId, p.RoleId}).IsUnique();
             builder.Entity<UserPermission>().HasIndex(p => p.Permission);
 
+            builder.Entity<ApiResource>().HasIndex(p => p.Name).IsUnique();
+
             base.OnModelCreating(builder);
         }
 

@@ -4,6 +4,7 @@ using AutoMapper;
 using IdentityServer4.Admin.Controllers.API.Dtos;
 using IdentityServer4.Admin.Entities;
 using IdentityServer4.Admin.Infrastructure;
+using IdentityServer4.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -73,17 +74,16 @@ namespace IdentityServer4.Admin
                     b.UseSqlServer(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
             }
 
-/*            var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
-            dbContextOptionsBuilder = b =>
-                b.UseSqlServer(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));*/
-
             services.AddDbContext<IDbContext, AdminDbContext>(dbContextOptionsBuilder);
-
             idBuilder.AddDefaultTokenProviders();
             idBuilder.AddEntityFrameworkStores<AdminDbContext>();
 
             // Add ids4
-            var builder = services.AddIdentityServer().AddAspNetIdentity<User>();
+            var builder = services.AddIdentityServer()
+                .AddAspNetIdentity<User>()
+                // todo: config credential in production
+                .AddDeveloperSigningCredential()
+                .AddProfileService<ProfileService>();
             builder.AddConfigurationStore<AdminDbContext>(options =>
                 {
                     options.ResolveDbContextOptions = (provider, b) => dbContextOptionsBuilder(b);

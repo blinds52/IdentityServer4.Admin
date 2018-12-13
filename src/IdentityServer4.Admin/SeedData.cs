@@ -6,12 +6,17 @@ using System.Threading.Tasks;
 using IdentityModel;
 using IdentityServer4.Admin.Entities;
 using IdentityServer4.Admin.Infrastructure;
+using IdentityServer4.EntityFramework.Entities;
 using IdentityServer4.EntityFramework.Mappers;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using ApiResource = IdentityServer4.Models.ApiResource;
+using Client = IdentityServer4.Models.Client;
 using GrantTypes = IdentityServer4.Models.GrantTypes;
+using IdentityResource = IdentityServer4.Models.IdentityResource;
+using Secret = IdentityServer4.Models.Secret;
 
 namespace IdentityServer4.Admin
 {
@@ -31,8 +36,8 @@ namespace IdentityServer4.Admin
                 await AddApiResources(scope.ServiceProvider);
 
                 await scope.ServiceProvider.GetRequiredService<IDbContext>().SaveChangesAsync();
-                
-                var dbContext = (AdminDbContext)scope.ServiceProvider.GetRequiredService<IDbContext>();
+
+                var dbContext = (AdminDbContext) scope.ServiceProvider.GetRequiredService<IDbContext>();
                 if (await dbContext.Users.CountAsync() == 0)
                 {
                     await AddPermissions(scope.ServiceProvider);
@@ -74,7 +79,7 @@ namespace IdentityServer4.Admin
         {
             await serviceProvider.GetRequiredService<IDbContext>().SaveChangesAsync();
         }
-        
+
         private static async Task AddApiResources(IServiceProvider serviceProvider)
         {
             var context = (AdminDbContext) serviceProvider.GetRequiredService<IDbContext>();
@@ -203,23 +208,22 @@ namespace IdentityServer4.Admin
             await CommitAsync(serviceProvider);
         }
 
-        // scopes define the resources in your system
-        private static IEnumerable<IdentityResource> GetIdentityResources()
-        {
-            var profile = new IdentityResources.Profile();
-            profile.UserClaims.Add("role");
-            return new List<IdentityResource>
-            {
-                new IdentityResources.OpenId(),
-                profile
-            };
-        }
-
         private static IEnumerable<ApiResource> GetApiResources()
         {
             return new List<ApiResource>
             {
-                new ApiResource("expert-api", "Expert Api"),
+                new ApiResource("expert-api", "Expert Api")
+            };
+        }
+
+        // scopes define the resources in your system
+        private static IEnumerable<IdentityResource> GetIdentityResources()
+        {
+            return new List<IdentityResource>
+            {
+                new IdentityResources.OpenId(),
+                new IdentityResources.Profile(),
+                new IdentityResource("role", "角色", new List<string> {"role"})
             };
         }
 
@@ -233,18 +237,36 @@ namespace IdentityServer4.Admin
                 {
                     ClientId = "expert-web",
                     ClientName = "Expert Web",
-                    AllowedGrantTypes =  GrantTypes.Implicit,
+                    AllowedGrantTypes = GrantTypes.Implicit,
                     AllowAccessTokensViaBrowser = true,
                     AllowedCorsOrigins = {"http://localhost:6568"},
-                    RedirectUris = {"http://localhost:6568/account/ssocallback"},
+                    RedirectUris = {"http://localhost:6568/openIdCallback"},
                     PostLogoutRedirectUris = {"http://localhost:6568"},
                     RequireConsent = true,
                     AllowedScopes =
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
+                        "role",
                         "expert-api"
                     }
+                },
+                new Client
+                {
+                    ClientId = "email-proxy",
+                    ClientName = "Email Proxy",
+                    AllowedGrantTypes = GrantTypes.Implicit,
+                    AllowedCorsOrigins = {"http://localhost:6570"},
+                    RedirectUris = {"http://localhost:6570/signin-oidc"},
+                    PostLogoutRedirectUris = {"http://localhost:6570/signout-callback-oidc"},
+                    AllowAccessTokensViaBrowser = true,
+                    AllowedScopes =
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        "role"
+                    },
+                    RequireConsent = false
                 }
             };
         }

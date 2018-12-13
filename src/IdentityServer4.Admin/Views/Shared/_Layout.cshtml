@@ -10,7 +10,7 @@
         {
             name = Context.User.GetDisplayName();
             isAdmin = Context.User.IsInRole(AdminConsts.AdminName);
-            userId = Context.User.FindFirst("sub").Value;
+            userId = Context.User.FindFirst("sub")?.Value;
         }
     }
 }
