@@ -26,7 +26,6 @@ namespace IdentityServer4.Admin
     {
         private readonly ConfigurationStoreOptions _configurationStoreOptions;
         private readonly OperationalStoreOptions _operationalStoreOptions;
-        private IDbContext _dbContextImplementation;
 
         /// <summary>
         /// 权限
@@ -125,7 +124,7 @@ namespace IdentityServer4.Admin
 
             foreach (var entry in ChangeTracker.Entries().ToList())
             {
-                ApplyAbpConcepts(entry, userId);
+                ApplyConcepts(entry, userId);
             }
 
             return base.SaveChangesAsync(cancellationToken);
@@ -137,7 +136,7 @@ namespace IdentityServer4.Admin
 
             foreach (var entry in ChangeTracker.Entries().ToList())
             {
-                ApplyAbpConcepts(entry, userId);
+                ApplyConcepts(entry, userId);
             }
 
             return base.SaveChanges();
@@ -163,23 +162,23 @@ namespace IdentityServer4.Admin
             return SaveChanges();
         }
 
-        protected virtual void ApplyAbpConcepts(EntityEntry entry, string userId)
+        protected virtual void ApplyConcepts(EntityEntry entry, string userId)
         {
             switch (entry.State)
             {
                 case EntityState.Added:
-                    ApplyAbpConceptsForAddedEntity(entry, userId);
+                    ApplyConceptsForAddedEntity(entry, userId);
                     break;
                 case EntityState.Modified:
-                    ApplyAbpConceptsForModifiedEntity(entry, userId);
+                    ApplyConceptsForModifiedEntity(entry, userId);
                     break;
                 case EntityState.Deleted:
-                    ApplyAbpConceptsForDeletedEntity(entry, userId);
+                    ApplyConceptsForDeletedEntity(entry, userId);
                     break;
             }
         }
 
-        protected virtual void ApplyAbpConceptsForAddedEntity(EntityEntry entry, string userId)
+        protected virtual void ApplyConceptsForAddedEntity(EntityEntry entry, string userId)
         {
             CheckAndSetId(entry);
 
@@ -203,7 +202,7 @@ namespace IdentityServer4.Admin
             creationAudited.CreatorUserId = userId;
         }
 
-        protected virtual void ApplyAbpConceptsForModifiedEntity(EntityEntry entry, string userId)
+        protected virtual void ApplyConceptsForModifiedEntity(EntityEntry entry, string userId)
         {
             var modificationAudited = entry.Entity as IModificationAudited;
             if (modificationAudited == null)
@@ -227,7 +226,7 @@ namespace IdentityServer4.Admin
             softDelete.DeleterUserId = userId;
         }
 
-        protected virtual void ApplyAbpConceptsForDeletedEntity(EntityEntry entry, string userId)
+        protected virtual void ApplyConceptsForDeletedEntity(EntityEntry entry, string userId)
         {
             CancelDeletionForSoftDelete(entry);
             SetDeletionAuditProperties(entry.Entity, userId);

@@ -180,8 +180,8 @@ namespace IdentityServer4.Admin.Controllers.API
                     Id = client.Id,
                     ClientId = client.ClientId,
                     ClientName = client.ClientName,
-                    AllowedGrantTypes = string.Join(", ", client.AllowedGrantTypes.Select(t => t.GrantType)),
-                    AllowedScopes = string.Join(", ", client.AllowedScopes.Select(s => s.Scope))
+                    AllowedGrantTypes = string.Join("; ", client.AllowedGrantTypes.Select(t => t.GrantType)),
+                    AllowedScopes = string.Join("; ", client.AllowedScopes.Select(s => s.Scope))
                 });
             }
 

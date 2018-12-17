@@ -208,3 +208,9 @@ app.emailCheck = function (mail) {
     let reg = /^([a-za-z0-9]+[_|_|.]?)*[a-za-z0-9]+@([a-za-z0-9]+[_|_|.]?)*[a-za-z0-9]+.[a-za-z]{2,3}$/;
     return reg.test(mail);
 };
+app.ui.setBusy = function () {
+    $("#loading").css("display", "");
+};
+app.ui.clearBusy = function () {
+    $("#loading").css("display", "none");
+};

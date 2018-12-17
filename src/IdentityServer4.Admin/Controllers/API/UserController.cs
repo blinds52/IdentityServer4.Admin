@@ -95,7 +95,7 @@ namespace IdentityServer4.Admin.Controllers.API
             foreach (var user in queryResult.Result)
             {
                 var dto = Mapper.Map<UserOutputDto>(user);
-                dto.Roles = string.Join(",", await _userManager.GetRolesAsync(user));
+                dto.Roles = string.Join("; ", await _userManager.GetRolesAsync(user));
                 userDtos.Add(dto);
             }
 
@@ -109,7 +109,7 @@ namespace IdentityServer4.Admin.Controllers.API
             if (user != null)
             {
                 var dto = Mapper.Map<UserOutputDto>(user);
-                dto.Roles = string.Join(",", await _userManager.GetRolesAsync(user));
+                dto.Roles = string.Join("; ", await _userManager.GetRolesAsync(user));
                 return new ApiResult(dto);
             }
 
