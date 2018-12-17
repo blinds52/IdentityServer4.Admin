@@ -200,7 +200,7 @@ else
                         <a href="/"><i class="fa fa-dashboard"></i>首页</a>
                     </li>
                     <li v-for="el in breadcrumb">
-                        <a v-text="el.name" :href="(el.href === '#' || el.href === '' || el.href) ? '#' : el.href"></a>
+                        <a v-text="el.name" :href="el.href"></a>
                     </li>
                 </ol>
             </section>

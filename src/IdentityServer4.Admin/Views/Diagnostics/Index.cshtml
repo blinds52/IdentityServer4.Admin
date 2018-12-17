@@ -13,14 +13,14 @@
                 @{
                     int claimsCount = Model.AuthenticateResult.Principal.Claims.Count();
                     int column = 3;
-                    int row = claimsCount % column;
+                    int row = claimsCount / column;
                     if (row == 0)
                     {
                         row = 1;
                     }
                     else
                     {
-                        row = row + (row != 0 ? 1 : 0);
+                        row = row + (claimsCount % column != 0 ? 1 : 0);
                     }
                     for (int i = 0; i < row; i++)
                     {
@@ -61,14 +61,14 @@
                 @{
                     int propertyCount = Model.AuthenticateResult.Properties.Items.Count;
                     int propertyColumn = 3;
-                    int propertyRow = propertyCount % propertyColumn;
+                    int propertyRow = propertyCount / propertyColumn;
                     if (propertyRow == 0)
                     {
                         propertyRow = 1;
                     }
                     else
                     {
-                        propertyRow = propertyRow + (propertyRow != 0 ? 1 : 0);
+                        propertyRow = propertyRow + (propertyCount % propertyColumn != 0 ? 1 : 0);
                     }
 
                     propertyRow = propertyRow == 0 ? 1 : propertyRow;
@@ -111,14 +111,14 @@
                 @{
                     int clientCount = Model.Clients.Count();
                     int clientColumn = 3;
-                    int clientRow = clientCount % clientColumn;
+                    int clientRow = clientCount / clientColumn;
                     if (clientRow == 0)
                     {
                         clientRow = 1;
                     }
                     else
                     {
-                        clientRow = clientRow + (clientRow != 0 ? 1 : 0);
+                        clientRow = clientRow + (clientCount % clientColumn != 0 ? 1 : 0);
                     }
                     for (int i = 0; i < clientRow; i++)
                     {

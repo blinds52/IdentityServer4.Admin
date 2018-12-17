@@ -35,7 +35,7 @@
                         <span v-text="el.allowedScopes"></span>
                     </td>
                     <td>
-                        <a class="btn btn-default btn-sm" >详情</a>
+                        <a class="btn btn-default btn-sm" :href="'/client/' + el.id" >详情</a>
                         <a class="btn btn-default btn-sm" @@click="remove(el.id)">删除</a>
                     </td>
                 </tr>
