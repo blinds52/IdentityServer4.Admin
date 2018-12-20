@@ -46,7 +46,7 @@ namespace IdentityServer4.Admin
 
             // Add Log
             ConfigureLogService();
-            
+
             // Add 
             services.AddAuthentication("Bearer")
                 .AddIdentityServerAuthentication(options =>
@@ -105,6 +105,12 @@ namespace IdentityServer4.Admin
 
             // Configure AutoMapper
             ConfigureAutoMapper();
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("vue-expert",
+                    b => b.WithOrigins("http://localhost:6568"));
+            });
         }
 
         private void ConfigureAutoMapper()
@@ -162,6 +168,7 @@ namespace IdentityServer4.Admin
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseIdentityServer();
+            app.UseCors("vue-expert");
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

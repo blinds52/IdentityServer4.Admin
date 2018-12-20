@@ -142,7 +142,7 @@ namespace IdentityServer4.Admin
             await AddUser(serviceProvider, "songzhiyun", "1qazZAQ!", "songzhiyun@163.com", "18121696556", "expert",
                 "expert-admin");
             await AddUser(serviceProvider, "shunyin", "1qazZAQ!", "shunyin@163.com", "18221696556", "expert",
-                "expert-admin");
+                "expert-admin", "UserReader");
             await AddUser(serviceProvider, "dingjiaoyi", "1qazZAQ!", "dingjiaoyi@163.com", "18321696556", "expert",
                 "expert-leader");
             await AddUser(serviceProvider, "yangjun", "1qazZAQ!", "yangjun@163.com", "18421696556", "expert",
@@ -200,6 +200,7 @@ namespace IdentityServer4.Admin
 
         private static async Task AddRoles(IServiceProvider serviceProvider)
         {
+            await AddRole(serviceProvider, "UserReader", "Which person can read all users");
             await AddRole(serviceProvider, "expert", "A member of expert group");
             await AddRole(serviceProvider, "expert-qc", "The quality controller of expert team");
             await AddRole(serviceProvider, "expert-admin", "The admin of expert group");
@@ -212,7 +213,8 @@ namespace IdentityServer4.Admin
         {
             return new List<ApiResource>
             {
-                new ApiResource("expert-api", "专家团队模块", new List<string> {JwtClaimTypes.Role})
+                new ApiResource("expert-api", "专家团队模块", new List<string> {JwtClaimTypes.Role}),
+                new ApiResource("identity-server4-user", "用户", new List<string> {JwtClaimTypes.Role})
             };
         }
 

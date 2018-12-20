@@ -15,8 +15,6 @@ using Microsoft.Extensions.Logging;
 namespace IdentityServer4.Admin.Controllers.API
 {
     [Route("api/[controller]")]
-    [Authorize(Roles = AdminConsts.AdminName)]
-    [SecurityHeaders]
     public class UserController : ApiControllerBase
     {
         private readonly UserManager<User> _userManager;
@@ -38,12 +36,13 @@ namespace IdentityServer4.Admin.Controllers.API
 
         #region User
 
+        [Authorize(Roles = AdminConsts.AdminName)]
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] CreateUserDto dto)
         {
             if (dto.UserName == AdminConsts.AdminName)
                 return new ApiResult(ApiResult.Error, $"用户名不能是 {AdminConsts.AdminName}");
-            
+
             var user = Mapper.Map<User>(dto);
 
             // Check username exist
@@ -55,7 +54,7 @@ namespace IdentityServer4.Admin.Controllers.API
             {
                 return new ApiResult(ApiResult.Error, "用户名已经存在");
             }
-            
+
             // Check email exists
             if (await _userManager.Users.AnyAsync(u => u.Email == user.Email && u.IsDeleted == false))
             {
@@ -91,17 +90,38 @@ namespace IdentityServer4.Admin.Controllers.API
                 );
             }
 
-            var userDtos = new List<UserOutputDto>();
-            foreach (var user in queryResult.Result)
+            if (User.IsInRole(AdminConsts.AdminName))
             {
-                var dto = Mapper.Map<UserOutputDto>(user);
-                dto.Roles = string.Join("; ", await _userManager.GetRolesAsync(user));
-                userDtos.Add(dto);
-            }
+                var userDtos = new List<UserOutputDto>();
+                foreach (var user in queryResult.Result)
+                {
+                    var dto = Mapper.Map<UserOutputDto>(user);
+                    dto.Roles = string.Join("; ", await _userManager.GetRolesAsync(user));
+                    userDtos.Add(dto);
+                }
 
-            return new ApiResult(queryResult.ToResult(userDtos));
+                return new ApiResult(queryResult.ToResult(userDtos));
+            }
+            else
+            {
+                var userDtos = new List<dynamic>();
+                foreach (var user in queryResult.Result)
+                {
+                    userDtos.Add(new
+                    {
+                        user.Id,
+                        Name = $"{user.FirstName} {user.LastName}",
+                        user.Email,
+                        user.PhoneNumber,
+                        user.Title
+                    });
+                }
+
+                return new ApiResult(queryResult.ToResult(userDtos));
+            }
         }
 
+        [Authorize(Roles = AdminConsts.AdminName)]
         [HttpGet("{userId}")]
         public async Task<IActionResult> FirstAsync(Guid userId)
         {
@@ -116,6 +136,7 @@ namespace IdentityServer4.Admin.Controllers.API
             return new ApiResult(ApiResult.Error, "用户不存在");
         }
 
+        [Authorize(Roles = AdminConsts.AdminName)]
         [HttpPut("{userId}")]
         public async Task<IActionResult> UpdateAsync(Guid userId, [FromBody] UpdateUserDto dto)
         {
@@ -152,6 +173,7 @@ namespace IdentityServer4.Admin.Controllers.API
             return result.Succeeded ? ApiResult.Ok : new ApiResult(ApiResult.Error, result.Errors.First().Description);
         }
 
+        [Authorize(Roles = AdminConsts.AdminName)]
         [HttpDelete("{userId}")]
         public async Task<IActionResult> DeleteAsync(Guid userId)
         {
@@ -164,6 +186,7 @@ namespace IdentityServer4.Admin.Controllers.API
             return ApiResult.Ok;
         }
 
+        [Authorize(Roles = AdminConsts.AdminName)]
         [HttpPut("{userId}/changePassword")]
         public async Task<IActionResult> ChangePasswordAsync(Guid userId, [FromBody] ChangePasswordInputDto dto)
         {
@@ -181,6 +204,7 @@ namespace IdentityServer4.Admin.Controllers.API
 
         #region User Permission	
 
+        [Authorize(Roles = AdminConsts.AdminName)]
         [HttpGet("{userId}/permission")]
         public async Task<IActionResult> FindUserPermissionAsync(Guid userId, PaginationQuery query)
         {
@@ -207,6 +231,7 @@ namespace IdentityServer4.Admin.Controllers.API
 
         #region User Role
 
+        [Authorize(Roles = AdminConsts.AdminName)]
         [HttpPost("{userId}/role/{role}")]
         public async Task<IActionResult> CreateUserRoleAsync(Guid userId, string role)
         {
@@ -231,6 +256,7 @@ namespace IdentityServer4.Admin.Controllers.API
                 : new ApiResult(ApiResult.Error, result.Errors.First().Description);
         }
 
+        [Authorize(Roles = AdminConsts.AdminName)]
         [HttpGet("{userId}/role")]
         public async Task<IActionResult> FindUserRoleAsync(Guid userId)
         {
@@ -250,6 +276,7 @@ namespace IdentityServer4.Admin.Controllers.API
             return new ApiResult(roles);
         }
 
+        [Authorize(Roles = AdminConsts.AdminName)]
         [HttpDelete("{userId}/role/{roleId}")]
         public async Task<IActionResult> DeleteUserRoleAsync(Guid userId, Guid roleId)
         {
