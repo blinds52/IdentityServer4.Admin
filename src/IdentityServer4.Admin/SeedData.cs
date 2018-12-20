@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using IdentityModel;
 using IdentityServer4.Admin.Entities;
 using IdentityServer4.Admin.Infrastructure;
-using IdentityServer4.EntityFramework.Entities;
 using IdentityServer4.EntityFramework.Mappers;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Identity;
@@ -16,7 +15,7 @@ using ApiResource = IdentityServer4.Models.ApiResource;
 using Client = IdentityServer4.Models.Client;
 using GrantTypes = IdentityServer4.Models.GrantTypes;
 using IdentityResource = IdentityServer4.Models.IdentityResource;
-using Secret = IdentityServer4.Models.Secret;
+
 
 namespace IdentityServer4.Admin
 {
@@ -103,6 +102,7 @@ namespace IdentityServer4.Admin
             if (!await context.IdentityResources.AnyAsync())
             {
                 Console.WriteLine("IdentityResources being populated");
+
                 foreach (var resource in GetIdentityResources().ToList())
                 {
                     await context.IdentityResources.AddAsync(resource.ToEntity());
@@ -212,18 +212,25 @@ namespace IdentityServer4.Admin
         {
             return new List<ApiResource>
             {
-                new ApiResource("expert-api", "Expert Api")
+                new ApiResource("expert-api", "专家团队模块", new List<string> {JwtClaimTypes.Role})
             };
         }
 
         // scopes define the resources in your system
         private static IEnumerable<IdentityResource> GetIdentityResources()
         {
+            var openId = new IdentityResources.OpenId();
+            openId.DisplayName = "用户标识";
+
+            var profile = new IdentityResources.Profile();
+            profile.DisplayName = "资料: 如姓、名、角色等";
+            profile.Description = "";
+            profile.UserClaims.Add(JwtClaimTypes.Role);
+
             return new List<IdentityResource>
             {
-                new IdentityResources.OpenId(),
-                new IdentityResources.Profile(),
-                new IdentityResource("role", "角色", new List<string> {"role"})
+                openId,
+                profile
             };
         }
 
@@ -235,19 +242,18 @@ namespace IdentityServer4.Admin
             {
                 new Client
                 {
-                    ClientId = "expert-web",
-                    ClientName = "Expert Web",
+                    ClientId = "vue-expert",
+                    ClientName = "vue-expert",
                     AllowedGrantTypes = GrantTypes.Implicit,
                     AllowAccessTokensViaBrowser = true,
                     AllowedCorsOrigins = {"http://localhost:6568"},
-                    RedirectUris = {"http://localhost:6568/openIdCallback"},
-                    PostLogoutRedirectUris = {"http://localhost:6568"},
+                    RedirectUris = {"http://localhost:6568/signin-oidc"},
+                    PostLogoutRedirectUris = {"http://localhost:6568/signout-callback-oidc"},
                     RequireConsent = true,
                     AllowedScopes =
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        "role",
                         "expert-api"
                     }
                 },
@@ -263,8 +269,7 @@ namespace IdentityServer4.Admin
                     AllowedScopes =
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
-                        IdentityServerConstants.StandardScopes.Profile,
-                        "role"
+                        IdentityServerConstants.StandardScopes.Profile
                     },
                     RequireConsent = false
                 }

@@ -45,8 +45,16 @@ namespace IdentityServer4.Admin
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             // Add Log
-            var debug = Environment.CommandLine.Contains("/debug");
-            ConfigureService(debug);
+            ConfigureLogService();
+            
+            // Add 
+            services.AddAuthentication("Bearer")
+                .AddIdentityServerAuthentication(options =>
+                {
+                    options.Authority = "http://localhost:6566";
+                    options.RequireHttpsMetadata = false;
+                    options.ApiName = "identity-server4";
+                });
 
             // Add aspnetcore identity
             IdentityBuilder idBuilder = services.AddIdentity<User, Role>(options =>
@@ -63,7 +71,7 @@ namespace IdentityServer4.Admin
 
             // Add DbContext            
             Action<DbContextOptionsBuilder> dbContextOptionsBuilder;
-            if (HostingEnvironment.IsDevelopment() || debug)
+            if (HostingEnvironment.IsDevelopment())
             {
                 dbContextOptionsBuilder = b => b.UseInMemoryDatabase("IDS4");
             }
@@ -82,8 +90,7 @@ namespace IdentityServer4.Admin
             var builder = services.AddIdentityServer()
                 .AddAspNetIdentity<User>()
                 // todo: config credential in production
-                .AddDeveloperSigningCredential()
-                .AddProfileService<ProfileService>();
+                .AddDeveloperSigningCredential();
             builder.AddConfigurationStore<AdminDbContext>(options =>
                 {
                     options.ResolveDbContextOptions = (provider, b) => dbContextOptionsBuilder(b);
@@ -113,9 +120,9 @@ namespace IdentityServer4.Admin
             });
         }
 
-        private void ConfigureService(bool debug)
+        private void ConfigureLogService()
         {
-            if (HostingEnvironment.IsDevelopment() || debug)
+            if (HostingEnvironment.IsDevelopment())
             {
                 Log.Logger = new LoggerConfiguration()
                     .MinimumLevel.Information()

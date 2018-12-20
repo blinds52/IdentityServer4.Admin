@@ -44,7 +44,7 @@ namespace IdentityServer4.Admin.Controllers.UI
         }
 
         [Authorize(Roles = AdminConsts.AdminName)]
-        [HttpGet("[controller]/{userId}/changepassword")]
+        [HttpGet("[controller]/{userId}/changePassword")]
         public IActionResult ChangePassword()
         {
             return View();

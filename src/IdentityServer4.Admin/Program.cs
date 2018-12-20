@@ -15,6 +15,12 @@ namespace IdentityServer4.Admin
                 args = args.Except(new[] {"/seed"}).ToArray();
             }
 
+            var builder = CreateWebHostBuilder(args);
+            if (args.Contains("/dev"))
+            {
+                builder.UseEnvironment(EnvironmentName.Development);
+            }
+
             var host = CreateWebHostBuilder(args).Build();
             if (seed)
             {
