@@ -27,9 +27,7 @@ namespace IdentityServer4.Admin.Controllers.UI
         [HttpGet("[controller]/create")]
         public IActionResult Create()
         {
-            ViewData["Group"] = _options.Group;
-            ViewData["Title"] = _options.Title;
-            ViewData["Level"] = _options.Level;
+            InitViewData();
             return View();
         }
 
@@ -37,9 +35,7 @@ namespace IdentityServer4.Admin.Controllers.UI
         [HttpGet("[controller]/{userId}/edit")]
         public IActionResult Edit()
         {
-            ViewData["Group"] = _options.Group;
-            ViewData["Title"] = _options.Title;
-            ViewData["Level"] = _options.Level;
+            InitViewData();
             return View();
         }
 
@@ -69,12 +65,17 @@ namespace IdentityServer4.Admin.Controllers.UI
         {
             if (User.FindFirst("sub")?.Value != userId.ToString())
                 return RedirectToAction("AccessDenied", "Account");
+
+            InitViewData();
             
+            return View();
+        }
+
+        private void InitViewData()
+        {
             ViewData["Group"] = _options.Group;
             ViewData["Title"] = _options.Title;
             ViewData["Level"] = _options.Level;
-            
-            return View();
         }
     }
 }

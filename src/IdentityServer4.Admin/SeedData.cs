@@ -214,7 +214,7 @@ namespace IdentityServer4.Admin
             return new List<ApiResource>
             {
                 new ApiResource("expert-api", "专家团队模块", new List<string> {JwtClaimTypes.Role}),
-                new ApiResource("identity-server4-user", "用户", new List<string> {JwtClaimTypes.Role})
+                new ApiResource("identity-server4", "IdentityServer4", new List<string> {JwtClaimTypes.Role})
             };
         }
 
@@ -256,7 +256,8 @@ namespace IdentityServer4.Admin
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        "expert-api"
+                        "expert-api",
+                        "identity-server4"
                     }
                 },
                 new Client

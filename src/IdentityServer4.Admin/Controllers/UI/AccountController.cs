@@ -30,15 +30,14 @@ namespace IdentityServer4.Admin.Controllers.UI
         private readonly IClientStore _clientStore;
         private readonly IAuthenticationSchemeProvider _schemeProvider;
         private readonly IEventService _events;
-        private readonly AdminOptions _options;
-        
+
         public AccountController(
             UserManager<User> userManager,
             SignInManager<User> signInManager,
             IIdentityServerInteractionService interaction,
             IClientStore clientStore,
             IAuthenticationSchemeProvider schemeProvider,
-            IEventService events,IOptions<AdminOptions> options)
+            IEventService events)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -46,14 +45,8 @@ namespace IdentityServer4.Admin.Controllers.UI
             _clientStore = clientStore;
             _schemeProvider = schemeProvider;
             _events = events;
-            _options = options.Value;
         }
 
-        public IActionResult AccessDenied(string returnUrl)
-        {
-            return View();
-        }
-            
         /// <summary>
         /// Show login page
         /// </summary>
@@ -122,7 +115,7 @@ namespace IdentityServer4.Admin.Controllers.UI
 
                 await _events.RaiseAsync(new UserLoginFailureEvent(model.Username, "invalid credentials"));
 
-                ModelState.AddModelError("", _options.InvalidCredentialsErrorMessage);
+                ModelState.AddModelError("", AdminConsts.InvalidCredentialsErrorMessage);
             }
 
             // something went wrong, show form with error
@@ -136,7 +129,7 @@ namespace IdentityServer4.Admin.Controllers.UI
         [HttpGet]
         public async Task<IActionResult> ExternalLogin(string provider, string returnUrl)
         {
-            if (_options.WindowsAuthenticationSchemeName == provider)
+            if (AdminConsts.WindowsAuthenticationSchemeName == provider)
             {
                 // windows authentication needs special handling
                 return await ProcessWindowsLoginAsync(returnUrl);
@@ -155,59 +148,6 @@ namespace IdentityServer4.Admin.Controllers.UI
                 };
                 return Challenge(props, provider);
             }
-        }
-
-        /// <summary>
-        /// Show logout page
-        /// </summary>
-        [HttpGet]
-        public async Task<IActionResult> Logout(string logoutId)
-        {
-            // build a model so the logout page knows what to display
-            var vm = await BuildLogoutViewModelAsync(logoutId);
-
-            if (vm.ShowLogoutPrompt == false)
-            {
-                // if the request for logout was properly authenticated from IdentityServer, then
-                // we don't need to show the prompt and can just log the user out directly.
-                return await Logout(vm);
-            }
-
-            return View(vm);
-        }
-        
-        /// <summary>
-        /// Handle logout page postback
-        /// </summary>
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Logout(LogoutInputModel model)
-        {
-            // build a model so the logged out page knows what to display
-            var vm = await BuildLoggedOutViewModelAsync(model.LogoutId);
-
-            if (User?.Identity.IsAuthenticated == true)
-            {
-                // delete local authentication cookie
-                await _signInManager.SignOutAsync();
-
-                // raise the logout event
-                await _events.RaiseAsync(new UserLogoutSuccessEvent(User.GetSubjectId(), User.GetDisplayName()));
-            }
-
-            // check if we need to trigger sign-out at an upstream identity provider
-            if (vm.TriggerExternalSignout)
-            {
-                // build a return URL so the upstream provider will redirect back
-                // to us after the user has logged out. this allows us to then
-                // complete our single sign-out processing.
-                string url = Url.Action("Logout", new {logoutId = vm.LogoutId});
-
-                // this triggers a redirect to the external provider for sign-out
-                return SignOut(new AuthenticationProperties {RedirectUri = url}, vm.ExternalAuthenticationScheme);
-            }
-
-            return View("LoggedOut", vm);
         }
 
         /// <summary>
@@ -247,10 +187,10 @@ namespace IdentityServer4.Admin.Controllers.UI
             // it doesn't expose an API to issue additional claims from the login workflow
             var principal = await _signInManager.CreateUserPrincipalAsync(user);
             additionalLocalClaims.AddRange(principal.Claims);
-            var name = principal.FindFirst(JwtClaimTypes.Name)?.Value ?? user.Id.ToString();
-            await _events.RaiseAsync(new UserLoginSuccessEvent(provider, providerUserId, user.Id.ToString(), name));
-            await HttpContext.SignInAsync(user.Id.ToString(), name, provider, localSignInProps,
-                additionalLocalClaims.ToArray());
+            var userId = user.Id.ToString();
+            var name = principal.FindFirst(JwtClaimTypes.Name)?.Value ?? userId;
+            await _events.RaiseAsync(new UserLoginSuccessEvent(provider, providerUserId, userId, name));
+            await HttpContext.SignInAsync(userId, name, provider, localSignInProps, additionalLocalClaims.ToArray());
 
             // delete temporary cookie used during external authentication
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
@@ -263,6 +203,59 @@ namespace IdentityServer4.Admin.Controllers.UI
             }
 
             return Redirect("~/");
+        }
+
+        /// <summary>
+        /// Show logout page
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> Logout(string logoutId)
+        {
+            // build a model so the logout page knows what to display
+            var vm = await BuildLogoutViewModelAsync(logoutId);
+
+            if (vm.ShowLogoutPrompt == false)
+            {
+                // if the request for logout was properly authenticated from IdentityServer, then
+                // we don't need to show the prompt and can just log the user out directly.
+                return await Logout(vm);
+            }
+
+            return View(vm);
+        }
+
+        /// <summary>
+        /// Handle logout page postback
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout(LogoutInputModel model)
+        {
+            // build a model so the logged out page knows what to display
+            var vm = await BuildLoggedOutViewModelAsync(model.LogoutId);
+
+            if (User?.Identity.IsAuthenticated == true)
+            {
+                // delete local authentication cookie
+                await _signInManager.SignOutAsync();
+
+                // raise the logout event
+                await _events.RaiseAsync(new UserLogoutSuccessEvent(User.GetSubjectId(), User.GetDisplayName()));
+            }
+
+            // check if we need to trigger sign-out at an upstream identity provider
+            if (vm.TriggerExternalSignout)
+            {
+                // build a return URL so the upstream provider will redirect back
+                // to us after the user has logged out. this allows us to then
+                // complete our single sign-out processing.
+                string url = Url.Action("Logout", new {logoutId = vm.LogoutId});
+
+                // this triggers a redirect to the external provider for sign-out
+                return SignOut(new AuthenticationProperties {RedirectUri = url}, vm.ExternalAuthenticationScheme);
+            }
+
+            return View("LoggedOut", vm);
         }
 
         /*****************************************/
@@ -278,7 +271,7 @@ namespace IdentityServer4.Admin.Controllers.UI
                 {
                     EnableLocalLogin = false,
                     ReturnUrl = returnUrl,
-                    Username = context?.LoginHint,
+                    Username = context.LoginHint,
                     ExternalProviders = new[]
                         {new ExternalProvider {AuthenticationScheme = context.IdP}}
                 };
@@ -288,7 +281,7 @@ namespace IdentityServer4.Admin.Controllers.UI
 
             var providers = schemes
                 .Where(x => x.DisplayName != null ||
-                            (x.Name.Equals(_options.WindowsAuthenticationSchemeName,
+                            (x.Name.Equals(AdminConsts.WindowsAuthenticationSchemeName,
                                 StringComparison.OrdinalIgnoreCase))
                 )
                 .Select(x => new ExternalProvider
@@ -315,8 +308,8 @@ namespace IdentityServer4.Admin.Controllers.UI
 
             return new LoginViewModel
             {
-                AllowRememberLogin = _options.AllowRememberLogin,
-                EnableLocalLogin = allowLocal && _options.AllowLocalLogin,
+                AllowRememberLogin = AdminConsts.AllowRememberLogin,
+                EnableLocalLogin = allowLocal && AdminConsts.AllowLocalLogin,
                 ReturnUrl = returnUrl,
                 Username = context?.LoginHint,
                 ExternalProviders = providers.ToArray()
@@ -333,7 +326,7 @@ namespace IdentityServer4.Admin.Controllers.UI
 
         private async Task<LogoutViewModel> BuildLogoutViewModelAsync(string logoutId)
         {
-            var vm = new LogoutViewModel {LogoutId = logoutId, ShowLogoutPrompt = _options.ShowLogoutPrompt};
+            var vm = new LogoutViewModel {LogoutId = logoutId, ShowLogoutPrompt = AdminConsts.ShowLogoutPrompt};
 
             if (User?.Identity.IsAuthenticated != true)
             {
@@ -362,7 +355,7 @@ namespace IdentityServer4.Admin.Controllers.UI
 
             var vm = new LoggedOutViewModel
             {
-                AutomaticRedirectAfterSignOut = _options.AutomaticRedirectAfterSignOut,
+                AutomaticRedirectAfterSignOut = AdminConsts.AutomaticRedirectAfterSignOut,
                 PostLogoutRedirectUri = logout?.PostLogoutRedirectUri,
                 ClientName = string.IsNullOrEmpty(logout?.ClientName) ? logout?.ClientId : logout?.ClientName,
                 SignOutIframeUrl = logout?.SignOutIFrameUrl,
@@ -396,7 +389,7 @@ namespace IdentityServer4.Admin.Controllers.UI
         private async Task<IActionResult> ProcessWindowsLoginAsync(string returnUrl)
         {
             // see if windows auth has already been requested and succeeded
-            var result = await HttpContext.AuthenticateAsync(_options.WindowsAuthenticationSchemeName);
+            var result = await HttpContext.AuthenticateAsync(AdminConsts.WindowsAuthenticationSchemeName);
             if (result?.Principal is WindowsPrincipal wp)
             {
                 // we will issue the external cookie and then redirect the
@@ -408,16 +401,16 @@ namespace IdentityServer4.Admin.Controllers.UI
                     Items =
                     {
                         {"returnUrl", returnUrl},
-                        {"scheme", _options.WindowsAuthenticationSchemeName},
+                        {"scheme", AdminConsts.WindowsAuthenticationSchemeName},
                     }
                 };
 
-                var id = new ClaimsIdentity(_options.WindowsAuthenticationSchemeName);
+                var id = new ClaimsIdentity(AdminConsts.WindowsAuthenticationSchemeName);
                 id.AddClaim(new Claim(JwtClaimTypes.Subject, wp.Identity.Name));
                 id.AddClaim(new Claim(JwtClaimTypes.Name, wp.Identity.Name));
 
                 // add the groups as claims -- be careful if the number of groups is too large
-                if (_options.IncludeWindowsGroups)
+                if (AdminConsts.IncludeWindowsGroups)
                 {
                     var wi = wp.Identity as WindowsIdentity;
                     var groups = wi.Groups.Translate(typeof(NTAccount));
@@ -436,7 +429,7 @@ namespace IdentityServer4.Admin.Controllers.UI
                 // trigger windows auth
                 // since windows auth don't support the redirect uri,
                 // this URL is re-triggered when we call challenge
-                return Challenge(_options.WindowsAuthenticationSchemeName);
+                return Challenge(AdminConsts.WindowsAuthenticationSchemeName);
             }
         }
 

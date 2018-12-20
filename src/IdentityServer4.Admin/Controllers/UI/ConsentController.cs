@@ -97,7 +97,7 @@ namespace IdentityServer4.Admin.Controllers.UI
                 grantedConsent = ConsentResponse.Denied;
             }
             // user clicked 'yes' - validate the data
-            else if (model.Button == "yes" && model != null)
+            else if (model.Button == "yes")
             {
                 // if the user consented to some scope, build the response model
                 if (model.ScopesConsented != null && model.ScopesConsented.Any())
@@ -156,7 +156,7 @@ namespace IdentityServer4.Admin.Controllers.UI
                     var resources = await _resourceStore.FindEnabledResourcesByScopeAsync(request.ScopesRequested);
                     if (resources != null && (resources.IdentityResources.Any() || resources.ApiResources.Any()))
                     {
-                        return CreateConsentViewModel(model, returnUrl, request, client, resources);
+                        return CreateConsentViewModel(model, returnUrl, client, resources);
                     }
                     else
                     {
@@ -179,7 +179,6 @@ namespace IdentityServer4.Admin.Controllers.UI
 
         private ConsentViewModel CreateConsentViewModel(
             ConsentInputModel model, string returnUrl,
-            AuthorizationRequest request,
             Client client, IdentityServer4.Models.Resources resources)
         {
             var vm = new ConsentViewModel();

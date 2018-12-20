@@ -1,7 +1,7 @@
-window.addEventListener("load", function () {
-    let a = document.querySelector("a.PostLogoutRedirectUri");
+$(function () {
+    let a = $('a.PostLogoutRedirectUri');
     if (a) {
-        window.location = a.href;
+        window.location = a.attr('href');
     } else {
         window.location = '/';
     }

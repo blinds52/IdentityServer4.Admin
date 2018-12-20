@@ -64,7 +64,7 @@ namespace IdentityServer4.Admin.Controllers.UI
                 {
                     var resources = await _resources.FindResourcesByScopeAsync(grant.Scopes);
 
-                    var item = new GrantViewModel()
+                    var item = new GrantViewModel
                     {
                         ClientId = client.ClientId,
                         ClientName = client.ClientName ?? client.ClientId,

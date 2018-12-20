@@ -47,6 +47,8 @@ namespace IdentityServer4.Admin
             // Add Log
             ConfigureLogService();
 
+            services.AddAuthorization();
+            
             // Add 
             services.AddAuthentication("Bearer")
                 .AddIdentityServerAuthentication(options =>
@@ -109,7 +111,7 @@ namespace IdentityServer4.Admin
             services.AddCors(options =>
             {
                 options.AddPolicy("vue-expert",
-                    b => b.WithOrigins("http://localhost:6568"));
+                    b => b.WithOrigins("http://localhost:6568").AllowAnyHeader());
             });
         }
 
