@@ -1,10 +1,7 @@
 <section class="content container-fluid">
-    <div :class=" errors.length ? 'alert alert-danger alert-dismissible' : 'hidden'">
-        <h4>
-            <i :class="'icon fa fa-ban'"></i><span v-text="errors.length ? '错误' : ''"></span>
-        </h4>
-        <p v-for="error in errors" v-text="'* ' + error">
-        </p>
+    <div :class=" errors.length ? 'row' : 'hidden'" style="margin-bottom: 10px;">
+        <span class="pull-left" style="color: red; margin-left: 14px;" v-for="error in errors" v-text="'* ' + error">
+        </span>
     </div>
     <div class="col-xs-12">
         <div class="box">

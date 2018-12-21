@@ -13,7 +13,7 @@ namespace IdentityServer4.Admin.Controllers.UI
 
         public UserController(IOptions<AdminOptions> options)
         {
-            _options = options.Value;           
+            _options = options.Value;
         }
 
         [Authorize(Roles = AdminConsts.AdminName)]
@@ -64,10 +64,10 @@ namespace IdentityServer4.Admin.Controllers.UI
         public IActionResult Profile(Guid userId)
         {
             if (User.FindFirst("sub")?.Value != userId.ToString())
-                return RedirectToAction("AccessDenied", "Account");
+                return Redirect("/404.html");
 
             InitViewData();
-            
+
             return View();
         }
 

@@ -12,6 +12,7 @@ using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace IdentityServer4.Admin.Controllers.UI
 {
@@ -25,17 +26,19 @@ namespace IdentityServer4.Admin.Controllers.UI
         private readonly IClientStore _clientStore;
         private readonly IResourceStore _resourceStore;
         private readonly ILogger<ConsentController> _logger;
+        private readonly AdminOptions _options;
 
         public ConsentController(
             IIdentityServerInteractionService interaction,
             IClientStore clientStore,
             IResourceStore resourceStore,
-            ILogger<ConsentController> logger)
+            ILogger<ConsentController> logger, IOptions<AdminOptions> options)
         {
             _interaction = interaction;
             _clientStore = clientStore;
             _resourceStore = resourceStore;
             _logger = logger;
+            _options = options.Value;
         }
 
         /// <summary>
@@ -103,7 +106,7 @@ namespace IdentityServer4.Admin.Controllers.UI
                 if (model.ScopesConsented != null && model.ScopesConsented.Any())
                 {
                     var scopes = model.ScopesConsented;
-                    if (AdminConsts.EnableOfflineAccess == false)
+                    if (_options.EnableOfflineAccess == false)
                     {
                         scopes = scopes.Where(x => x != IdentityServerConstants.StandardScopes.OfflineAccess);
                     }
@@ -116,12 +119,12 @@ namespace IdentityServer4.Admin.Controllers.UI
                 }
                 else
                 {
-                    result.ValidationError = AdminConsts.MustChooseOneErrorMessage;
+                    result.ValidationError = _options.MustChooseOneErrorMessage;
                 }
             }
             else
             {
-                result.ValidationError = AdminConsts.InvalidSelectionErrorMessage;
+                result.ValidationError = _options.InvalidSelectionErrorMessage;
             }
 
             if (grantedConsent != null)
@@ -196,7 +199,7 @@ namespace IdentityServer4.Admin.Controllers.UI
                 .Select(x => CreateScopeViewModel(x, vm.ScopesConsented.Contains(x.Name) || model == null)).ToArray();
             vm.ResourceScopes = resources.ApiResources.SelectMany(x => x.Scopes).Select(x =>
                 CreateScopeViewModel(x, vm.ScopesConsented.Contains(x.Name) || model == null)).ToArray();
-            if (AdminConsts.EnableOfflineAccess && resources.OfflineAccess)
+            if (_options.EnableOfflineAccess && resources.OfflineAccess)
             {
                 vm.ResourceScopes = vm.ResourceScopes.Union(new[]
                 {
@@ -240,8 +243,8 @@ namespace IdentityServer4.Admin.Controllers.UI
             return new ScopeViewModel
             {
                 Name = IdentityServerConstants.StandardScopes.OfflineAccess,
-                DisplayName = AdminConsts.OfflineAccessDisplayName,
-                Description = AdminConsts.OfflineAccessDescription,
+                DisplayName = _options.OfflineAccessDisplayName,
+                Description = _options.OfflineAccessDescription,
                 Emphasize = true,
                 Checked = check
             };

@@ -30,6 +30,7 @@ namespace IdentityServer4.Admin.Controllers.UI
         private readonly IClientStore _clientStore;
         private readonly IAuthenticationSchemeProvider _schemeProvider;
         private readonly IEventService _events;
+        private readonly AdminOptions _options;
 
         public AccountController(
             UserManager<User> userManager,
@@ -37,7 +38,7 @@ namespace IdentityServer4.Admin.Controllers.UI
             IIdentityServerInteractionService interaction,
             IClientStore clientStore,
             IAuthenticationSchemeProvider schemeProvider,
-            IEventService events)
+            IEventService events, IOptions<AdminOptions> options)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -45,6 +46,7 @@ namespace IdentityServer4.Admin.Controllers.UI
             _clientStore = clientStore;
             _schemeProvider = schemeProvider;
             _events = events;
+            _options = options.Value;
         }
 
         /// <summary>
@@ -115,7 +117,7 @@ namespace IdentityServer4.Admin.Controllers.UI
 
                 await _events.RaiseAsync(new UserLoginFailureEvent(model.Username, "invalid credentials"));
 
-                ModelState.AddModelError("", AdminConsts.InvalidCredentialsErrorMessage);
+                ModelState.AddModelError("", _options.InvalidCredentialsErrorMessage);
             }
 
             // something went wrong, show form with error
@@ -129,7 +131,7 @@ namespace IdentityServer4.Admin.Controllers.UI
         [HttpGet]
         public async Task<IActionResult> ExternalLogin(string provider, string returnUrl)
         {
-            if (AdminConsts.WindowsAuthenticationSchemeName == provider)
+            if (_options.WindowsAuthenticationSchemeName == provider)
             {
                 // windows authentication needs special handling
                 return await ProcessWindowsLoginAsync(returnUrl);
@@ -281,7 +283,7 @@ namespace IdentityServer4.Admin.Controllers.UI
 
             var providers = schemes
                 .Where(x => x.DisplayName != null ||
-                            (x.Name.Equals(AdminConsts.WindowsAuthenticationSchemeName,
+                            (x.Name.Equals(_options.WindowsAuthenticationSchemeName,
                                 StringComparison.OrdinalIgnoreCase))
                 )
                 .Select(x => new ExternalProvider
@@ -308,8 +310,8 @@ namespace IdentityServer4.Admin.Controllers.UI
 
             return new LoginViewModel
             {
-                AllowRememberLogin = AdminConsts.AllowRememberLogin,
-                EnableLocalLogin = allowLocal && AdminConsts.AllowLocalLogin,
+                AllowRememberLogin = _options.AllowRememberLogin,
+                EnableLocalLogin = allowLocal && _options.AllowLocalLogin,
                 ReturnUrl = returnUrl,
                 Username = context?.LoginHint,
                 ExternalProviders = providers.ToArray()
@@ -326,7 +328,7 @@ namespace IdentityServer4.Admin.Controllers.UI
 
         private async Task<LogoutViewModel> BuildLogoutViewModelAsync(string logoutId)
         {
-            var vm = new LogoutViewModel {LogoutId = logoutId, ShowLogoutPrompt = AdminConsts.ShowLogoutPrompt};
+            var vm = new LogoutViewModel {LogoutId = logoutId, ShowLogoutPrompt = _options.ShowLogoutPrompt};
 
             if (User?.Identity.IsAuthenticated != true)
             {
@@ -355,7 +357,7 @@ namespace IdentityServer4.Admin.Controllers.UI
 
             var vm = new LoggedOutViewModel
             {
-                AutomaticRedirectAfterSignOut = AdminConsts.AutomaticRedirectAfterSignOut,
+                AutomaticRedirectAfterSignOut = _options.AutomaticRedirectAfterSignOut,
                 PostLogoutRedirectUri = logout?.PostLogoutRedirectUri,
                 ClientName = string.IsNullOrEmpty(logout?.ClientName) ? logout?.ClientId : logout?.ClientName,
                 SignOutIframeUrl = logout?.SignOutIFrameUrl,
@@ -389,7 +391,7 @@ namespace IdentityServer4.Admin.Controllers.UI
         private async Task<IActionResult> ProcessWindowsLoginAsync(string returnUrl)
         {
             // see if windows auth has already been requested and succeeded
-            var result = await HttpContext.AuthenticateAsync(AdminConsts.WindowsAuthenticationSchemeName);
+            var result = await HttpContext.AuthenticateAsync(_options.WindowsAuthenticationSchemeName);
             if (result?.Principal is WindowsPrincipal wp)
             {
                 // we will issue the external cookie and then redirect the
@@ -401,16 +403,16 @@ namespace IdentityServer4.Admin.Controllers.UI
                     Items =
                     {
                         {"returnUrl", returnUrl},
-                        {"scheme", AdminConsts.WindowsAuthenticationSchemeName},
+                        {"scheme", _options.WindowsAuthenticationSchemeName},
                     }
                 };
 
-                var id = new ClaimsIdentity(AdminConsts.WindowsAuthenticationSchemeName);
+                var id = new ClaimsIdentity(_options.WindowsAuthenticationSchemeName);
                 id.AddClaim(new Claim(JwtClaimTypes.Subject, wp.Identity.Name));
                 id.AddClaim(new Claim(JwtClaimTypes.Name, wp.Identity.Name));
 
                 // add the groups as claims -- be careful if the number of groups is too large
-                if (AdminConsts.IncludeWindowsGroups)
+                if (_options.IncludeWindowsGroups)
                 {
                     var wi = wp.Identity as WindowsIdentity;
                     var groups = wi.Groups.Translate(typeof(NTAccount));
@@ -429,7 +431,7 @@ namespace IdentityServer4.Admin.Controllers.UI
                 // trigger windows auth
                 // since windows auth don't support the redirect uri,
                 // this URL is re-triggered when we call challenge
-                return Challenge(AdminConsts.WindowsAuthenticationSchemeName);
+                return Challenge(_options.WindowsAuthenticationSchemeName);
             }
         }
 
