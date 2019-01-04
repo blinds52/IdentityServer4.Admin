@@ -23,10 +23,6 @@ namespace IdentityServer4.Admin
         {
             Configuration = configuration;
             HostingEnvironment = env;
-            if (HostingEnvironment.IsDevelopment())
-            {
-                Console.WriteLine("Hosting: Development");
-            }
         }
 
         private IConfiguration Configuration { get; }
@@ -47,26 +43,7 @@ namespace IdentityServer4.Admin
             // Add Log
             ConfigureLogService();
 
-            services.AddAuthorization();
-            
-            // Add 
-            services.AddAuthentication("Bearer")
-                .AddIdentityServerAuthentication(options =>
-                {
-                    options.Authority = "http://localhost:6566";
-                    options.RequireHttpsMetadata = false;
-                    options.ApiName = "identity-server4";
-                });
-
-            // Add aspnetcore identity
-            IdentityBuilder idBuilder = services.AddIdentity<User, Role>(options =>
-            {
-                options.Password.RequireUppercase = false;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireDigit = false;
-                options.Password.RequiredLength = 6;
-                options.User.RequireUniqueEmail = false;
-            }).AddErrorDescriber<CustomIdentityErrorDescriber>();
+            services.AddAuthorization();           
 
             string connectionString = Configuration.GetSection("IdentityServer4Admin")
                 .GetValue<string>("ConnectionString");
@@ -85,6 +62,17 @@ namespace IdentityServer4.Admin
             }
 
             services.AddDbContext<IDbContext, AdminDbContext>(dbContextOptionsBuilder);
+            
+            // Add aspnetcore identity
+            IdentityBuilder idBuilder = services.AddIdentity<User, Role>(options =>
+            {
+                options.Password.RequireUppercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireDigit = false;
+                options.Password.RequiredLength = 6;
+                options.User.RequireUniqueEmail = false;
+            }).AddErrorDescriber<CustomIdentityErrorDescriber>();
+            
             idBuilder.AddDefaultTokenProviders();
             idBuilder.AddEntityFrameworkStores<AdminDbContext>();
 
@@ -134,7 +122,7 @@ namespace IdentityServer4.Admin
             {
                 Log.Logger = new LoggerConfiguration()
                     .MinimumLevel.Information()
-                    .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                    .MinimumLevel.Override("Microsoft", LogEventLevel.Verbose)
                     .MinimumLevel.Override("System", LogEventLevel.Information)
                     .MinimumLevel.Override("Microsoft.AspNetCore.Authentication", LogEventLevel.Information)
                     .Enrich.FromLogContext()
