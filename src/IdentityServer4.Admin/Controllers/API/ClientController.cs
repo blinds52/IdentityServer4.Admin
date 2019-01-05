@@ -158,7 +158,7 @@ namespace IdentityServer4.Admin.Controllers.API
         }
 
         [HttpGet]
-        public IActionResult Find([FromQuery] PaginationQuery input)
+        public IActionResult Find([FromQuery] PagedQuery input)
         {
             var queryResult = _dbContext.Clients
                 .Include(x => x.AllowedGrantTypes)

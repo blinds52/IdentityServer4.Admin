@@ -1,6 +1,6 @@
 namespace IdentityServer4.Admin.Infrastructure
 {
-    public class PaginationQuery
+    public class PagedQuery
     {
         private int _page = 1;
         private int _size = 30;
@@ -35,10 +35,16 @@ namespace IdentityServer4.Admin.Infrastructure
                     _size = value.Value;
                 }
             }
+        } 
+        
+        public int GetPage()
+        {
+            return _page;
         }
 
-        public string Sort { get; set; }
-        
-        public bool SortByDesc { get; set; } = true;  
+        public int GetSize()
+        {
+            return _size;
+        }
     }
 }

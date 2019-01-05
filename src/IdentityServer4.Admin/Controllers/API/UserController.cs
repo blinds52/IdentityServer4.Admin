@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using AutoMapper;
 using IdentityServer4.Admin.Controllers.API.Dtos;
@@ -11,21 +12,23 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace IdentityServer4.Admin.Controllers.API
 {
     [Route("api/[controller]")]
-    [Authorize(Roles = AdminConsts.AdminName)]
     public class UserController : ApiControllerBase
     {
         private readonly UserManager<User> _userManager;
         private readonly IDbContext _dbContext;
         private readonly IServiceProvider _serviceProvider;
         private readonly RoleManager<Role> _roleManager;
+        private readonly AdminOptions _options;
 
         public UserController(UserManager<User> userManager,
             RoleManager<Role> roleManager,
             IDbContext dbContext,
+            IOptions<AdminOptions> options,
             IServiceProvider serviceProvider,
             ILoggerFactory loggerFactory) : base(loggerFactory)
         {
@@ -33,11 +36,13 @@ namespace IdentityServer4.Admin.Controllers.API
             _dbContext = dbContext;
             _serviceProvider = serviceProvider;
             _roleManager = roleManager;
+            _options = options.Value;
         }
 
         #region User
 
         [HttpPost]
+        [Authorize(Roles = AdminConsts.AdminName)]
         public async Task<IActionResult> CreateAsync([FromBody] CreateUserDto dto)
         {
             if (dto.UserName == AdminConsts.AdminName)
@@ -72,9 +77,10 @@ namespace IdentityServer4.Admin.Controllers.API
         }
 
         [HttpGet]
-        public async Task<IActionResult> FindAsync([FromQuery] QueryUserInputDto input)
+        [Authorize(Roles = AdminConsts.AdminName)]
+        public async Task<IActionResult> SearchAsync([FromQuery] KeywordPagedQuery input)
         {
-            PaginationQueryResult<User> queryResult;
+            PagedQueryResult<User> queryResult;
             if (string.IsNullOrWhiteSpace(input.Keyword))
             {
                 queryResult = _userManager.Users.PagedQuery(input);
@@ -121,8 +127,73 @@ namespace IdentityServer4.Admin.Controllers.API
             }
         }
 
+        [HttpGet("search")]
+        public IActionResult SearchAsync(PagedQueryUserDto dto)
+        {
+            if (!_options.AllowAnonymousUserQuery)
+            {
+                return NoContent();
+            }
+
+            Expression<Func<User, bool>> where = null;
+            if (!string.IsNullOrWhiteSpace(dto.Q))
+            {
+                where = u =>
+                    (u.FirstName + u.LastName).Contains(dto.Q) || u.Email.Contains(dto.Q) ||
+                    u.PhoneNumber.Contains(dto.Q);
+            }
+
+            if (!string.IsNullOrWhiteSpace(dto.Group))
+            {
+                if (where == null)
+                {
+                    where = u => u.Group == dto.Group.Trim();
+                }
+                else
+                {
+                    where = where.AndAlso(u => u.Group == dto.Group.Trim());
+                }
+            }
+
+            var titles = string.IsNullOrWhiteSpace(dto.Titles)
+                ? null
+                : dto.Titles.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries);
+
+            if (titles != null && titles.Length > 0)
+            {
+                if (where == null)
+                {
+                    where = u => titles.Contains(u.Title);
+                }
+                else
+                {
+                    where = where.AndAlso(u => titles.Contains(u.Title));
+                }
+            }
+
+            var output = _userManager.Users.PagedQuery(dto, where);
+            var result = new PagedQueryResult
+            {
+                Page = output.Page,
+                Size = output.Size,
+                Total = output.Total,
+                Result = output.Result.Select(u => new
+                {
+                    u.Id,
+                    Name = u.FirstName + u.LastName,
+                    u.Title,
+                    u.Email,
+                    u.PhoneNumber,
+                    u.OfficePhone,
+                    u.Group,
+                    Level = User.IsInRole(AdminConsts.AdminName) ? u.Level : ""
+                }).ToList()
+            };
+            return new ApiResult(result);
+        }
 
         [HttpGet("{userId}")]
+        [Authorize(Roles = AdminConsts.AdminName)]
         public async Task<IActionResult> FirstAsync(Guid userId)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
@@ -138,6 +209,7 @@ namespace IdentityServer4.Admin.Controllers.API
 
 
         [HttpPut("{userId}")]
+        [Authorize(Roles = AdminConsts.AdminName)]
         public async Task<IActionResult> UpdateAsync(Guid userId, [FromBody] UpdateUserDto dto)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
@@ -175,6 +247,7 @@ namespace IdentityServer4.Admin.Controllers.API
 
 
         [HttpDelete("{userId}")]
+        [Authorize(Roles = AdminConsts.AdminName)]
         public async Task<IActionResult> DeleteAsync(Guid userId)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId && u.IsDeleted == false);
@@ -188,6 +261,7 @@ namespace IdentityServer4.Admin.Controllers.API
 
 
         [HttpPut("{userId}/changePassword")]
+        [Authorize(Roles = AdminConsts.AdminName)]
         public async Task<IActionResult> ChangePasswordAsync(Guid userId, [FromBody] ChangePasswordInputDto dto)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
@@ -205,7 +279,8 @@ namespace IdentityServer4.Admin.Controllers.API
         #region User Permission	
 
         [HttpGet("{userId}/permission")]
-        public async Task<IActionResult> FindUserPermissionAsync(Guid userId, PaginationQuery query)
+        [Authorize(Roles = AdminConsts.AdminName)]
+        public async Task<IActionResult> FindUserPermissionAsync(Guid userId, PagedQuery query)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null) return new ApiResult(ApiResult.Error, "用户不存在或已经删除");
@@ -231,6 +306,7 @@ namespace IdentityServer4.Admin.Controllers.API
         #region User Role
 
         [HttpPost("{userId}/role/{role}")]
+        [Authorize(Roles = AdminConsts.AdminName)]
         public async Task<IActionResult> CreateUserRoleAsync(Guid userId, string role)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
@@ -256,6 +332,7 @@ namespace IdentityServer4.Admin.Controllers.API
 
 
         [HttpGet("{userId}/role")]
+        [Authorize(Roles = AdminConsts.AdminName)]
         public async Task<IActionResult> FindUserRoleAsync(Guid userId)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
@@ -276,6 +353,7 @@ namespace IdentityServer4.Admin.Controllers.API
 
 
         [HttpDelete("{userId}/role/{roleId}")]
+        [Authorize(Roles = AdminConsts.AdminName)]
         public async Task<IActionResult> DeleteUserRoleAsync(Guid userId, Guid roleId)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);

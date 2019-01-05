@@ -48,7 +48,7 @@ namespace IdentityServer4.Admin.Controllers.API
         }
 
         [HttpGet]
-        public IActionResult Find([FromQuery] PaginationQuery input)
+        public IActionResult Find([FromQuery] PagedQuery input)
         {
             var output = _dbContext.ApiResources.PagedQuery(input);
             return new ApiResult(output);

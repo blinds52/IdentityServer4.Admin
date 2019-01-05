@@ -5,6 +5,8 @@ namespace IdentityServer4.Admin.Infrastructure
 {
     public class AdminOptions
     {
+        public bool AllowAnonymousUserQuery { get; set; }
+        
         public string ConnectionString { get; set; }
         public bool AllowLocalLogin { get; set; } = true;
         public bool AllowRememberLogin { get; set; } = true;

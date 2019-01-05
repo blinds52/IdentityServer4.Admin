@@ -42,7 +42,7 @@ namespace IdentityServer4.Admin.Controllers.API
         }
 
         [HttpGet]
-        public IActionResult Find([FromQuery] PaginationQuery input)
+        public IActionResult Find([FromQuery] PagedQuery input)
         {
             var queryResult = _dbContext.Permissions.PagedQuery(input);
             var dtos = Mapper.Map<List<PermissionDto>>(queryResult.Result);

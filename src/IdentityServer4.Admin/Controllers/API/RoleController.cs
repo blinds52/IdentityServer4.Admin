@@ -53,7 +53,7 @@ namespace IdentityServer4.Admin.Controllers.API
         }
 
         [HttpGet]
-        public IActionResult Find([FromQuery] PaginationQuery input)
+        public IActionResult Find([FromQuery] PagedQuery input)
         {
             var queryResult = _roleManager.Roles.PagedQuery(input);
             var dtos = Mapper.Map<List<RoleDto>>(queryResult.Result);
@@ -138,7 +138,7 @@ namespace IdentityServer4.Admin.Controllers.API
         }
 
         [HttpGet("{roleId}/permission")]
-        public IActionResult FindRolePermission(Guid roleId, [FromQuery] PaginationQuery input)
+        public IActionResult FindRolePermission(Guid roleId, [FromQuery] PagedQuery input)
         {
             var queryResult = _dbContext.RolePermissions.Where(rp => rp.RoleId == roleId)
                 .Join(_dbContext.Permissions,
