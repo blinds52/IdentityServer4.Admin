@@ -8,8 +8,7 @@ namespace IdentityServer4.Admin.Controllers.API.Dtos
         /// <summary>
         /// 职位
         /// </summary>
-        [StringLength(200)]
-        public string Titles { get; set; }
+        public string[] Titles { get; set; }
 
         /// <summary>
         /// 团队

@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Reflection;
 using AutoMapper;
+using DotBPE.Protocol.Amp;
+using DotBPE.Rpc;
+using DotBPE.Rpc.Hosting;
 using IdentityServer4.Admin.Controllers.API.Dtos;
 using IdentityServer4.Admin.Entities;
 using IdentityServer4.Admin.Infrastructure;
+using IdentityServer4.Admin.Rpc;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -12,8 +16,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
+using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace IdentityServer4.Admin
 {
@@ -40,10 +46,7 @@ namespace IdentityServer4.Admin
                 .AddMvcOptions(o => o.Filters.Add<HttpGlobalExceptionFilter>())
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            // Add Log
-            ConfigureLogService();
-
-            services.AddAuthorization();           
+            services.AddAuthorization();
 
             string connectionString = Configuration.GetSection("IdentityServer4Admin")
                 .GetValue<string>("ConnectionString");
@@ -62,7 +65,7 @@ namespace IdentityServer4.Admin
             }
 
             services.AddDbContext<IDbContext, AdminDbContext>(dbContextOptionsBuilder);
-            
+
             // Add aspnetcore identity
             IdentityBuilder idBuilder = services.AddIdentity<User, Role>(options =>
             {
@@ -72,7 +75,7 @@ namespace IdentityServer4.Admin
                 options.Password.RequiredLength = 6;
                 options.User.RequireUniqueEmail = false;
             }).AddErrorDescriber<CustomIdentityErrorDescriber>();
-            
+
             idBuilder.AddDefaultTokenProviders();
             idBuilder.AddEntityFrameworkStores<AdminDbContext>();
 
@@ -101,6 +104,14 @@ namespace IdentityServer4.Admin
                 options.AddPolicy("vue-expert",
                     b => b.WithOrigins("http://localhost:6568").AllowAnyHeader());
             });
+            
+            //添加协议支持
+            services.AddDotBPE();
+            //注册服务
+            services.AddServiceActors<AmpMessage>(actors => { actors.Add<UserService>(); });
+
+            //添加挂载的宿主服务
+            services.AddSingleton<IHostedService, RpcHostedService>();
         }
 
         private void ConfigureAutoMapper()
@@ -114,32 +125,6 @@ namespace IdentityServer4.Admin
                 cfg.CreateMap<RoleDto, Role>();
                 cfg.CreateMap<User, UserOutputDto>();
             });
-        }
-
-        private void ConfigureLogService()
-        {
-            if (HostingEnvironment.IsDevelopment())
-            {
-                Log.Logger = new LoggerConfiguration()
-                    .MinimumLevel.Information()
-                    .MinimumLevel.Override("Microsoft", LogEventLevel.Verbose)
-                    .MinimumLevel.Override("System", LogEventLevel.Information)
-                    .MinimumLevel.Override("Microsoft.AspNetCore.Authentication", LogEventLevel.Information)
-                    .Enrich.FromLogContext()
-                    .WriteTo.Console().WriteTo.RollingFile("ids4.log")
-                    .CreateLogger();
-            }
-            else
-            {
-                Log.Logger = new LoggerConfiguration()
-                    .MinimumLevel.Information()
-                    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-                    .MinimumLevel.Override("System", LogEventLevel.Warning)
-                    .MinimumLevel.Override("Microsoft.AspNetCore.Authentication", LogEventLevel.Information)
-                    .Enrich.FromLogContext()
-                    .WriteTo.Console().WriteTo.RollingFile("ids4.log")
-                    .CreateLogger();
-            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

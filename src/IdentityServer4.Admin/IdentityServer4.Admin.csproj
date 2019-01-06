@@ -8,6 +8,8 @@
     <ItemGroup>
         <PackageReference Include="AutoMapper" Version="8.0.0" />
         <PackageReference Include="BuildBundlerMinifier" Version="2.8.391" />
+        <PackageReference Include="DotBPE.Protocol.Amp" Version="1.2.10" />
+        <PackageReference Include="DotBPE.Rpc.Hosting" Version="1.2.10" />
         <PackageReference Include="IdentityServer4.AspNetIdentity" Version="2.3.0" />
         <PackageReference Include="IdentityServer4.EntityFramework" Version="2.3.2" />
         <PackageReference Include="Microsoft.AspNetCore.App" />
