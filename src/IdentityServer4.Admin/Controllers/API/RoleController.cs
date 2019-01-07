@@ -138,9 +138,9 @@ namespace IdentityServer4.Admin.Controllers.API
         }
 
         [HttpGet("{roleId}/permission")]
-        public IActionResult FindRolePermission(Guid roleId, [FromQuery] PagedQuery input)
+        public async Task<IActionResult> FindRolePermissionAsync(Guid roleId, [FromQuery] PagedQuery input)
         {
-            var queryResult = _dbContext.RolePermissions.Where(rp => rp.RoleId == roleId)
+            var queryResult = await _dbContext.RolePermissions.Where(rp => rp.RoleId == roleId)
                 .Join(_dbContext.Permissions,
                     rolePermission => rolePermission.PermissionId, permission => permission.Id,
                     (rolePermission, permission) => new RolePermissionOutputDto

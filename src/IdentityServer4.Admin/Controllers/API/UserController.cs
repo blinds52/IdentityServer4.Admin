@@ -80,18 +80,18 @@ namespace IdentityServer4.Admin.Controllers.API
         public async Task<IActionResult> SearchAsync([FromQuery] KeywordPagedQuery input)
         {
             PagedQueryResult<User> queryResult;
-            if (string.IsNullOrWhiteSpace(input.Keyword))
+            if (string.IsNullOrWhiteSpace(input.Q))
             {
                 queryResult = await _userManager.Users.PagedQuery(input);
             }
             else
             {
                 queryResult = await _userManager.Users.PagedQuery(input,
-                    u => u.Email.Contains(input.Keyword) ||
-                         u.UserName.Contains(input.Keyword) ||
-                         u.PhoneNumber.Contains(input.Keyword) ||
+                    u => u.Email.Contains(input.Q) ||
+                         u.UserName.Contains(input.Q) ||
+                         u.PhoneNumber.Contains(input.Q) ||
                          // Comment: 如果不拼接成字符串报空引用错, Lewis Zou, 2018-12-10
-                         $"{u.FirstName}{u.LastName}".Contains(input.Keyword)
+                         $"{u.FirstName}{u.LastName}".Contains(input.Q)
                 );
             }
 

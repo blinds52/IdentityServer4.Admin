@@ -134,7 +134,7 @@ namespace IdentityServer4.Admin
         private static async Task AddAdmin(IServiceProvider serviceProvider)
         {
             await AddUser(serviceProvider,
-                Guid.NewGuid().ToString(),
+                "d237e995-572f-409c-8ca9-852e1d522efe",
                 AdminConsts.AdminName,
                 "admin", "admin",
                 "1qazZAQ!", "zlzforever@163.com",
@@ -270,7 +270,7 @@ namespace IdentityServer4.Admin
                 Level = level,
                 Title = title,
                 OfficePhone = officePhone,
-                TwoFactorEnabled = true,
+                TwoFactorEnabled = false,
                 Sex = 0,
                 LockoutEnabled = true,
                 CreationTime = DateTime.Now,

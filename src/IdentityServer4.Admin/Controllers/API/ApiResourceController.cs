@@ -41,16 +41,16 @@ namespace IdentityServer4.Admin.Controllers.API
             apiResource.DisplayName = dto.DisplayName;
             apiResource.Description = dto.Description;
             apiResource.UserClaims = dto.UserClaims;
-            
-            await _dbContext.ApiResources.AddAsync( apiResource.ToEntity());
+
+            await _dbContext.ApiResources.AddAsync(apiResource.ToEntity());
             await _dbContext.SaveChangesAsync();
             return ApiResult.Ok;
         }
 
         [HttpGet]
-        public IActionResult Find([FromQuery] PagedQuery input)
+        public async Task<IActionResult> SearchAsync([FromQuery] PagedQuery input)
         {
-            var output = _dbContext.ApiResources.PagedQuery(input);
+            var output = await _dbContext.ApiResources.PagedQuery(input);
             return new ApiResult(output);
         }
 
