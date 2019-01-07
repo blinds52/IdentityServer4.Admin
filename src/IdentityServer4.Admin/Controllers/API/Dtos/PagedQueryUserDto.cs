@@ -15,6 +15,11 @@ namespace IdentityServer4.Admin.Controllers.API.Dtos
         /// </summary>
         [StringLength(50)]
         public string Group { get; set; }
+        
+        /// <summary>
+        /// 角色
+        /// </summary>
+        public string[] Roles { get; set; }
 
         /// <summary>
         /// 关键词

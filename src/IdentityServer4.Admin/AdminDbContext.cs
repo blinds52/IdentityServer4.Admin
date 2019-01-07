@@ -115,6 +115,8 @@ namespace IdentityServer4.Admin
 
             builder.Entity<ApiResource>().HasIndex(p => p.Name).IsUnique();
 
+            builder.Entity<User>().HasIndex(u => u.CreationTime);
+
             base.OnModelCreating(builder);
         }
 
