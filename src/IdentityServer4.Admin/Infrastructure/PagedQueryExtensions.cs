@@ -22,7 +22,7 @@ namespace IdentityServer4.Admin.Infrastructure
             result.Page = input.Page ?? 1;
             result.Size = input.Size ?? 20;
 
-            entities = entities.AsNoTracking().Skip((result.Page - 1) * result.Size).Take(result.Size);
+            entities = entities.Skip((result.Page - 1) * result.Size).Take(result.Size);
 
             result.Result = result.Total == 0 ? new List<TEntity>() : await entities.ToListAsync();
             return result;
