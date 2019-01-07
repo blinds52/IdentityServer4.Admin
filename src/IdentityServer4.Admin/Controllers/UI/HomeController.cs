@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityServer4.Admin.Controllers.UI
 {
-    [Route("home")]
     public class HomeController : BaseController
     {
         private readonly IIdentityServerInteractionService _interaction;
@@ -24,8 +23,7 @@ namespace IdentityServer4.Admin.Controllers.UI
         }
 
         [Authorize]
-        [HttpGet]
-        public IActionResult Dashboard()
+        public IActionResult Index()
         {
             var userId = User.FindFirst("sub").Value;
             if (HttpContext.User.IsInRole(AdminConsts.AdminName))

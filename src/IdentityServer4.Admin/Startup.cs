@@ -157,7 +157,7 @@ namespace IdentityServer4.Admin
             {
                 routes.MapRoute(
                     "default",
-                    "{controller=home}/{action=dashboard}/{id?}");
+                    "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }
