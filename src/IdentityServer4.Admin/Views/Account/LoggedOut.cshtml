@@ -39,8 +39,7 @@
     @if (Model.PostLogoutRedirectUri != null)
     {
         <div>
-            点击 <a class="PostLogoutRedirectUri" href="@Model.PostLogoutRedirectUri">链接</a> 返回
-            <span>@Model.ClientName</span>.
+            点击 <a class="PostLogoutRedirectUri" href="@Model.PostLogoutRedirectUri">@Model.ClientName</a> 返回
         </div>
     }
     else if (Model.SignOutIframeUrl != null)
@@ -48,8 +47,7 @@
         <iframe width="0" height="0" class="signout" src="@Model.SignOutIframeUrl"></iframe>
     }
     <div>
-        点击 <a class="PostLogoutRedirectUri" href="/">链接</a> 返回
-        <span>IdentityServer4</span>.
+        点击 <a class="PostLogoutRedirectUri" href="/">用户中心</a> 返回
     </div>
 </div>
 <!-- /.login-box -->

@@ -39,7 +39,7 @@ $(function () {
         methods: {
             create: function () {
                 const apiResource = this.$data.el;
-                const url = "/api/apiResource";
+                const url = "/api/api-resource";
                 if (apiResource.userClaims) {
                     apiResource.userClaims = apiResource.userClaims.split(';');
                 } else {
@@ -47,7 +47,7 @@ $(function () {
                 }
                 apiResource.enabled = apiResource.enabled === 'True';
                 app.post(url, apiResource, function () {
-                    window.location.href = '/apiResource';
+                    window.location.href = '/api-resource';
                 });
             }
         }

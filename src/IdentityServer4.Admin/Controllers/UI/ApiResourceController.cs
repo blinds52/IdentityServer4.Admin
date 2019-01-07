@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace IdentityServer4.Admin.Controllers.UI
 {
     [Authorize(Roles = AdminConsts.AdminName)]
+    [Route("api-resource")]
     public class ApiResourceController : BaseController
     {
         public IActionResult Index()
@@ -12,6 +13,7 @@ namespace IdentityServer4.Admin.Controllers.UI
             return View();
         }
 
+        [HttpGet("create")]
         public IActionResult Create()
         {
             return View();

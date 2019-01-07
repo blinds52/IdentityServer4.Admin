@@ -324,8 +324,7 @@ namespace IdentityServer4.Admin
         {
             return new List<ApiResource>
             {
-                new ApiResource("expert-api", "专家团队模块", new List<string> {JwtClaimTypes.Role}),
-                new ApiResource("identity-server4", "IdentityServer4", new List<string> {JwtClaimTypes.Role})
+                new ApiResource("expert-api", "专家系统", new List<string> {JwtClaimTypes.Role})
             };
         }
 
@@ -356,7 +355,7 @@ namespace IdentityServer4.Admin
                 new Client
                 {
                     ClientId = "vue-expert",
-                    ClientName = "vue-expert",
+                    ClientName = "专家系统",
                     AllowedGrantTypes = GrantTypes.Implicit,
                     AllowAccessTokensViaBrowser = true,
                     AllowedCorsOrigins = {"http://localhost:6568"},
@@ -374,7 +373,7 @@ namespace IdentityServer4.Admin
                 new Client
                 {
                     ClientId = "email-proxy",
-                    ClientName = "Email Proxy",
+                    ClientName = "邮件系统",
                     AllowedGrantTypes = GrantTypes.Implicit,
                     AllowedCorsOrigins = {"http://localhost:6570"},
                     RedirectUris = {"http://localhost:6570/signin-oidc"},

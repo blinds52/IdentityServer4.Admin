@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityServer4.Admin.Controllers.UI
 {
+    [Route("home")]
     public class HomeController : BaseController
     {
         private readonly IIdentityServerInteractionService _interaction;
@@ -16,32 +17,29 @@ namespace IdentityServer4.Admin.Controllers.UI
             _interaction = interaction;
         }
 
+        [HttpGet("test")]
         public IActionResult Test()
         {
             return View();
         }
 
         [Authorize]
-        public IActionResult Index()
+        [HttpGet]
+        public IActionResult Dashboard()
         {
             var userId = User.FindFirst("sub").Value;
             if (HttpContext.User.IsInRole(AdminConsts.AdminName))
             {
-                return Redirect("User");
+                return View();
             }
 
-            return Redirect($"User/{userId}/profile");
-        }
-
-        [Authorize(Roles = AdminConsts.AdminName)]
-        public IActionResult Dashboard()
-        {
-            return View();
+            return Redirect($"user/{userId}/profile");
         }
 
         /// <summary>
         /// Shows the error page
         /// </summary>
+        [HttpGet("error/{errorId}")]
         public async Task<IActionResult> Error(string errorId)
         {
             var vm = new ErrorViewModel();

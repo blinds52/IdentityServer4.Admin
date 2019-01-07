@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 namespace IdentityServer4.Admin.Controllers.UI
 {
     [Authorize]
+    [Route("user")]
     public class UserController : BaseController
     {
         private readonly AdminOptions _options;
@@ -24,7 +25,7 @@ namespace IdentityServer4.Admin.Controllers.UI
         }
 
         [Authorize(Roles = AdminConsts.AdminName)]
-        [HttpGet("[controller]/create")]
+        [HttpGet("create")]
         public IActionResult Create()
         {
             InitViewData();
@@ -32,7 +33,7 @@ namespace IdentityServer4.Admin.Controllers.UI
         }
 
         [Authorize(Roles = AdminConsts.AdminName)]
-        [HttpGet("[controller]/{userId}/edit")]
+        [HttpGet("{userId}/edit")]
         public IActionResult Edit()
         {
             InitViewData();
@@ -40,27 +41,27 @@ namespace IdentityServer4.Admin.Controllers.UI
         }
 
         [Authorize(Roles = AdminConsts.AdminName)]
-        [HttpGet("[controller]/{userId}/changePassword")]
+        [HttpGet("{userId}/changePassword")]
         public IActionResult ChangePassword()
         {
             return View();
         }
 
         [Authorize(Roles = AdminConsts.AdminName)]
-        [HttpGet("[controller]/{userId}/role")]
+        [HttpGet("{userId}/role")]
         public IActionResult Role()
         {
             return View();
         }
 
         [Authorize(Roles = AdminConsts.AdminName)]
-        [HttpGet("[controller]/{userId}/permission")]
+        [HttpGet("{userId}/permission")]
         public IActionResult Permission()
         {
             return View();
         }
 
-        [HttpGet("[controller]/{userId}/profile")]
+        [HttpGet("{userId}/profile")]
         public IActionResult Profile(Guid userId)
         {
             if (User.FindFirst("sub")?.Value != userId.ToString())

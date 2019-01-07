@@ -19,7 +19,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>IDS4.Admin</title>
+    <title>用户中心</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" asp-append-version="true">
@@ -54,7 +54,7 @@
             {
                 icon: 'fa fa-area-chart',
                 name: '首页',
-                href: '/',
+                href: '/home',
                 isActive: false
             }, {
                 icon: 'fa fa-book',
@@ -79,7 +79,7 @@
             }, {
                 icon: 'fa fa-book',
                 name: 'API 资源管理',
-                href: '/apiResource',
+                href: '/api-resource',
                 isActive: false
             }, {
                 icon: 'fa fa-desktop',
@@ -89,12 +89,12 @@
             }, {
                 icon: 'fa fa-history',
                 name: '授权记录',
-                href: '/grants',
+                href: '/grant',
                 isActive: false
             }, {
                 icon: 'fa fa-flask',
                 name: '诊断',
-                href: '/diagnostics',
+                href: '/diagnostic',
                 isActive: false
             }
         ];
@@ -112,12 +112,12 @@ else
             }, {
                 icon: 'fa fa-history',
                 name: '授权记录',
-                href: '/grants',
+                href: '/grant',
                 isActive: false
             }, {
                 icon: 'fa fa-flask',
                 name: '诊断',
-                href: '/diagnostics',
+                href: '/diagnostic',
                 isActive: false
             }
         ];
@@ -130,10 +130,10 @@ else
         <!-- Logo -->
         <a href="/" class="logo">
             <!-- mini logo for sidebar mini 50x50 pixels -->
-            <span class="logo-mini"><b>I</b>ds4</span>
+            <span class="logo-mini"><b>用</b>户</span>
             <!-- logo for regular state and mobile devices -->
             <span class="logo-lg">
-                <b>IdentityServer4</b>
+                <b>用户中心</b>
             </span>
         </a>
         <!-- Header Navbar -->
@@ -217,7 +217,7 @@ else
             <div class="pull-right hidden-xs">
             </div>
             <!-- Default to the left -->
-            <strong>Copyright &copy; 2018 <a href="#">IdentityServer4.Admin</a>.</strong> All rights reserved.
+            <strong>Copyright &copy; 2018-2019 <a href="https://github.com/zlzforever/IdentityServer4.Admin">IdentityServer4.Admin</a>.</strong> All rights reserved.
         </footer>
         <!-- /.control-sidebar -->
         <!-- Add the sidebar's background. This div must be placed

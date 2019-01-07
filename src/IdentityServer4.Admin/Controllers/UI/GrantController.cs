@@ -17,13 +17,14 @@ namespace IdentityServer4.Admin.Controllers.UI
     /// This sample controller allows a user to revoke grants given to clients
     /// </summary>
     [Authorize]
-    public class GrantsController : Controller
+    [Route("grant")]
+    public class GrantController : Controller
     {
         private readonly IIdentityServerInteractionService _interaction;
         private readonly IClientStore _clients;
         private readonly IResourceStore _resources;
 
-        public GrantsController(IIdentityServerInteractionService interaction,
+        public GrantController(IIdentityServerInteractionService interaction,
             IClientStore clients,
             IResourceStore resources)
         {

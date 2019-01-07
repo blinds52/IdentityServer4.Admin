@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace IdentityServer4.Admin.Controllers.UI
 {
     [Authorize(Roles = AdminConsts.AdminName)]
+    [Route("client")]
     public class ClientController : BaseController
     {
         private readonly IDbContext _dbContext;
@@ -19,19 +20,19 @@ namespace IdentityServer4.Admin.Controllers.UI
             _dbContext = dbContext;
         }
 
-        [Route("[controller]")]
+        [HttpGet]
         public IActionResult Index()
         {
             return View();
         }
 
-        [Route("[controller]/create")]
+        [HttpGet("create")]
         public IActionResult Create()
         {
             return View();
         }
 
-        [Route("[controller]/{clientId}")]
+        [HttpGet("{clientId}")]
         public async Task<IActionResult> Detail(int clientId)
         {
             var client = await _dbContext.Clients

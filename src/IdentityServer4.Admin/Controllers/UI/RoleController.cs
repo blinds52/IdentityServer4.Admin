@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace IdentityServer4.Admin.Controllers.UI
 { 
     [Authorize(Roles = AdminConsts.AdminName)]
+    [Route("role")]
     public class RoleController : BaseController
     { 
         [HttpGet]
@@ -13,19 +14,19 @@ namespace IdentityServer4.Admin.Controllers.UI
             return View();
         }
 
-        [HttpGet("[controller]/create")]
+        [HttpGet("create")]
         public IActionResult Create()
         {
             return View();
         }
 
-        [HttpGet("[controller]/{roleId}/edit")]
+        [HttpGet("{roleId}/edit")]
         public IActionResult Edit()
         {
             return View();
         }
         
-        [HttpGet("[controller]/{roleId}/permission")]
+        [HttpGet("{roleId}/permission")]
         public IActionResult Permission()
         {
             return View();

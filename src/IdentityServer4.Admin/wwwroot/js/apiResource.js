@@ -27,7 +27,7 @@ $(function () {
                     type: "warning",
                     showCancelButton: true
                 }, function () {
-                    app.delete("/api/apiResource/" + id, function () {
+                    app.delete("/api/api-resource/" + id, function () {
                         loadView(that);
                     });
                 });
@@ -36,7 +36,7 @@ $(function () {
     });
 
     function loadView(vue) {
-        const url = '/api/apiResource?q=' + vue.$data.q + '&page=' + vue.$data.page + '&size=' + vue.$data.size;
+        const url = '/api/api-resource?q=' + vue.$data.q + '&page=' + vue.$data.page + '&size=' + vue.$data.size;
         app.get(url, function (result) {
             vue.$data.els = result.data.result;
             vue.$data.total = result.data.total;
@@ -44,7 +44,7 @@ $(function () {
             vue.$data.size = result.data.size;
 
             app.ui.initPagination('#pagination', result.data, function (page) {
-                window.location.href = '/apiResource?q=' + vue.$data.q + '&page=' + page + '&size=' + vue.$data.size;
+                window.location.href = '/api-resource?q=' + vue.$data.q + '&page=' + page + '&size=' + vue.$data.size;
             });
         });
     }

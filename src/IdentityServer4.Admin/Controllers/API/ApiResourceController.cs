@@ -14,7 +14,7 @@ using Microsoft.Extensions.Logging;
 
 namespace IdentityServer4.Admin.Controllers.API
 {
-    [Route("api/[controller]")]
+    [Route("api/api-resource")]
     [Authorize(Roles = AdminConsts.AdminName)]
     [SecurityHeaders]
     public class ApiResourceController : ApiControllerBase

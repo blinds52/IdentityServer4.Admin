@@ -20,6 +20,7 @@ namespace IdentityServer4.Admin.Controllers.UI
     /// This controller processes the consent UI
     /// </summary>
     [Authorize]
+    [Route("consent")]
     public class ConsentController : Controller
     {
         private readonly IIdentityServerInteractionService _interaction;

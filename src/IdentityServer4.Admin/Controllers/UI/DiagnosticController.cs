@@ -12,8 +12,10 @@ using Microsoft.AspNetCore.Mvc;
 namespace IdentityServer4.Admin.Controllers.UI
 {
     [Authorize]
-    public class DiagnosticsController : Controller
+    [Route("diagnostic")]
+    public class DiagnosticController : Controller
     {
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             var model = new DiagnosticsViewModel(await HttpContext.AuthenticateAsync());
