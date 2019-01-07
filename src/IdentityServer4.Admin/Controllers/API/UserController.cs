@@ -82,11 +82,11 @@ namespace IdentityServer4.Admin.Controllers.API
             PagedQueryResult<User> queryResult;
             if (string.IsNullOrWhiteSpace(input.Keyword))
             {
-                queryResult = _userManager.Users.PagedQuery(input);
+                queryResult = await _userManager.Users.PagedQuery(input);
             }
             else
             {
-                queryResult = _userManager.Users.PagedQuery(input,
+                queryResult = await _userManager.Users.PagedQuery(input,
                     u => u.Email.Contains(input.Keyword) ||
                          u.UserName.Contains(input.Keyword) ||
                          u.PhoneNumber.Contains(input.Keyword) ||

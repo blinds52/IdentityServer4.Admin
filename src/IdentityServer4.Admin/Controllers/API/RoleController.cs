@@ -53,9 +53,9 @@ namespace IdentityServer4.Admin.Controllers.API
         }
 
         [HttpGet]
-        public IActionResult Find([FromQuery] PagedQuery input)
+        public async Task<IActionResult> SearchAsync([FromQuery] PagedQuery input)
         {
-            var queryResult = _roleManager.Roles.PagedQuery(input);
+            var queryResult = await _roleManager.Roles.PagedQuery(input);
             var dtos = Mapper.Map<List<RoleDto>>(queryResult.Result);
             return new ApiResult(queryResult.ToResult(dtos));
         }

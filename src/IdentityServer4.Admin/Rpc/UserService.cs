@@ -8,6 +8,7 @@ using IdentityServer4.Admin.Controllers.API.Dtos;
 using IdentityServer4.Admin.Entities;
 using IdentityServer4.Admin.Infrastructure;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -18,7 +19,7 @@ namespace IdentityServer4.Admin.Rpc
     public class UserService : ServiceActor
     {
         /// <summary>
-        /// 服务的标识,这里的服务号是10000
+        /// 服务的标识
         /// </summary>
         protected override int ServiceId => 10000;
 
@@ -34,7 +35,7 @@ namespace IdentityServer4.Admin.Rpc
         /// </summary>
         /// <param name="req">请求的消息</param>
         /// <returns>返回消息</returns>
-        public override Task<AmpMessage> ProcessAsync(AmpMessage req)
+        public override async Task<AmpMessage> ProcessAsync(AmpMessage req)
         {
             AmpMessage rsp;
             var serviceProvider = _serviceProvider.CreateScope().ServiceProvider;
@@ -43,12 +44,12 @@ namespace IdentityServer4.Admin.Rpc
                 // 查询
                 case 0:
                 {
-                    rsp = Search(serviceProvider, req);
+                    rsp = await SearchUsersAsync(serviceProvider, req);
                     break;
                 }
                 case 1:
                 {
-                    rsp = Get(serviceProvider, req);
+                    rsp = await GetUsersAsync(serviceProvider, req);
                     break;
                 }
                 default:
@@ -57,10 +58,11 @@ namespace IdentityServer4.Admin.Rpc
                     break;
                 }
             }
-            return Task.FromResult(rsp);
+
+            return rsp;
         }
 
-        private AmpMessage Get(IServiceProvider serviceProvider, AmpMessage req)
+        private async Task<AmpMessage> GetUsersAsync(IServiceProvider serviceProvider, AmpMessage req)
         {
             var rsp = AmpMessage.CreateResponseMessage(req.ServiceId, req.MessageId);
             var message = Encoding.UTF8.GetString(req.Data);
@@ -76,22 +78,22 @@ namespace IdentityServer4.Admin.Rpc
             }
 
             var ids = JsonConvert.DeserializeObject<Guid[]>(message);
-            var users = userManager.Users.Where(u => ids.Contains(u.Id)).Select(u => new
+            var users = await userManager.Users.Where(u => ids.Contains(u.Id)).Select(u => new
             {
                 u.Id,
                 Name = u.FirstName + u.LastName,
                 u.Title,
                 u.Email,
-                u.PhoneNumber,
+                Mobile = u.PhoneNumber,
                 u.OfficePhone,
                 u.Group,
                 u.Level
-            }).ToList();
+            }).ToListAsync();
             rsp.Data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(users));
             return rsp;
         }
 
-        private AmpMessage Search(IServiceProvider serviceProvider, AmpMessage req)
+        private async Task<AmpMessage> SearchUsersAsync(IServiceProvider serviceProvider, AmpMessage req)
         {
             var rsp = AmpMessage.CreateResponseMessage(req.ServiceId, req.MessageId);
             var message = Encoding.UTF8.GetString(req.Data);
@@ -138,7 +140,7 @@ namespace IdentityServer4.Admin.Rpc
                 }
             }
 
-            var output = userManager.Users.PagedQuery(dto, where);
+            var output = await userManager.Users.PagedQuery(dto, where);
             var result = new PagedQueryResult
             {
                 Page = output.Page,
@@ -150,7 +152,7 @@ namespace IdentityServer4.Admin.Rpc
                     Name = u.FirstName + u.LastName,
                     u.Title,
                     u.Email,
-                    u.PhoneNumber,
+                    Mobile = u.PhoneNumber,
                     u.OfficePhone,
                     u.Group,
                     u.Level

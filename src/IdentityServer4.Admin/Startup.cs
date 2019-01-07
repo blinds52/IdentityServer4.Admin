@@ -104,11 +104,20 @@ namespace IdentityServer4.Admin
                 options.AddPolicy("vue-expert",
                     b => b.WithOrigins("http://localhost:6568").AllowAnyHeader());
             });
-            
+
+            AddRpc(services);
+        }
+
+        private void AddRpc(IServiceCollection services)
+        {
             //添加协议支持
             services.AddDotBPE();
             //注册服务
-            services.AddServiceActors<AmpMessage>(actors => { actors.Add<UserService>(); });
+            services.AddServiceActors<AmpMessage>(actors =>
+            {
+                actors.Add<UserService>();
+                actors.Add<PermissionService>();
+            });
 
             //添加挂载的宿主服务
             services.AddSingleton<IHostedService, RpcHostedService>();

@@ -158,9 +158,9 @@ namespace IdentityServer4.Admin.Controllers.API
         }
 
         [HttpGet]
-        public IActionResult Find([FromQuery] PagedQuery input)
+        public async Task<IActionResult> SearchAsync([FromQuery] PagedQuery input)
         {
-            var queryResult = _dbContext.Clients
+            var queryResult = await _dbContext.Clients
                 .Include(x => x.AllowedGrantTypes)
                 .Include(x => x.RedirectUris)
                 .Include(x => x.PostLogoutRedirectUris)
