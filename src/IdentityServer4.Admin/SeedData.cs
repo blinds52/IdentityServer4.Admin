@@ -311,11 +311,10 @@ namespace IdentityServer4.Admin
 
         private static async Task AddRoles(IServiceProvider serviceProvider)
         {
-            await AddRole(serviceProvider, "expert", "A member of expert group");
-            await AddRole(serviceProvider, "expert-qc", "The quality controller of expert team");
-            await AddRole(serviceProvider, "expert-admin", "The admin of expert group");
+            await AddRole(serviceProvider, "expert-admin", "专家团队管理员");
+            await AddRole(serviceProvider, "expert", "专家团队成员");
+            await AddRole(serviceProvider, "expert-qc", "专家团队 QC");
             await AddRole(serviceProvider, "expert-op", "The operator of expert group");
-            await AddRole(serviceProvider, "expert-leader", "The leader of a expert team");
             await AddRole(serviceProvider, "sale", "销售");
             await CommitAsync(serviceProvider);
         }
@@ -362,12 +361,13 @@ namespace IdentityServer4.Admin
                     RedirectUris = {"http://localhost:6568/signin-oidc"},
                     PostLogoutRedirectUris = {"http://localhost:6568/signout-callback-oidc"},
                     RequireConsent = true,
+                    AllowOfflineAccess = false,
+                    AccessTokenLifetime = 10,
                     AllowedScopes =
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        "expert-api",
-                        "identity-server4"
+                        "expert-api"
                     }
                 },
                 new Client
