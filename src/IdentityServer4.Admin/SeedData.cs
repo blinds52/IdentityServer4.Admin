@@ -362,7 +362,7 @@ namespace IdentityServer4.Admin
                     PostLogoutRedirectUris = {"http://localhost:6568/signout-callback-oidc"},
                     RequireConsent = true,
                     AllowOfflineAccess = false,
-                    AccessTokenLifetime = 10,
+                    AccessTokenLifetime = 3600 * 24 * 7,
                     AllowedScopes =
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
