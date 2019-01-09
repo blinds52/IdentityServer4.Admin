@@ -34,17 +34,11 @@ $(function () {
             loadView(this);
         },
         watch: {
-            sex: function (val) {
-                $("#sex").val(val).trigger('change');
-            },
-            title: function (val) {
-                $("#title").val(val).trigger('change');
-            },
-            group: function (val) {
-                $("#group").val(val).trigger('change');
-            },
-            level: function (val) {
-                $("#level").val(val).trigger('change');
+            el: function (val) {
+                $("#sex").val(val.sex).trigger('change');
+                $("#title").val(val.title).trigger('change');
+                $("#group").val(val.group).trigger('change');
+                $("#level").val(val.level).trigger('change');
             }
         },
         mounted: function () {
@@ -53,16 +47,16 @@ $(function () {
                 minimumResultsForSearch: Infinity
             });
             $("#sex").on('change', function (e) {
-                that.sex = $("#sex").val();
+                that.el.sex = $("#sex").val();
             });
             $("#title").on('change', function (e) {
-                that.title = $("#title").val();
+                that.el.title = $("#title").val();
             });
             $("#group").on('change', function (e) {
-                that.group = $("#group").val();
+                that.el.group = $("#group").val();
             });
             $("#level").on('change', function (e) {
-                that.level = $("#level").val();
+                that.el.level = $("#level").val();
             });
         },
         methods: {
@@ -71,8 +65,7 @@ $(function () {
 
                 if (!app.requireCheck(this.el.userName)) {
                     this.errors.push("用户名不能为空");
-                }
-                else {
+                } else {
                     if (!app.rangeCheck(this.el.userName.length, 4, 30)) {
                         this.errors.push("用户名长度范围为 4-30");
                     }
@@ -88,16 +81,14 @@ $(function () {
                 }
                 if (!app.requireCheck(this.el.firstName)) {
                     this.errors.push("姓 不能为空");
-                }
-                else {
+                } else {
                     if (!app.rangeCheck(this.el.firstName.length, 1, 50)) {
                         this.errors.push("姓 长度范围为 1-50");
                     }
                 }
                 if (!app.requireCheck(this.el.lastName)) {
                     this.errors.push("名 不能为空");
-                }
-                else {
+                } else {
                     if (!app.rangeCheck(this.el.lastName.length, 1, 50)) {
                         this.errors.push("名 长度范围为 1-50");
                     }
@@ -124,10 +115,7 @@ $(function () {
             },
             update: function () {
                 if (this.checkProfile()) {
-                    app.put("/api/user/" + app.getPathPart(window.location.href, 1) + '/profile', {
-                        oldPassword: this.$data.el.oldPassword,
-                        newPassword: this.$data.el.newPassword
-                    }, function () {
+                    app.put("/api/user/" + app.getPathPart(window.location.href, 1) + '/profile', this.$data.el, function () {
                         swal({
                             title: "更新成功",
                             type: "success",
@@ -167,6 +155,7 @@ $(function () {
     function loadView(vue) {
         const url = '/api/user/' + app.getPathPart(window.location.href, 1) + '/profile';
         app.get(url, function (result) {
+            vue.$data.el = {};
             vue.$data.el.userName = result.data.userName;
             vue.$data.el.email = result.data.email;
             vue.$data.el.phoneNumber = result.data.phoneNumber;

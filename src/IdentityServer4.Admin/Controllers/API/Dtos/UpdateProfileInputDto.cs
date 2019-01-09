@@ -41,24 +41,12 @@ namespace IdentityServer4.Admin.Controllers.API.Dtos
         /// 名
         /// </summary>
         [StringLength(50)]
-        public string LastName { get; set; }
-        
-        /// <summary>
-        /// 职位
-        /// </summary>
-        [StringLength(50)]
-        public string Title { get; set; }
-        
-        /// <summary>
-        /// 团队
-        /// </summary>
-        [StringLength(50)]
-        public string Group { get; set; }        
+        public string LastName { get; set; }               
 
         /// <summary>
         /// 性别
         /// </summary>
-        public Sex Sex { get; set; }
+        public Sex Sex { get; set; }     
 
         /// <summary>
         /// 公司电话

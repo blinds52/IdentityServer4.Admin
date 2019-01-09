@@ -63,8 +63,6 @@ namespace IdentityServer4.Admin.Controllers.API
             dto.UserName = dto.UserName.Trim();
             dto.FirstName = dto.FirstName?.Trim();
             dto.LastName = dto.LastName?.Trim();
-            dto.Title = dto.Title?.Trim();
-            dto.Group = dto.Group?.Trim();
             dto.OfficePhone = dto.OfficePhone?.Trim();
 
             if (User.FindFirst("sub")?.Value != userId.ToString())
@@ -94,11 +92,9 @@ namespace IdentityServer4.Admin.Controllers.API
             user.PhoneNumber = dto.PhoneNumber;
             user.FirstName = dto.FirstName;
             user.LastName = dto.LastName;
-            user.Title = dto.Title;
-            user.Group = dto.Group;
             user.OfficePhone = dto.OfficePhone;
             user.Sex = dto.Sex;
-
+            
             var result = await _userManager.UpdateAsync(user);
             return result.Succeeded ? ApiResult.Ok : new ApiResult(ApiResult.Error, result.Errors.First().Description);
         }

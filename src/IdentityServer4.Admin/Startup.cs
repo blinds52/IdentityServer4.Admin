@@ -77,7 +77,7 @@ namespace IdentityServer4.Admin
             }).AddErrorDescriber<CustomIdentityErrorDescriber>();
 
             idBuilder.AddDefaultTokenProviders();
-            idBuilder.AddEntityFrameworkStores<AdminDbContext>();
+            idBuilder.AddEntityFrameworkStores<AdminDbContext>();            
 
             // Add ids4
             var builder = services.AddIdentityServer()
@@ -95,7 +95,8 @@ namespace IdentityServer4.Admin
                     // this enables automatic token cleanup. this is optional.
                     options.EnableTokenCleanup = true;
                 });
-
+            builder.AddProfileService<ProfileService>();
+            
             // Configure AutoMapper
             ConfigureAutoMapper();
 

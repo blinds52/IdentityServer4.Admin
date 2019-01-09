@@ -323,7 +323,15 @@ namespace IdentityServer4.Admin
         {
             return new List<ApiResource>
             {
-                new ApiResource("expert-api", "专家系统", new List<string> {JwtClaimTypes.Role})
+                new ApiResource("expert-api", "专家系统", new List<string>
+                {
+                    JwtClaimTypes.Role,
+                    JwtClaimTypes.Name,
+                    JwtClaimTypes.PhoneNumber,
+                    "title",
+                    "level",
+                    "group"
+                })
             };
         }
 

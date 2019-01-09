@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using IdentityServer4.Admin.Entities;
 using IdentityServer4.Extensions;
@@ -35,14 +37,21 @@ namespace IdentityServer4.Admin.Infrastructure
         /// </summary>
         /// <param name="context">The context.</param>
         /// <returns></returns>
-        public virtual Task GetProfileDataAsync(ProfileDataRequestContext context)
-        {               
-            context.LogProfileRequest(Logger);
-            // context.IssuedClaims = context.Subject.Claims.ToList();
+        public virtual async Task GetProfileDataAsync(ProfileDataRequestContext context)
+        {
             context.AddRequestedClaims(context.Subject.Claims);
-            context.LogIssuedClaims(Logger);
 
-            return Task.CompletedTask;
+            var user = await UserManager.GetUserAsync(context.Subject);
+
+            var claims = new List<Claim>
+            {
+                new Claim("title", user.Title),
+                new Claim("group", user.Group),
+                new Claim("level", user.Level),
+                new Claim("officephone", user.OfficePhone)
+            };
+
+            context.IssuedClaims.AddRange(claims);
         }
 
         /// <summary>
