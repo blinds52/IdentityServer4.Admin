@@ -381,7 +381,8 @@ namespace IdentityServer4.Admin
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         "full_profile",
-                        "expert-api"
+                        "expert-api",
+                        "email-proxy-api"
                     }
                 },
                 new Client
