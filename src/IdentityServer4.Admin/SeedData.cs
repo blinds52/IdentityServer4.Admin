@@ -323,15 +323,8 @@ namespace IdentityServer4.Admin
         {
             return new List<ApiResource>
             {
-                new ApiResource("expert-api", "专家系统", new List<string>
-                {
-                    JwtClaimTypes.Role,
-                    JwtClaimTypes.Name,
-                    JwtClaimTypes.PhoneNumber,
-                    "title",
-                    "level",
-                    "group"
-                })
+                new ApiResource("expert-api", "专家系统"),
+                new ApiResource("email-proxy-api", "邮件系统")
             };
         }
 
@@ -340,16 +333,29 @@ namespace IdentityServer4.Admin
         {
             var openId = new IdentityResources.OpenId();
             openId.DisplayName = "用户标识";
-
-            var profile = new IdentityResources.Profile();
-            profile.DisplayName = "资料: 如姓、名、角色等";
-            profile.Description = "";
+            var profile = new IdentityResources.Profile
+            {
+                DisplayName = "基本信息: 如姓名、角色等", Description = ""
+            };
             profile.UserClaims.Add(JwtClaimTypes.Role);
 
+            var fullProfile = new IdentityResources.Profile
+            {
+                Name = "full_profile", DisplayName = "完整信息: 如姓名、角色、电话、邮件、公司信息等", Description = ""
+            };
+            fullProfile.UserClaims.Add(JwtClaimTypes.Role);
+            fullProfile.UserClaims.Add(JwtClaimTypes.PhoneNumber);
+            fullProfile.UserClaims.Add(JwtClaimTypes.Email);
+            fullProfile.UserClaims.Add("title");
+            fullProfile.UserClaims.Add("group");
+            fullProfile.UserClaims.Add("level");
+            fullProfile.UserClaims.Add("office_phone");
+            fullProfile.UserClaims.Add("full_name");
             return new List<IdentityResource>
             {
                 openId,
-                profile
+                profile,
+                fullProfile
             };
         }
 
@@ -374,7 +380,7 @@ namespace IdentityServer4.Admin
                     AllowedScopes =
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
-                        IdentityServerConstants.StandardScopes.Profile,
+                        "full_profile",
                         "expert-api"
                     }
                 },
@@ -383,16 +389,19 @@ namespace IdentityServer4.Admin
                     ClientId = "email-proxy",
                     ClientName = "邮件系统",
                     AllowedGrantTypes = GrantTypes.Implicit,
-                    AllowedCorsOrigins = {"http://localhost:6570"},
-                    RedirectUris = {"http://localhost:6570/signin-oidc"},
-                    PostLogoutRedirectUris = {"http://localhost:6570/signout-callback-oidc"},
                     AllowAccessTokensViaBrowser = true,
+                    AllowedCorsOrigins = {"http://localhost:6570"},
+                    RedirectUris = {"http://localhost:6570/signin-oidc.html"},
+                    PostLogoutRedirectUris = {"http://localhost:6570/signout-callback-oidc.html"},
+                    RequireConsent = true,
+                    AllowOfflineAccess = false,
+                    AccessTokenLifetime = 3600 * 24 * 7,
                     AllowedScopes =
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
-                        IdentityServerConstants.StandardScopes.Profile
-                    },
-                    RequireConsent = false
+                        "full_profile",
+                        "email-proxy-api"
+                    }
                 }
             };
         }

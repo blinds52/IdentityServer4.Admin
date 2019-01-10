@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using IdentityModel;
 using IdentityServer4.Admin.Entities;
 using IdentityServer4.Extensions;
 using IdentityServer4.Hosting;
@@ -43,15 +44,91 @@ namespace IdentityServer4.Admin.Infrastructure
 
             var user = await UserManager.GetUserAsync(context.Subject);
 
-            var claims = new List<Claim>
+            var claims = new HashSet<string>();
+            foreach (var resource in context.RequestedResources.IdentityResources)
             {
-                new Claim("title", user.Title),
-                new Claim("group", user.Group),
-                new Claim("level", user.Level),
-                new Claim("officephone", user.OfficePhone)
-            };
+                foreach (var claim in resource.UserClaims)
+                {
+                    claims.Add(claim);
+                }
+            }
 
-            context.IssuedClaims.AddRange(claims);
+            foreach (var claim in claims)
+            {
+                switch (claim)
+                {
+                    case JwtClaimTypes.Name:
+                    {
+                        context.IssuedClaims.Add(context.Subject.FindFirst(JwtClaimTypes.Name));
+                        continue;
+                    }
+                    case JwtClaimTypes.IdentityProvider:
+                    {
+                        context.IssuedClaims.Add(context.Subject.FindFirst(JwtClaimTypes.IdentityProvider));
+                        continue;
+                    }
+                    case JwtClaimTypes.AuthenticationMethod:
+                    {
+                        context.IssuedClaims.Add(context.Subject.FindFirst(JwtClaimTypes.AuthenticationMethod));
+                        continue;
+                    }
+                    case JwtClaimTypes.AuthenticationTime:
+                    {
+                        context.IssuedClaims.Add(context.Subject.FindFirst(JwtClaimTypes.AuthenticationTime));
+                        continue;
+                    }
+                    case JwtClaimTypes.Role:
+                    {
+                        context.IssuedClaims.AddRange(context.Subject.FindAll(JwtClaimTypes.Role));
+                        continue;
+                    }
+                    case JwtClaimTypes.FamilyName:
+                    {
+                        context.IssuedClaims.Add(new Claim(JwtClaimTypes.FamilyName, user.LastName));
+                        continue;
+                    }
+                    case JwtClaimTypes.GivenName:
+                    {
+                        context.IssuedClaims.Add(new Claim(JwtClaimTypes.GivenName, user.FirstName));
+                        continue;
+                    }
+                    case JwtClaimTypes.PhoneNumber:
+                    {
+                        context.IssuedClaims.Add(new Claim(JwtClaimTypes.PhoneNumber, user.PhoneNumber));
+                        continue;
+                    }
+                    case JwtClaimTypes.Email:
+                    {
+                        context.IssuedClaims.Add(new Claim(JwtClaimTypes.Email, user.Email));
+                        continue;
+                    }
+                    case "group":
+                    {
+                        context.IssuedClaims.Add(new Claim("group", user.Group));
+                        continue;
+                    }
+                    case "level":
+                    {
+                        context.IssuedClaims.Add(new Claim("level", user.Level));
+                        continue;
+                    }
+                    case "office_phone":
+                    {
+                        context.IssuedClaims.Add(new Claim("office_phone", user.OfficePhone));
+                        continue;
+                    }
+                    case "full_name":
+                    {
+                        context.IssuedClaims.Add(new Claim("full_name", user.FirstName + user.LastName));
+                        continue;
+                    }
+                    case "title":
+                    {
+                        context.IssuedClaims.Add(new Claim("title", user.Title));
+                        continue;
+                    }
+                }
+            }
         }
 
         /// <summary>
