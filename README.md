@@ -63,10 +63,8 @@
 |----|----|----|----|
 | 记录所有操作        |  | login |   ☐   |
 
-#### Build docker image
-
-        docker build -f Dockerfile -t zlzforever/ids4admin .
         
-#### Run test docker instance
+#### Build and run test instance in local
 
-        docker run -d --name ids4admin  -e ASPNETCORE_ENVIRONMENT=Development --restart always -p 6566:6566 -p 6201:6201 zlzforever/ids4admin:latest /seed
+        $ sh build.sh
+        $ docker run -d --name ids4admin  -e ASPNETCORE_ENVIRONMENT=Development --restart always -p 6566:6566 -p 6201:6201 ids4admin /seed
