@@ -137,7 +137,7 @@ namespace IdentityServer4.Admin
                 "d237e995-572f-409c-8ca9-852e1d522efe",
                 AdminConsts.AdminName,
                 "admin", "admin",
-                "1qazZAQ!", "zousong@research.xbmail.com.cn",
+                "1qazZAQ!", "jackical.shen@research.xbmail.com.cn",
                 "18721696556",
                 "",
                 "",

@@ -187,7 +187,8 @@ namespace IdentityServer4.Admin.Rpc
                                 Group = u.Group,
                                 Level = u.Level,
                                 RoleId = ur.RoleId,
-                                UserName = u.UserName
+                                UserName = u.UserName,
+                                CreationTime = u.CreationTime
                             }).Where(t =>
                         roleIds.Contains(t.RoleId) &&
                         (string.IsNullOrWhiteSpace(dto.Q) || t.Name.Contains(dto.Q) || t.Email.Contains(dto.Q) ||
@@ -230,8 +231,8 @@ namespace IdentityServer4.Admin.Rpc
             public string Group { get; set; }
             public string Level { get; set; }
             public Guid RoleId { get; set; }
-
             public string UserName { get; set; }
+            public DateTime CreationTime { get; set; }
 
             public bool Equals(TmpUser x, TmpUser y)
             {
