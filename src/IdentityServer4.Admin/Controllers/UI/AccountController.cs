@@ -38,7 +38,7 @@ namespace IdentityServer4.Admin.Controllers.UI
             IIdentityServerInteractionService interaction,
             IClientStore clientStore,
             IAuthenticationSchemeProvider schemeProvider,
-            IEventService events, IOptions<AdminOptions> options)
+            IEventService events, AdminOptions options)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -46,7 +46,7 @@ namespace IdentityServer4.Admin.Controllers.UI
             _clientStore = clientStore;
             _schemeProvider = schemeProvider;
             _events = events;
-            _options = options.Value;
+            _options = options;
         }
 
         /// <summary>

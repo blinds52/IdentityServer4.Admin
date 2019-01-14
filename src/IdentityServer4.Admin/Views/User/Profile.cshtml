@@ -90,52 +90,19 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label>团队</label>
-                        <select id="group" class="form-control select2"
-                                @if (!isAdmin)
-                                {
-                                    @Html.Raw("disabled='disabled'")
-                                }
-                                style="width: 100%;">
-                            <option value="无">无</option>
-                            @foreach (var group in (HashSet<string>) ViewData["Group"])
-                            {
-                                <option value="@group">@group</option>
-                            }
-                        </select>
+                        <input class="form-control" readonly="readonly" style="width: 100%;" v-model="el.group"/>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
                         <label>职位</label>
-                        <select id="title" class="form-control select2"
-                                @if (!isAdmin)
-                                {
-                                    @Html.Raw("disabled='disabled'")
-                                }
-                                style="width: 100%;">
-                            <option value="无">无</option>
-                            @foreach (var title in (HashSet<string>) ViewData["Title"])
-                            {
-                                <option value="@title">@title</option>
-                            }
-                        </select>
+                        <input class="form-control" readonly="readonly" style="width: 100%;" v-model="el.title"/>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
                         <label>职级</label>
-                        <select id="level" class="form-control select2"
-                                @if (!isAdmin)
-                                {
-                                    @Html.Raw("disabled='disabled'")
-                                }
-                                style="width: 100%;">
-                            <option value="无">无</option>
-                            @foreach (var level in (HashSet<string>) ViewData["Level"])
-                            {
-                                <option value="@level">@level</option>
-                            }
-                        </select>
+                        <input class="form-control" readonly="readonly" style="width: 100%;" v-model="el.level"/>
                     </div>
                 </div>
             </div>

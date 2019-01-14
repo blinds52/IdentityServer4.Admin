@@ -37,15 +37,27 @@ namespace IdentityServer4.Admin
             }
 
             var builder = CreateWebHostBuilder(args);
+
             if (args.Contains("/dev"))
             {
                 builder.UseEnvironment(EnvironmentName.Development);
             }
 
-            var host = CreateWebHostBuilder(args).Build();
-            if (seed)
+            if (args.Contains("/prod"))
             {
-                SeedData.EnsureSeedData(host.Services).ConfigureAwait(true);
+                builder.UseEnvironment(EnvironmentName.Production);
+            }
+
+            var host = CreateWebHostBuilder(args).Build();
+
+            if (args.Contains("/dev") && seed)
+            {
+                SeedData.EnsureTestData(host.Services).ConfigureAwait(true);
+            }
+
+            if (args.Contains("/prod"))
+            {
+                SeedData.EnsureData(host.Services).ConfigureAwait(true);
             }
 
             host.Run();

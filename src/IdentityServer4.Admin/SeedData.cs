@@ -21,7 +21,7 @@ namespace IdentityServer4.Admin
 {
     internal static class SeedData
     {
-        public static async Task EnsureSeedData(IServiceProvider serviceProvider)
+        public static async Task EnsureTestData(IServiceProvider serviceProvider)
         {
             Console.WriteLine("Seeding database...");
 
@@ -137,7 +137,7 @@ namespace IdentityServer4.Admin
                 "d237e995-572f-409c-8ca9-852e1d522efe",
                 AdminConsts.AdminName,
                 "admin", "admin",
-                "1qazZAQ!", "jackical.shen@research.xbmail.com.cn",
+                "1qazZAQ!", "zlzforever@163.com",
                 "18721696556",
                 "",
                 "",
@@ -405,6 +405,28 @@ namespace IdentityServer4.Admin
                     }
                 }
             };
+        }
+
+        public static async Task EnsureData(IServiceProvider serviceProvider)
+        {
+            using (IServiceScope scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                var dbContext = (AdminDbContext) scope.ServiceProvider.GetRequiredService<IDbContext>();
+                if (await dbContext.Users.CountAsync() == 0)
+                {
+                    await AddPermissions(scope.ServiceProvider);
+                    await AddAdminRole(scope.ServiceProvider);
+                    await AddAdmin(scope.ServiceProvider);
+                    await CommitAsync(serviceProvider);
+                    Console.WriteLine("Done seeding database.");
+                }
+                else
+                {
+                    Console.WriteLine("Ignore seeding database.");
+                }
+            }
+
+            Console.WriteLine();
         }
     }
 }

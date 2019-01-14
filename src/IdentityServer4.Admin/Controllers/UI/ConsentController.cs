@@ -33,13 +33,13 @@ namespace IdentityServer4.Admin.Controllers.UI
             IIdentityServerInteractionService interaction,
             IClientStore clientStore,
             IResourceStore resourceStore,
-            ILogger<ConsentController> logger, IOptions<AdminOptions> options)
+            ILogger<ConsentController> logger, AdminOptions options)
         {
             _interaction = interaction;
             _clientStore = clientStore;
             _resourceStore = resourceStore;
             _logger = logger;
-            _options = options.Value;
+            _options = options;
         }
 
         /// <summary>

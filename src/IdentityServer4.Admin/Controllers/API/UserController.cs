@@ -29,7 +29,7 @@ namespace IdentityServer4.Admin.Controllers.API
         public UserController(UserManager<User> userManager,
             RoleManager<Role> roleManager,
             IDbContext dbContext,
-            IOptions<AdminOptions> options,
+            AdminOptions options,
             IServiceProvider serviceProvider,
             ILoggerFactory loggerFactory) : base(loggerFactory)
         {
@@ -37,7 +37,7 @@ namespace IdentityServer4.Admin.Controllers.API
             _dbContext = dbContext;
             _serviceProvider = serviceProvider;
             _roleManager = roleManager;
-            _options = options.Value;
+            _options = options;
         }
 
         #region User

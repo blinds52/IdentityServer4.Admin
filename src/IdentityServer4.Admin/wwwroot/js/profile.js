@@ -36,9 +36,6 @@ $(function () {
         watch: {
             el: function (val) {
                 $("#sex").val(val.sex).trigger('change');
-                $("#title").val(val.title).trigger('change');
-                $("#group").val(val.group).trigger('change');
-                $("#level").val(val.level).trigger('change');
             }
         },
         mounted: function () {
@@ -48,15 +45,6 @@ $(function () {
             });
             $("#sex").on('change', function (e) {
                 that.el.sex = $("#sex").val();
-            });
-            $("#title").on('change', function (e) {
-                that.el.title = $("#title").val();
-            });
-            $("#group").on('change', function (e) {
-                that.el.group = $("#group").val();
-            });
-            $("#level").on('change', function (e) {
-                that.el.level = $("#level").val();
             });
         },
         methods: {

@@ -71,7 +71,7 @@ namespace IdentityServer4.Admin.Rpc
             logger.LogInformation($"ServiceId: {req.ServiceId}, MessageId: {req.MessageId}, Data: {message}");
 
             var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
-            var options = serviceProvider.GetRequiredService<IOptions<AdminOptions>>().Value;
+            var options = serviceProvider.GetRequiredService<AdminOptions>();
 
             if (!options.AllowAnonymousUserQuery)
             {
@@ -104,7 +104,7 @@ namespace IdentityServer4.Admin.Rpc
             var logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<UserService>();
             logger.LogInformation($"ServiceId: {req.ServiceId}, MessageId: {req.MessageId}, Data: {message}");
             var dbContext = serviceProvider.GetRequiredService<IDbContext>();
-            var options = serviceProvider.GetRequiredService<IOptions<AdminOptions>>().Value;
+            var options = serviceProvider.GetRequiredService<AdminOptions>();
 
             if (!options.AllowAnonymousUserQuery)
             {

@@ -39,7 +39,7 @@ namespace IdentityServer4.Admin
         public void ConfigureServices(IServiceCollection services)
         {
             // Add configuration
-            services.Configure<AdminOptions>(Configuration.GetSection("IdentityServer4Admin"));
+            services.AddSingleton<AdminOptions>();
 
             // Add MVC
             services.AddMvc()
@@ -48,8 +48,7 @@ namespace IdentityServer4.Admin
 
             services.AddAuthorization();
 
-            string connectionString = Configuration.GetSection("IdentityServer4Admin")
-                .GetValue<string>("ConnectionString");
+            string connectionString = Configuration["ConnectionString"];
 
             // Add DbContext            
             Action<DbContextOptionsBuilder> dbContextOptionsBuilder;
@@ -60,8 +59,26 @@ namespace IdentityServer4.Admin
             else
             {
                 var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
-                dbContextOptionsBuilder = b =>
-                    b.UseSqlServer(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
+                var provider = Configuration["DatabaseProvider"];
+                switch (provider.ToLower())
+                {
+                    case "mysql":
+                    {
+                        dbContextOptionsBuilder = b =>
+                            b.UseMySql(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
+                        break;
+                    }
+                    case "sqlserver":
+                    {
+                        dbContextOptionsBuilder = b =>
+                            b.UseSqlServer(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));       
+                        break;
+                    }
+                    default:
+                    {
+                        throw new Exception($"Unsupported database provider: {provider}");
+                    }
+                }
             }
 
             services.AddDbContext<IDbContext, AdminDbContext>(dbContextOptionsBuilder);

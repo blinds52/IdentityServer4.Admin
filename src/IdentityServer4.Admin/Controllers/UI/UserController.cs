@@ -12,9 +12,9 @@ namespace IdentityServer4.Admin.Controllers.UI
     {
         private readonly AdminOptions _options;
 
-        public UserController(IOptions<AdminOptions> options)
+        public UserController(AdminOptions options)
         {
-            _options = options.Value;
+            _options = options;
         }
 
         [Authorize(Roles = AdminConsts.AdminName)]
