@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using AutoMapper;
 using DotBPE.Protocol.Amp;
@@ -8,7 +9,6 @@ using IdentityServer4.Admin.Controllers.API.Dtos;
 using IdentityServer4.Admin.Entities;
 using IdentityServer4.Admin.Infrastructure;
 using IdentityServer4.Admin.Rpc;
-using IdentityServer4.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -17,29 +17,27 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Serilog;
-using Serilog.Events;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace IdentityServer4.Admin
 {
     public class Startup
     {
+        private readonly IConfiguration _configuration;
+        private readonly IHostingEnvironment _hostingEnvironment;
+
         public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
-            Configuration = configuration;
-            HostingEnvironment = env;
+            _configuration = configuration;
+            _hostingEnvironment = env;
         }
-
-        private IConfiguration Configuration { get; }
-
-        private IHostingEnvironment HostingEnvironment { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var adminOptions = new AdminOptions(_configuration);
             // Add configuration
-            services.AddSingleton<AdminOptions>();
+            services.AddSingleton(adminOptions);
 
             // Add MVC
             services.AddMvc()
@@ -48,18 +46,18 @@ namespace IdentityServer4.Admin
 
             services.AddAuthorization();
 
-            string connectionString = Configuration["ConnectionString"];
+            string connectionString = _configuration["ConnectionString"];
 
             // Add DbContext            
             Action<DbContextOptionsBuilder> dbContextOptionsBuilder;
-            if (HostingEnvironment.IsDevelopment())
+            if (_hostingEnvironment.IsDevelopment())
             {
                 dbContextOptionsBuilder = b => b.UseInMemoryDatabase("IDS4");
             }
             else
             {
                 var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
-                var provider = Configuration["DatabaseProvider"];
+                var provider = _configuration["DatabaseProvider"];
                 switch (provider.ToLower())
                 {
                     case "mysql":
@@ -71,7 +69,7 @@ namespace IdentityServer4.Admin
                     case "sqlserver":
                     {
                         dbContextOptionsBuilder = b =>
-                            b.UseSqlServer(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));       
+                            b.UseSqlServer(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
                         break;
                     }
                     default:
@@ -86,15 +84,15 @@ namespace IdentityServer4.Admin
             // Add aspnetcore identity
             IdentityBuilder idBuilder = services.AddIdentity<User, Role>(options =>
             {
-                options.Password.RequireUppercase = false;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireDigit = false;
-                options.Password.RequiredLength = 6;
-                options.User.RequireUniqueEmail = false;
+                options.Password.RequireUppercase = adminOptions.RequireUppercase;
+                options.Password.RequireNonAlphanumeric = adminOptions.RequireNonAlphanumeric;
+                options.Password.RequireDigit = adminOptions.RequireDigit;
+                options.Password.RequiredLength = adminOptions.RequiredLength;
+                options.User.RequireUniqueEmail = adminOptions.RequireUniqueEmail;
             }).AddErrorDescriber<CustomIdentityErrorDescriber>();
 
             idBuilder.AddDefaultTokenProviders();
-            idBuilder.AddEntityFrameworkStores<AdminDbContext>();            
+            idBuilder.AddEntityFrameworkStores<AdminDbContext>();
 
             // Add ids4
             var builder = services.AddIdentityServer()
@@ -110,18 +108,14 @@ namespace IdentityServer4.Admin
                 {
                     options.ResolveDbContextOptions = (provider, b) => dbContextOptionsBuilder(b);
                     // this enables automatic token cleanup. this is optional.
-                    options.EnableTokenCleanup = true;
+                    options.EnableTokenCleanup = adminOptions.EnableTokenCleanup;
                 });
             builder.AddProfileService<ProfileService>();
-            
+
             // Configure AutoMapper
             ConfigureAutoMapper();
 
-            services.AddCors(options =>
-            {
-                options.AddPolicy("vue-expert",
-                    b => b.WithOrigins("http://localhost:6568").AllowAnyHeader());
-            });
+            services.AddCors();
 
             AddRpc(services);
         }
@@ -170,7 +164,10 @@ namespace IdentityServer4.Admin
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseIdentityServer();
-            app.UseCors("vue-expert");
+            app.UseCors(builder =>
+            {
+                builder.WithOrigins(app.ApplicationServices.GetRequiredService<AdminOptions>().Cors.ToArray());
+            });
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

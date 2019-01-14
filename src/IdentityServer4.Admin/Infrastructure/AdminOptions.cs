@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 
@@ -12,6 +11,26 @@ namespace IdentityServer4.Admin.Infrastructure
         {
             _configuration = configuration;
         }
+
+        public bool RequireUppercase =>
+            !string.IsNullOrWhiteSpace(_configuration["RequireUppercase"]) &&
+            _configuration["RequireUppercase"].CastTo<bool>();
+
+        public bool RequireNonAlphanumeric =>
+            !string.IsNullOrWhiteSpace(_configuration["RequireNonAlphanumeric"]) &&
+            _configuration["RequireNonAlphanumeric"].CastTo<bool>();
+
+        public bool RequireDigit =>
+            !string.IsNullOrWhiteSpace(_configuration["RequireDigit"]) &&
+            _configuration["RequireDigit"].CastTo<bool>();
+
+        public int RequiredLength => _configuration["RequiredLength"].CastTo<int>();
+
+        public bool RequireUniqueEmail => !string.IsNullOrWhiteSpace(_configuration["RequireUniqueEmail"]) &&
+                                          _configuration["RequireUniqueEmail"].CastTo<bool>();
+
+        public bool EnableTokenCleanup => string.IsNullOrWhiteSpace(_configuration["EnableTokenCleanup"]) ||
+                                          _configuration["EnableTokenCleanup"].CastTo<bool>();
 
         public bool AllowAnonymousUserQuery => string.IsNullOrWhiteSpace(_configuration["AllowAnonymousUserQuery"]) ||
                                                _configuration["AllowAnonymousUserQuery"].CastTo<bool>();
@@ -66,8 +85,12 @@ namespace IdentityServer4.Admin.Infrastructure
                 ? "Invalid selection"
                 : _configuration["InvalidSelectionErrorMessage"];
 
-        public HashSet<string> Group { get; set; }
-        public HashSet<string> Title { get; set; }
-        public HashSet<string> Level { get; set; }
+        public HashSet<string> Group => _configuration.GetSection("Group").Get<HashSet<string>>();
+
+        public HashSet<string> Title => _configuration.GetSection("Title").Get<HashSet<string>>();
+
+        public HashSet<string> Level => _configuration.GetSection("Level").Get<HashSet<string>>();
+
+        public HashSet<string> Cors => _configuration.GetSection("Cors").Get<HashSet<string>>();
     }
 }

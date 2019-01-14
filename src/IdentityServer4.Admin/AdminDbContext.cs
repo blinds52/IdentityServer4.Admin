@@ -266,7 +266,7 @@ namespace IdentityServer4.Admin
             builder.AddJsonFile(config, optional: false);
 
             var configuration = builder.Build();
-            return configuration.GetSection("IdentityServer4Admin").GetValue<string>("ConnectionString");
+            return configuration["ConnectionString"];
         }
     }
 }

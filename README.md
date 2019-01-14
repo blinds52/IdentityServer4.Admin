@@ -64,7 +64,7 @@
 | 记录所有操作        |  | login |   ☐   |
 
 #### Run
-
+        $ docker run --rm ids4admin /init
         $ docker run -d --name ids4admin --restart always  -e ROOT_PASSWORD=1qazZAQ! -p 6566:6566 -p 6201:6201 ids4admin migrate
 
         

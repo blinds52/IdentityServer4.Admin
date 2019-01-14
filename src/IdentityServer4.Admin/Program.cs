@@ -1,16 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using DotBPE.Protocol.Amp;
-using DotBPE.Rpc;
-using DotBPE.Rpc.Hosting;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Newtonsoft.Json;
 using Serilog;
 using Serilog.Events;
 using EnvironmentName = Microsoft.AspNetCore.Hosting.EnvironmentName;
@@ -30,6 +22,32 @@ namespace IdentityServer4.Admin
                 .WriteTo.Console().WriteTo.RollingFile("ids4.log")
                 .CreateLogger();
 
+            if (args.Contains("/init"))
+            {
+                // EF Migrate
+                var proc = Process.Start(new ProcessStartInfo
+                {
+                    FileName = "dotnet",
+                    Arguments = "ef database update " + string.Join(" ", args),
+                    CreateNoWindow = true,
+                    RedirectStandardOutput = true
+                });
+                if (proc == null)
+                {
+                    Log.Logger.Information("EF Migrate execute failed.");
+                    return;
+                }
+
+                proc.WaitForExit();
+                var info = proc.StandardOutput.ReadToEnd();
+                if (!info.EndsWith("Done.\n"))
+                {
+                    Log.Logger.Error(("EF Migrate execute failed."));
+                }
+
+                return;
+            }
+
             var seed = args.Contains("/seed");
             if (seed)
             {
@@ -48,7 +66,7 @@ namespace IdentityServer4.Admin
                 builder.UseEnvironment(EnvironmentName.Production);
             }
 
-            var host = CreateWebHostBuilder(args).Build();
+            var host = builder.Build();
 
             if (args.Contains("/dev") && seed)
             {

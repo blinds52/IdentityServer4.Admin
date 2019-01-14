@@ -2,7 +2,6 @@ using System;
 using IdentityServer4.Admin.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 
 namespace IdentityServer4.Admin.Controllers.UI
 {
