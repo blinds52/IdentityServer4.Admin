@@ -79,7 +79,7 @@ namespace IdentityServer4.Admin.Controllers.UI
             dic.Add("BackChannelLogoutSessionRequired", client.BackChannelLogoutSessionRequired);
             dic.Add("AllowOfflineAccess", client.AllowOfflineAccess);
             dic.Add("AllowedScopes",
-                client.AllowedScopes == null ? "" : string.Join("; ", client.AllowedScopes.Select(t => t.Scope)));
+                client.AllowedScopes == null ? "" : string.Join(" ", client.AllowedScopes.Select(t => t.Scope)));
             dic.Add("IdentityTokenLifetime", client.IdentityTokenLifetime);
             dic.Add("AccessTokenLifetime", client.AccessTokenLifetime);
             dic.Add("AuthorizationCodeLifetime", client.AuthorizationCodeLifetime);
