@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using IdentityServer4.Models;
@@ -61,9 +62,7 @@ namespace IdentityServer4.Admin.Controllers.API.Dtos
 
         public bool RequireConsent { get; set; }
 
-        [Required]
-        [StringLength(2000)]
-        public string AllowedScopes { get; set; }
+        [Required] [StringLength(2000)] public string AllowedScopes { get; set; }
 
         /// <summary>
         /// Gets or sets the protocol type.
@@ -80,7 +79,7 @@ namespace IdentityServer4.Admin.Controllers.API.Dtos
         public bool RequireClientSecret { get; set; } = true;
 
         /// <summary>
-        /// Description of the client.
+        /// Description of the 
         /// </summary>
         [StringLength(1000)]
         public string Description { get; set; }
@@ -202,7 +201,7 @@ namespace IdentityServer4.Admin.Controllers.API.Dtos
         public AccessTokenType AccessTokenType { get; set; } = AccessTokenType.Jwt;
 
         /// <summary>
-        /// Gets or sets a value indicating whether the local login is allowed for this client. Defaults to <c>true</c>.
+        /// Gets or sets a value indicating whether the local login is allowed for this client.  Defaults to <c>true</c>.
         /// </summary>
         /// <value>
         ///   <c>true</c> if local logins are enabled; otherwise, <c>false</c>.
@@ -241,7 +240,7 @@ namespace IdentityServer4.Admin.Controllers.API.Dtos
         public string ClientClaimsPrefix { get; set; } = "client_";
 
         /// <summary>
-        /// Gets or sets a salt value used in pair-wise subjectId generation for users of this client.
+        /// Gets or sets a salt value used in pair-wise subjectId generation for users of this client. 
         /// </summary>
         [StringLength(200)]
         public string PairWiseSubjectSalt { get; set; }
@@ -269,11 +268,59 @@ namespace IdentityServer4.Admin.Controllers.API.Dtos
         public int DeviceCodeLifetime { get; set; } = 300;
 
         /// <summary>
-        /// Gets or sets the custom properties for the client.
+        /// Gets or sets the custom properties for the client. 
         /// </summary>
         /// <value>
         /// The properties.
         /// </value>
         public IDictionary<string, string> Properties { get; set; } = new Dictionary<string, string>();
+
+        public ICollection<string> GetAllowedGrantTypes()
+        {
+            switch (AllowedGrantTypes)
+            {
+                case GrantTypes.Code:
+                {
+                    return Models.GrantTypes.Code;
+                }
+                case GrantTypes.Hybrid:
+                {
+                    return Models.GrantTypes.Hybrid;
+                }
+                case GrantTypes.Implicit:
+                {
+                    return Models.GrantTypes.Implicit;
+                }
+                case GrantTypes.ClientCredentials:
+                {
+                    return Models.GrantTypes.ClientCredentials;
+                }
+                case GrantTypes.DeviceFlow:
+                {
+                    return Models.GrantTypes.DeviceFlow;
+                }
+                case GrantTypes.ResourceOwnerPassword:
+                {
+                    return Models.GrantTypes.ResourceOwnerPassword;
+                }
+                case GrantTypes.CodeAndClientCredentials:
+                {
+                    return Models.GrantTypes.CodeAndClientCredentials;
+                }
+                case GrantTypes.HybridAndClientCredentials:
+                {
+                    return Models.GrantTypes.HybridAndClientCredentials;
+                }
+                case GrantTypes.ImplicitAndClientCredentials:
+                {
+                    return Models.GrantTypes.ImplicitAndClientCredentials;
+                }
+                case GrantTypes.ResourceOwnerPasswordAndClientCredentials:
+                {
+                    return Models.GrantTypes.ResourceOwnerPasswordAndClientCredentials;
+                }
+            }
+            throw new ArgumentException("不支持的授权类型");
+        }
     }
 }

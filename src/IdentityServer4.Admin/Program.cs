@@ -24,14 +24,14 @@ namespace IdentityServer4.Admin
                     logDirectory.Create();
                 }
 
-                logFile = "/dis4admin/log/ids4.log";
+                logFile = "/ids4admin/log/ids4.log";
             }
 
             Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Information()
-                .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-                .MinimumLevel.Override("System", LogEventLevel.Warning)
-                .MinimumLevel.Override("Microsoft.AspNetCore.Authentication", LogEventLevel.Information)
+                .MinimumLevel.Verbose()
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Verbose)
+                .MinimumLevel.Override("System", LogEventLevel.Verbose)
+                .MinimumLevel.Override("Microsoft.AspNetCore.Authentication", LogEventLevel.Verbose)
                 .Enrich.FromLogContext()
                 .WriteTo.Console().WriteTo.RollingFile(logFile)
                 .CreateLogger();

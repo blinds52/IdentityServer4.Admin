@@ -32,14 +32,11 @@ namespace IdentityServer4.Admin.Controllers.API
                 return new ApiResult(ApiResult.Error, "资源名已经存在");
             }
 
-            var apiResource = new ApiResource();
+            var apiResource = new ApiResource(dto.Name, dto.DisplayName, dto.UserClaims);
             apiResource.Enabled = dto.Enabled;
-            apiResource.Name = dto.Name;
-            apiResource.DisplayName = dto.DisplayName;
             apiResource.Description = dto.Description;
-            apiResource.UserClaims = dto.UserClaims;
-
-            await _dbContext.ApiResources.AddAsync(apiResource.ToEntity());
+            var entity = apiResource.ToEntity();
+            await _dbContext.ApiResources.AddAsync(entity);
             await _dbContext.SaveChangesAsync();
             return ApiResult.Ok;
         }

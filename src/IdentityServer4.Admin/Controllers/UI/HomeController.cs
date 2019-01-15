@@ -9,13 +9,6 @@ namespace IdentityServer4.Admin.Controllers.UI
 {
     public class HomeController : BaseController
     {
-        private readonly IIdentityServerInteractionService _interaction;
-
-        public HomeController(IIdentityServerInteractionService interaction)
-        {
-            _interaction = interaction;
-        }
-
         [HttpGet("test")]
         public IActionResult Test()
         {
@@ -32,24 +25,6 @@ namespace IdentityServer4.Admin.Controllers.UI
             }
 
             return Redirect($"user/{userId}/profile");
-        }
-
-        /// <summary>
-        /// Shows the error page
-        /// </summary>
-        [HttpGet("error")]
-        public async Task<IActionResult> Error(string errorId)
-        {
-            var vm = new ErrorViewModel();
-
-            // retrieve error details from identityserver
-            var message = await _interaction.GetErrorContextAsync(errorId);
-            if (message != null)
-            {
-                vm.Error = message;
-            }
-
-            return View("Error", vm);
         }
     }
 }

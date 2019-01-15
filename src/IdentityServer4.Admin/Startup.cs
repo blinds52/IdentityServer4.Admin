@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using AutoMapper;
@@ -9,6 +10,7 @@ using IdentityServer4.Admin.Controllers.API.Dtos;
 using IdentityServer4.Admin.Entities;
 using IdentityServer4.Admin.Infrastructure;
 using IdentityServer4.Admin.Rpc;
+using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -97,9 +99,17 @@ namespace IdentityServer4.Admin
 
             // Add ids4
             var builder = services.AddIdentityServer()
-                .AddAspNetIdentity<User>()
-                // todo: config credential in production
-                .AddDeveloperSigningCredential();
+                .AddAspNetIdentity<User>();
+            if (_hostingEnvironment.IsDevelopment())
+            {
+                builder.AddDeveloperSigningCredential();
+            }
+            else
+            {
+                var key = Directory.Exists("/ids4admin") ? "/ids4admin/signing_key.rsa" : "signing_key.rsa";
+                builder.AddDeveloperSigningCredential(true, key);
+            }
+
             builder.AddConfigurationStore<AdminDbContext>(options =>
                 {
                     options.ResolveDbContextOptions = (provider, b) => dbContextOptionsBuilder(b);
@@ -110,7 +120,7 @@ namespace IdentityServer4.Admin
                     options.ResolveDbContextOptions = (provider, b) => dbContextOptionsBuilder(b);
                     // this enables automatic token cleanup. this is optional.
                     options.EnableTokenCleanup = adminOptions.EnableTokenCleanup;
-                });
+                }).AddResourceStore<EfResourceStore>();
             builder.AddProfileService<ProfileService>();
 
             // Configure AutoMapper
@@ -156,7 +166,7 @@ namespace IdentityServer4.Admin
             }
             else
             {
-                app.UseDeveloperExceptionPage();
+                app.UseExceptionHandler("/error");
                 app.UseHsts();
             }
 

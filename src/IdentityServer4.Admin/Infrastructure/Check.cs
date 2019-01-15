@@ -17,7 +17,7 @@ namespace IdentityServer4.Admin.Infrastructure
         /// <param name="assertion">要验证的断言。</param>
         /// <param name="message">异常消息。</param>
         private static void Require<TException>(bool assertion, string message)
-            where TException : System.Exception
+            where TException : Exception
         {
             if (assertion)
             {
@@ -43,7 +43,7 @@ namespace IdentityServer4.Admin.Infrastructure
             {
                 throw new ArgumentNullException(nameof(assertionFunc));
             }
-            Require<System.Exception>(assertionFunc(value), message);
+            Require<Exception>(assertionFunc(value), message);
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace IdentityServer4.Admin.Infrastructure
         /// <param name="value">要判断的值</param>
         /// <param name="assertionFunc">要验证的断言表达式</param>
         /// <param name="message">异常消息</param>
-        public static void Required<T, TException>(T value, Func<T, bool> assertionFunc, string message) where TException : System.Exception
+        public static void Required<T, TException>(T value, Func<T, bool> assertionFunc, string message) where TException : Exception
         {
             if (assertionFunc == null)
             {
