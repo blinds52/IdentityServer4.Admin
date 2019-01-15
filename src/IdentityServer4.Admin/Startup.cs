@@ -116,8 +116,6 @@ namespace IdentityServer4.Admin
             // Configure AutoMapper
             ConfigureAutoMapper();
 
-            services.AddCors();
-
             AddRpc(services);
         }
 
@@ -166,10 +164,6 @@ namespace IdentityServer4.Admin
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseIdentityServer();
-            app.UseCors(builder =>
-            {
-                builder.WithOrigins(app.ApplicationServices.GetRequiredService<AdminOptions>().Cors.ToArray());
-            });
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

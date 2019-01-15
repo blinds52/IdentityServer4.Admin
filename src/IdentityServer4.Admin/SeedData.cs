@@ -45,7 +45,7 @@ namespace IdentityServer4.Admin
             }
 
             await CommitAsync(serviceProvider);
-            
+
             Console.WriteLine("Done seeding database.");
             Console.WriteLine();
         }

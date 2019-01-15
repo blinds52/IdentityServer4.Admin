@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -40,6 +41,10 @@ namespace IdentityServer4.Admin.Infrastructure
 
             var user = await UserManager.GetUserAsync(context.Subject);
 
+            if (user == null)
+            {
+                throw new ArgumentException("User not exits");
+            }
             var claims = new HashSet<string>();
             foreach (var resource in context.RequestedResources.IdentityResources)
             {
@@ -48,6 +53,8 @@ namespace IdentityServer4.Admin.Infrastructure
                     claims.Add(claim);
                 }
             }
+
+            context.IssuedClaims = context.IssuedClaims ?? new List<Claim>();
 
             foreach (var claim in claims)
             {
@@ -80,47 +87,47 @@ namespace IdentityServer4.Admin.Infrastructure
                     }
                     case JwtClaimTypes.FamilyName:
                     {
-                        context.IssuedClaims.Add(new Claim(JwtClaimTypes.FamilyName, user.LastName));
+                        context.IssuedClaims.Add(new Claim(JwtClaimTypes.FamilyName, user.LastName ?? ""));
                         continue;
                     }
                     case JwtClaimTypes.GivenName:
                     {
-                        context.IssuedClaims.Add(new Claim(JwtClaimTypes.GivenName, user.FirstName));
+                        context.IssuedClaims.Add(new Claim(JwtClaimTypes.GivenName, user.FirstName ?? ""));
                         continue;
                     }
                     case JwtClaimTypes.PhoneNumber:
                     {
-                        context.IssuedClaims.Add(new Claim(JwtClaimTypes.PhoneNumber, user.PhoneNumber));
+                        context.IssuedClaims.Add(new Claim(JwtClaimTypes.PhoneNumber, user.PhoneNumber ?? ""));
                         continue;
                     }
                     case JwtClaimTypes.Email:
                     {
-                        context.IssuedClaims.Add(new Claim(JwtClaimTypes.Email, user.Email));
+                        context.IssuedClaims.Add(new Claim(JwtClaimTypes.Email, user.Email ?? ""));
                         continue;
                     }
                     case "group":
                     {
-                        context.IssuedClaims.Add(new Claim("group", user.Group));
+                        context.IssuedClaims.Add(new Claim("group", user.Group ?? ""));
                         continue;
                     }
                     case "level":
                     {
-                        context.IssuedClaims.Add(new Claim("level", user.Level));
+                        context.IssuedClaims.Add(new Claim("level", user.Level ?? ""));
                         continue;
                     }
                     case "office_phone":
                     {
-                        context.IssuedClaims.Add(new Claim("office_phone", user.OfficePhone));
+                        context.IssuedClaims.Add(new Claim("office_phone", user.OfficePhone ?? ""));
                         continue;
                     }
                     case "full_name":
                     {
-                        context.IssuedClaims.Add(new Claim("full_name", user.FirstName + user.LastName));
+                        context.IssuedClaims.Add(new Claim("full_name", user.FirstName ?? "" + user.LastName ?? ""));
                         continue;
                     }
                     case "title":
                     {
-                        context.IssuedClaims.Add(new Claim("title", user.Title));
+                        context.IssuedClaims.Add(new Claim("title", user.Title ?? ""));
                         continue;
                     }
                 }

@@ -36,14 +36,14 @@ namespace IdentityServer4.Admin
                 .WriteTo.Console().WriteTo.RollingFile(logFile)
                 .CreateLogger();
 
-
+            Log.Logger.Information($"Log to: {logFile}");
             var builder = WebHost.CreateDefaultBuilder(args).ConfigureAppConfiguration(config =>
                 {
                     var configFile = args.FirstOrDefault(a => a.Contains("appsettings.json"));
                     if (configFile != null && File.Exists(configFile))
                     {
                         config.AddJsonFile(configFile);
-                        Log.Logger.Information("Use extend config");
+                        Log.Logger.Information($"Use external config: {configFile}");
                     }
                 })
                 .UseStartup<Startup>().UseSerilog().UseUrls("http://*:6566");

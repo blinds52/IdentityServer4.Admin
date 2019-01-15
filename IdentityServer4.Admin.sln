@@ -12,6 +12,7 @@ ProjectSection(SolutionItems) = preProject
 	azure-pipelines.docker.yml = azure-pipelines.docker.yml
 	azure-pipelines.yml = azure-pipelines.yml
 	restart.sh = restart.sh
+	push.sh = push.sh
 EndProjectSection
 EndProject
 Global
