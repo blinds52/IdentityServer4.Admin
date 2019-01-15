@@ -10,7 +10,7 @@
 
 #### run a test instance
 
-        $ docker run -d --name ids4admin --restart always  -e ADMIN_PASSWORD=1qazZAQ! -p 6566:6566 -p 6201:6201 zlzforever/ids4admin /dev
+        $ docker run -d --name ids4admin --restart always  -e ADMIN_PASSWORD=1qazZAQ! -p 6566:6566 -p 6201:6201 zlzforever/ids4admin:latest /dev
 
 + try open http://localhost:6566 and login by user: admin, password: 1qazZAQ!
 + ids4admin runs in a memory storage with dev mode
@@ -27,7 +27,7 @@ change the configuration as you wish, for example database settings, support Sql
 
 then start a new instance          
                  
-        $ docker run -d --name ids4admin --restart always -v /ids4admin:/ids4admin -p 6566:6566 -p 6201:6201 zlzforever/ids4admin /ids4admin/appsettings.json
+        $ docker run -d --name ids4admin --restart always -v /ids4admin:/ids4admin -p 6566:6566 -p 6201:6201 zlzforever/ids4admin:latest /ids4admin/appsettings.json
 
 ### How to build the latest docker image
 
