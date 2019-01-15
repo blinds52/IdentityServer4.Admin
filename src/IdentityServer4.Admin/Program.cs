@@ -15,13 +15,25 @@ namespace IdentityServer4.Admin
     {
         public static void Main(string[] args)
         {
+            string logFile = "ids4.log";
+            if (Directory.Exists("/ids4admin"))
+            {
+                var logDirectory = new DirectoryInfo("/ids4admin/log");
+                if (!logDirectory.Exists)
+                {
+                    logDirectory.Create();
+                }
+
+                logFile = "/dis4admin/log/ids4.log";
+            }
+
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Information()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
                 .MinimumLevel.Override("System", LogEventLevel.Warning)
                 .MinimumLevel.Override("Microsoft.AspNetCore.Authentication", LogEventLevel.Information)
                 .Enrich.FromLogContext()
-                .WriteTo.Console().WriteTo.RollingFile("ids4.log")
+                .WriteTo.Console().WriteTo.RollingFile(logFile)
                 .CreateLogger();
 
 
