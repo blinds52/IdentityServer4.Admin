@@ -156,7 +156,7 @@ namespace IdentityServer4.Admin
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseDeveloperExceptionPage();
                 app.UseHsts();
             }
 
@@ -189,8 +189,8 @@ namespace IdentityServer4.Admin
             using (IServiceScope scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 var sp = scope.ServiceProvider;
+                SeedData.AddIdentityResources(sp).Wait();
                 SeedData.EnsureData(sp).Wait();
-
                 if (env.IsDevelopment() && _configuration["seed"] == "true")
                 {
                     SeedData.EnsureTestData(sp).Wait();

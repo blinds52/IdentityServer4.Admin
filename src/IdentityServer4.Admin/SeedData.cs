@@ -29,8 +29,7 @@ namespace IdentityServer4.Admin
 
             // Add client
             await AddClients(serviceProvider);
-            // Add identityResource
-            await AddIdentityResources(serviceProvider);
+
             // Add apiResource
             await AddApiResources(serviceProvider);
 
@@ -82,7 +81,7 @@ namespace IdentityServer4.Admin
             }
         }
 
-        private static async Task AddIdentityResources(IServiceProvider serviceProvider)
+        public static async Task AddIdentityResources(IServiceProvider serviceProvider)
         {
             var context = (AdminDbContext) serviceProvider.GetRequiredService<IDbContext>();
             if (!await context.IdentityResources.AnyAsync())
@@ -98,6 +97,8 @@ namespace IdentityServer4.Admin
             {
                 Console.WriteLine("IdentityResources already populated");
             }
+            
+            await CommitAsync(serviceProvider);
         }
 
         private static async Task AddClients(IServiceProvider serviceProvider)

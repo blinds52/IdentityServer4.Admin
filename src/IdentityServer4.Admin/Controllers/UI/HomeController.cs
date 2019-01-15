@@ -37,7 +37,7 @@ namespace IdentityServer4.Admin.Controllers.UI
         /// <summary>
         /// Shows the error page
         /// </summary>
-        [HttpGet("error/{errorId}")]
+        [HttpGet("error")]
         public async Task<IActionResult> Error(string errorId)
         {
             var vm = new ErrorViewModel();

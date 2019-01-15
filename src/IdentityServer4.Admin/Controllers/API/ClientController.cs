@@ -105,7 +105,7 @@ namespace IdentityServer4.Admin.Controllers.API
 
             client.Description = dto.Description;
             client.Properties = dto.Properties;
-            client.AllowedScopes = dto.AllowedScopes.Split(new[] {";"}, StringSplitOptions.RemoveEmptyEntries)
+            client.AllowedScopes = dto.AllowedScopes.Split(new[] {" "}, StringSplitOptions.RemoveEmptyEntries)
                 .Where(cors => !string.IsNullOrWhiteSpace(cors)).ToList();
             client.ClientId = dto.ClientId;
             client.ClientName = dto.ClientName;
