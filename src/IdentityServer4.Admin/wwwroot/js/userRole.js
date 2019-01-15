@@ -14,8 +14,7 @@ $(function () {
                 href: '#'
             }],
             els: [],
-            roles: [],
-            role: ''
+            roles: []
         },
         created: function () {
             loadView(this);
@@ -41,9 +40,14 @@ $(function () {
             },
             addRole: function () {
                 let that = this;
-                app.post("/api/user/" + app.getPathPart(window.location.href, 1) + "/role/" + $('.select2').val(), null, function () {
-                    loadView(that);
-                });
+                let roleId = $('.select2').val();
+                if (!roleId) {
+                    swal('错误', '请选择角色', "error");
+                } else {
+                    app.post("/api/user/" + app.getPathPart(window.location.href, 1) + "/role/" + roleId, null, function () {
+                        loadView(that);
+                    });
+                }
             }
         }
     });
@@ -56,7 +60,7 @@ $(function () {
         let getRoleUrl = '/api/role?page=1&size=1000';
         app.get(getRoleUrl, function (result) {
             vue.$data.roles = result.data.result;
-            vue.$data.role = vue.$data.roles[0].id;
+            $('.select2').val(vue.$data.roles[0].id)
         });
     }
 });

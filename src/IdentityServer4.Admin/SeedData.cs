@@ -10,7 +10,9 @@ using IdentityServer4.EntityFramework.Mappers;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using ApiResource = IdentityServer4.Models.ApiResource;
 using Client = IdentityServer4.Models.Client;
 using GrantTypes = IdentityServer4.Models.GrantTypes;
@@ -25,43 +27,27 @@ namespace IdentityServer4.Admin
         {
             Console.WriteLine("Seeding database...");
 
-            using (IServiceScope scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            // Add client
+            await AddClients(serviceProvider);
+            // Add identityResource
+            await AddIdentityResources(serviceProvider);
+            // Add apiResource
+            await AddApiResources(serviceProvider);
+
+            await CommitAsync(serviceProvider);
+
+            var dbContext = (AdminDbContext) serviceProvider.GetRequiredService<IDbContext>();
+            if (await dbContext.Users.CountAsync() == 0)
             {
-                // Add client
-                await AddClients(scope.ServiceProvider);
-                // Add identityResource
-                await AddIdentityResources(scope.ServiceProvider);
-                // Add apiResource
-                await AddApiResources(scope.ServiceProvider);
-
-                await scope.ServiceProvider.GetRequiredService<IDbContext>().SaveChangesAsync();
-
-                var dbContext = (AdminDbContext) scope.ServiceProvider.GetRequiredService<IDbContext>();
-                if (await dbContext.Users.CountAsync() == 0)
-                {
-                    await AddPermissions(scope.ServiceProvider);
-                    await AddAdminRole(scope.ServiceProvider);
-                    await AddRoles(scope.ServiceProvider);
-                    await AddAdmin(scope.ServiceProvider);
-                    await AddUsers(scope.ServiceProvider);
-                }
-
-                await CommitAsync(serviceProvider);
+                await AddPermissions(serviceProvider);
+                await AddRoles(serviceProvider);
+                await AddUsers(serviceProvider);
             }
 
+            await CommitAsync(serviceProvider);
+            
             Console.WriteLine("Done seeding database.");
             Console.WriteLine();
-        }
-
-        private static async Task AddAdminRole(IServiceProvider serviceProvider)
-        {
-            var context = (AdminDbContext) serviceProvider.GetRequiredService<IDbContext>();
-
-            var role = await AddRole(serviceProvider, AdminConsts.AdminName, "Super admin");
-            var permission = await context.Permissions.FirstOrDefaultAsync(p => p.Name == AdminConsts.AdminName);
-            await context.RolePermissions.AddAsync(new RolePermission
-                {RoleId = role.Id, PermissionId = permission.Id});
-            await CommitAsync(serviceProvider);
         }
 
         private static async Task AddPermissions(IServiceProvider serviceProvider)
@@ -129,21 +115,6 @@ namespace IdentityServer4.Admin
             {
                 Console.WriteLine("Clients already populated");
             }
-        }
-
-        private static async Task AddAdmin(IServiceProvider serviceProvider)
-        {
-            await AddUser(serviceProvider,
-                "d237e995-572f-409c-8ca9-852e1d522efe",
-                AdminConsts.AdminName,
-                "admin", "admin",
-                "1qazZAQ!", "zlzforever@163.com",
-                "18721696556",
-                "",
-                "",
-                "",
-                "021-7998989",
-                AdminConsts.AdminName);
         }
 
         private static async Task AddUsers(IServiceProvider serviceProvider)
@@ -277,13 +248,8 @@ namespace IdentityServer4.Admin
                 IsDeleted = false,
                 AccessFailedCount = 0
             };
-            var result = await userMgr.CreateAsync(user, password);
-            await userMgr.AddClaimsAsync(user, new[]
-            {
-                new Claim(JwtClaimTypes.Name, name),
-                new Claim(JwtClaimTypes.Email, email),
-                new Claim(JwtClaimTypes.EmailVerified, "true", ClaimValueTypes.Boolean)
-            });
+            await userMgr.CreateAsync(user, password);
+
             foreach (var role in roles)
             {
                 await userMgr.AddToRoleAsync(user, role);
@@ -409,24 +375,48 @@ namespace IdentityServer4.Admin
 
         public static async Task EnsureData(IServiceProvider serviceProvider)
         {
-            using (IServiceScope scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
-            {
-                var dbContext = (AdminDbContext) scope.ServiceProvider.GetRequiredService<IDbContext>();
-                if (await dbContext.Users.CountAsync() == 0)
-                {
-                    await AddPermissions(scope.ServiceProvider);
-                    await AddAdminRole(scope.ServiceProvider);
-                    await AddAdmin(scope.ServiceProvider);
-                    await CommitAsync(serviceProvider);
-                    Console.WriteLine("Done seeding database.");
-                }
-                else
-                {
-                    Console.WriteLine("Ignore seeding database.");
-                }
-            }
+            var dbContext = (AdminDbContext) serviceProvider.GetRequiredService<IDbContext>();
 
-            Console.WriteLine();
+            if (await dbContext.Users.CountAsync() == 0)
+            {
+                var permission = new Permission
+                    {Name = AdminConsts.AdminName, Description = "Super admin permission"};
+                await dbContext.Permissions.AddAsync(permission);
+
+                var role = new Role
+                {
+                    Id = Guid.NewGuid(),
+                    Name = AdminConsts.AdminName,
+                    Description = "Super admin"
+                };
+                await serviceProvider.GetRequiredService<RoleManager<Role>>().CreateAsync(role);
+
+                await dbContext.RolePermissions.AddAsync(new RolePermission
+                    {RoleId = role.Id, PermissionId = permission.Id});
+
+                var userMgr = serviceProvider.GetRequiredService<UserManager<User>>();
+                var user = new User
+                {
+                    Id = Guid.NewGuid(),
+                    UserName = "admin",
+                    Email = "admin@ids4admin.com",
+                    EmailConfirmed = true,
+                    CreationTime = DateTime.Now,
+                    IsDeleted = false,
+                };
+
+                var password = serviceProvider.GetRequiredService<IConfiguration>()["ADMIN_PASSWORD"];
+                if (string.IsNullOrWhiteSpace(password))
+                {
+                    password = "1qazZAQ!";
+                }
+
+                await userMgr.CreateAsync(user, password);
+
+                await userMgr.AddToRoleAsync(user, AdminConsts.AdminName);
+
+                await dbContext.SaveChangesAsync();
+            }
         }
     }
 }

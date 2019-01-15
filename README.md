@@ -1,25 +1,50 @@
 # IdentityServer4.Admin
 
+基于 IdentityServer4 开发的授权、用户管理、角色管理、权限管理
+
 | OS | Status |
 |---|---|
 | Ubuntu 16.04 | [![Build Status](https://dev.azure.com/zlzforever/IdentityServer4.Admin/_apis/build/status/Ids4.Admin%20Build)](https://dev.azure.com/zlzforever/IdentityServer4.Admin/_build/latest?definitionId=2) |
 
+### How to use
 
-##### 项目介绍
+#### run a test instance
 
-基于 IdentityServer4 开发的授权、用户管理、角色管理、权限管理
+        $ docker run -d --name ids4admin --restart always  -e ADMIN_PASSWORD=1qazZAQ! -p 6566:6566 -p 6201:6201 zlzforever/ids4admin /dev
 
-##### 开发说明
++ try open http://localhost:6566 and login by user: admin, password: 1qazZAQ!
++ ids4admin runs in a memory storage with dev mode
+        
+#### run a production instance
+
+        $ sudo mkdir /ids4admin
+        $ sudo curl -o /ids4admin/appsettings.json https://raw.githubusercontent.com/zlzforever/IdentityServer4.Admin/master/src/IdentityServer4.Admin/appsettings.json
+        
+change the configuration as you wish, for example database settings, support SqlServer and MySql right now:
+        
+        "DatabaseProvider": "MySql",
+        "ConnectionString": "Database='ids4';Data Source=192.168.90.109;User ID=root;Password=xxxx;Port=60007;SslMode=None;",
+
+then start a new instance          
+                 
+        $ docker run -d --name ids4admin --restart always -v /ids4admin:/ids4admin -p 6566:6566 -p 6201:6201 zlzforever/ids4admin /ids4admin/appsettings.json
+
+### How to build the latest docker image
+
+        $ sh build.sh
+        
+
+### 开发说明
 
 添加 EF 迁移配置
 
-        dotnet ef migrations add admin
+        dotnet ef migrations add {xxx}
         
 执行数据库迁移
 
         dotnet ef database update                             
 
-##### 功能说明
+### 功能说明
 
 权限
 
@@ -63,12 +88,3 @@
 |----|----|----|----|
 | 记录所有操作        |  | login |   ☐   |
 
-#### Run
-        $ docker run --rm ids4admin /init
-        $ docker run -d --name ids4admin --restart always  -e ROOT_PASSWORD=1qazZAQ! -p 6566:6566 -p 6201:6201 ids4admin migrate
-
-        
-#### Build and run test instance in local
-
-        $ sh build.sh
-        $ docker run -d --name ids4admin  -e ASPNETCORE_ENVIRONMENT=Development --restart always -p 6566:6566 -p 6201:6201 ids4admin /seed

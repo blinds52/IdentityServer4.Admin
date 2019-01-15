@@ -22,17 +22,15 @@ $(function () {
         methods: {
             checkPermission: function () {
                 this.errors = [];
-
                 if (!app.requireCheck(this.el.name)) {
                     this.errors.push("权限名不能为空");
-                }
-                else {
-                    if (!app.rangeCheck(this.el.name, 4, 30)) {
+                } else {
+                    if (!app.rangeCheck(this.el.name.length, 4, 30)) {
                         this.errors.push("权限名长度范围为 4-30");
                     }
                 }
                 if (app.requireCheck(this.el.description)) {
-                    if (!app.maxCheck(this.el.description, 1000)) {
+                    if (!app.maxCheck(this.el.description.length, 1000)) {
                         this.errors.push("权限描述不能超过 1000 字符");
                     }
                 }
@@ -41,7 +39,7 @@ $(function () {
             },
             create: function () {
                 if (this.checkPermission()) {
-                    app.post('/api/permission', this.$data, function () {
+                    app.post('/api/permission', this.$data.el, function () {
                         window.location.href = '/permission';
                     });
                 }

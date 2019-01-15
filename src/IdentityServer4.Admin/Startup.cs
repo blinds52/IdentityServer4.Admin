@@ -17,6 +17,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace IdentityServer4.Admin
@@ -149,9 +150,9 @@ namespace IdentityServer4.Admin
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
-            if (env.IsDevelopment())
+            if (_hostingEnvironment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
@@ -161,6 +162,7 @@ namespace IdentityServer4.Admin
                 app.UseHsts();
             }
 
+            PrePareDatabase(app.ApplicationServices, _hostingEnvironment);
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseIdentityServer();
@@ -174,6 +176,32 @@ namespace IdentityServer4.Admin
                     "default",
                     "{controller=Home}/{action=Index}/{id?}");
             });
+        }
+
+        private void PrePareDatabase(IServiceProvider serviceProvider, IHostingEnvironment env)
+        {
+            using (IServiceScope scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                var sp = scope.ServiceProvider;
+                var logger = sp.GetRequiredService<ILogger<Startup>>();
+                var options = sp.GetRequiredService<AdminOptions>();
+                logger.LogInformation("Configuration: " + options.Version);
+                if (sp.GetRequiredService<AdminDbContext>().Database.EnsureCreated())
+                {
+                    logger.LogInformation("Created database success");
+                }
+            }
+
+            using (IServiceScope scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                var sp = scope.ServiceProvider;
+                SeedData.EnsureData(sp).Wait();
+
+                if (env.IsDevelopment() && _configuration["seed"] == "true")
+                {
+                    SeedData.EnsureTestData(sp).Wait();
+                }
+            }
         }
     }
 }

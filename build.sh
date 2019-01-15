@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 cd src/IdentityServer4.Admin
 bower update
 cd ../..

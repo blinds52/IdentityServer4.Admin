@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Serilog;
 using Serilog.Events;
 using EnvironmentName = Microsoft.AspNetCore.Hosting.EnvironmentName;
@@ -22,39 +24,23 @@ namespace IdentityServer4.Admin
                 .WriteTo.Console().WriteTo.RollingFile("ids4.log")
                 .CreateLogger();
 
-            if (args.Contains("/init"))
-            {
-                // EF Migrate
-                var proc = Process.Start(new ProcessStartInfo
-                {
-                    FileName = "dotnet",
-                    Arguments = "ef database update " + string.Join(" ", args),
-                    CreateNoWindow = true,
-                    RedirectStandardOutput = true
-                });
-                if (proc == null)
-                {
-                    Log.Logger.Information("EF Migrate execute failed.");
-                    return;
-                }
 
-                proc.WaitForExit();
-                var info = proc.StandardOutput.ReadToEnd();
-                if (!info.EndsWith("Done.\n"))
+            var builder = WebHost.CreateDefaultBuilder(args).ConfigureAppConfiguration(config =>
                 {
-                    Log.Logger.Error(("EF Migrate execute failed."));
-                }
-
-                return;
-            }
+                    var configFile = args.FirstOrDefault(a => a.Contains("appsettings.json"));
+                    if (configFile != null && File.Exists(configFile))
+                    {
+                        config.AddJsonFile(configFile);
+                        Log.Logger.Information("Use extend config");
+                    }
+                })
+                .UseStartup<Startup>().UseSerilog().UseUrls("http://*:6566");
 
             var seed = args.Contains("/seed");
             if (seed)
             {
-                args = args.Except(new[] {"/seed"}).ToArray();
+                builder.UseSetting("seed", "true");
             }
-
-            var builder = CreateWebHostBuilder(args);
 
             if (args.Contains("/dev"))
             {
@@ -68,21 +54,7 @@ namespace IdentityServer4.Admin
 
             var host = builder.Build();
 
-            if (args.Contains("/dev") && seed)
-            {
-                SeedData.EnsureTestData(host.Services).ConfigureAwait(true);
-            }
-
-            if (args.Contains("/prod"))
-            {
-                SeedData.EnsureData(host.Services).ConfigureAwait(true);
-            }
-
             host.Run();
         }
-
-        private static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>().UseSerilog().UseUrls("http://*:6566");
     }
 }

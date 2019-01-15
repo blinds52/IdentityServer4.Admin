@@ -3,6 +3,7 @@
         <div class="box-header">
             <div class="box-title">
                 <a class="btn btn-default btn-sm" @@click="showAddRole()">添加</a>
+
             </div>
         </div>
         <!-- /.box-header -->
@@ -48,7 +49,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <select class="form-control select2" v-model="role" style="width: 100%;">
+                            <select class="form-control select2" style="width: 100%;">
                                 <option v-for="r in roles" :value="r.name" v-text="r.name"></option>
                             </select>
                         </div>

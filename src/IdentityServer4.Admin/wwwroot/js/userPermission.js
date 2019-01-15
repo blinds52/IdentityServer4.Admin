@@ -50,10 +50,10 @@ $(function () {
     function loadView(vue) {
         let url = '/api/user/' + app.getPathPart(window.location.href, 1) + '/permission';
         app.get(url, function (result) {
-            vue.$data.els = result.data.result;
+            vue.$data.els = result.data.result.result;
         });
-        let getRoleUrl = '/api/permission?page=1&size=1000';
-        app.get(getRoleUrl, function (result) {
+        let getAllPermissionUrl = '/api/permission?page=1&size=1000';
+        app.get(getAllPermissionUrl, function (result) {
             vue.$data.permissions = result.data.result;
             if (result.data.result.length > 0)
                 $('.select2').val(result.data.result[0].permissionId)

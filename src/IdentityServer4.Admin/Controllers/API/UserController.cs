@@ -145,7 +145,7 @@ namespace IdentityServer4.Admin.Controllers.API
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null) return new ApiResult(ApiResult.Error, "用户不存在或已经删除");
             if (user.UserName == AdminConsts.AdminName && dto.UserName != AdminConsts.AdminName)
-                return new ApiResult(ApiResult.Error, "管理员用户名不能修改");
+                return new ApiResult(ApiResult.Error, "超级管理员用户名不能修改");
 
             if (user.UserName != AdminConsts.AdminName && dto.UserName == AdminConsts.AdminName)
                 return new ApiResult(ApiResult.Error, $"用户名不能是 {AdminConsts.AdminName}");
@@ -182,7 +182,7 @@ namespace IdentityServer4.Admin.Controllers.API
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId && u.IsDeleted == false);
             if (user == null) return new ApiResult(ApiResult.Error, "用户不存在或已经删除");
             if (user.UserName == AdminConsts.AdminName)
-                return new ApiResult(ApiResult.Error, "管理员用户不能删除");
+                return new ApiResult(ApiResult.Error, "超级管理员不能删除");
             user.LockoutEnabled = true;
             await _userManager.DeleteAsync(user);
             return ApiResult.Ok;
@@ -194,7 +194,7 @@ namespace IdentityServer4.Admin.Controllers.API
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null) return new ApiResult(ApiResult.Error, "用户不存在或已经删除");
-            if (user.UserName == AdminConsts.AdminName) return new ApiResult(ApiResult.Error, "管理员密码请通过个人信息入口修改");
+            if (user.UserName == AdminConsts.AdminName) return new ApiResult(ApiResult.Error, "超级管理员请通过个人信息入口修改密码");
             var result = await _userManager.RemovePasswordAsync(user);
             if (!result.Succeeded) return new ApiResult(ApiResult.Error, result.Errors.First().Description);
 
@@ -238,8 +238,10 @@ namespace IdentityServer4.Admin.Controllers.API
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null) return new ApiResult(ApiResult.Error, "用户不存在或已经删除");
 
-            if (await _userManager.IsInRoleAsync(user, AdminConsts.AdminName))
-                return new ApiResult(ApiResult.Error, "管理员不能添加角色");
+            if (user.UserName == AdminConsts.AdminName)
+            {
+                return new ApiResult(ApiResult.Error, "超级管理员不能添加角色");
+            }
 
             // 添加用户权限记录，用于权限校验接口
             var permissions = _dbContext.RolePermissions.Join(_dbContext.Permissions, rp => rp.PermissionId,
@@ -282,9 +284,14 @@ namespace IdentityServer4.Admin.Controllers.API
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null) return new ApiResult(ApiResult.Error, "用户不存在或已经删除");
+            if (user.UserName == AdminConsts.AdminName)
+            {
+                return new ApiResult(ApiResult.Error, "超级管理员不能删除角色");
+            }
 
             var role = await _roleManager.FindByIdAsync(roleId.ToString());
             if (role == null) return new ApiResult(ApiResult.Error, "角色不存在");
+
 
             // 先删除用户权限记录
             var permissions = _dbContext.RolePermissions.Join(_dbContext.Permissions, rp => rp.PermissionId,

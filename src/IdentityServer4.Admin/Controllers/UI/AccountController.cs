@@ -282,8 +282,8 @@ namespace IdentityServer4.Admin.Controllers.UI
 
             var providers = schemes
                 .Where(x => x.DisplayName != null ||
-                            (x.Name.Equals(_options.WindowsAuthenticationSchemeName,
-                                StringComparison.OrdinalIgnoreCase))
+                            x.Name.Equals(_options.WindowsAuthenticationSchemeName,
+                                StringComparison.OrdinalIgnoreCase)
                 )
                 .Select(x => new ExternalProvider
                 {
