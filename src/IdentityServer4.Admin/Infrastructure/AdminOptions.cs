@@ -14,6 +14,10 @@ namespace IdentityServer4.Admin.Infrastructure
 
         public string Version => _configuration["Version"];
 
+        public string SiteName => string.IsNullOrWhiteSpace(_configuration["SiteName"])
+            ? "IdentityServer4 Admin"
+            : _configuration["SiteName"];
+
         public bool RequireUppercase =>
             !string.IsNullOrWhiteSpace(_configuration["RequireUppercase"]) &&
             _configuration["RequireUppercase"].CastTo<bool>();

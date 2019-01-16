@@ -1,4 +1,6 @@
-﻿@model IdentityServer4.Admin.ViewModels.Account.LoginViewModel
+﻿@using IdentityServer4.Admin.Infrastructure
+@model IdentityServer4.Admin.ViewModels.Account.LoginViewModel
+@inject AdminOptions Options;
 @{
     Layout = null;
 }
@@ -32,7 +34,7 @@
 <div class="login-box">
     <div class="login-logo">
         <a>
-            <b>IdentityServer4 SSO</b>
+            <b>@Options.SiteName</b>
         </a>
     </div>
 

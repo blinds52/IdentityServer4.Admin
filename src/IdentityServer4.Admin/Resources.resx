@@ -67,11 +67,11 @@
     <comment>User names can only contain letters or digits</comment>
   </data>
   <data name="LoginAlreadyAssociated" xml:space="preserve">
-    <value>A user with this login already exists.</value>
+    <value>用户已经登录</value>
     <comment>Error when a login already linked</comment>
   </data>
   <data name="MustCallAddIdentity" xml:space="preserve">
-    <value>AddIdentity must be called on the service collection.</value>
+    <value>必须调用 AddIdentity</value>
     <comment>Error when AddIdentity is not called</comment>
   </data>
   <data name="NoTokenProvider" xml:space="preserve">

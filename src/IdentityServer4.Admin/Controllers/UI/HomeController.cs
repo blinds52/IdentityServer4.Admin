@@ -1,7 +1,4 @@
-﻿using System.Threading.Tasks;
-using IdentityServer4.Admin.Infrastructure;
-using IdentityServer4.Admin.ViewModels;
-using IdentityServer4.Services;
+﻿using IdentityServer4.Admin.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
