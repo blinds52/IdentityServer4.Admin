@@ -213,7 +213,7 @@ namespace IdentityServer4.Admin.Controllers.API
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null) return new ApiResult(ApiResultType.Error, "用户不存在或已经删除");
 
-            var queryResult = _dbContext.UserRoles.Where(ur => ur.UserId == userId)
+            var queryResult = await _dbContext.UserRoles.Where(ur => ur.UserId == userId)
                 .Join(_dbContext.Roles, userRole => userRole.RoleId, role => role.Id,
                     (userRole, role) => new {RoleId = role.Id, RoleName = role.Name})
                 .Join(_dbContext.RolePermissions, role => role.RoleId, rolePermission => rolePermission.RoleId,
