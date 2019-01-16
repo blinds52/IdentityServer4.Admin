@@ -1,3 +1,5 @@
+@using System.Security.Claims
+@using IdentityModel
 @using IdentityServer4.Admin.Infrastructure
 @{
     bool isAdmin = false;
@@ -5,7 +7,7 @@
     {
         if (Context.User != null)
         {
-            isAdmin = Context.User.IsInRole(AdminConsts.AdminName);
+            isAdmin = Context.User.FindFirstValue(JwtClaimTypes.Name) == AdminConsts.AdminName;
         }
     }
 }
@@ -37,10 +39,6 @@
                     <div class="form-group">
                         <label>邮箱</label>
                         <input class="form-control" autocomplete="false" type="text"
-                               @if (!isAdmin)
-                               {
-                                   @Html.Raw("readonly='readonly'")
-                               }
                                v-model="el.email" placeholder="邮箱">
                     </div>
                 </div>

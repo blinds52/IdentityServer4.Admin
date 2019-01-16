@@ -139,7 +139,7 @@ namespace IdentityServer4.Admin.Controllers.API
         [HttpPut("{userId}")]
         public async Task<IActionResult> UpdateAsync(Guid userId, [FromBody] UpdateUserDto dto)
         {
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId && u.IsDeleted == false);
             if (user == null) return new ApiResult(ApiResultType.Error, "用户不存在或已经删除");
             if (user.UserName == AdminConsts.AdminName && dto.UserName != AdminConsts.AdminName)
                 return new ApiResult(ApiResultType.Error, "超级管理员用户名不能修改");

@@ -34,7 +34,7 @@ namespace IdentityServer4.Admin
             await CommitAsync(serviceProvider);
 
             var dbContext = (AdminDbContext) serviceProvider.GetRequiredService<IDbContext>();
-            if (await dbContext.Users.CountAsync() == 0)
+            if (await dbContext.Users.CountAsync() <= 1)
             {
                 await AddPermissions(serviceProvider);
                 await AddRoles(serviceProvider);
@@ -95,7 +95,7 @@ namespace IdentityServer4.Admin
             {
                 Console.WriteLine("IdentityResources already populated");
             }
-            
+
             await CommitAsync(serviceProvider);
         }
 

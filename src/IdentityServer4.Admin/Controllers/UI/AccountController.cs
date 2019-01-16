@@ -101,6 +101,19 @@ namespace IdentityServer4.Admin.Controllers.UI
                 if (result.Succeeded)
                 {
                     var user = await _userManager.FindByNameAsync(model.Username);
+
+                    if (user.IsDeleted)
+                    {
+                        await _signInManager.SignOutAsync();
+                        
+                        ModelState.AddModelError("","帐户已经被禁用");
+                            
+                        // something went wrong, show form with error
+                        var vm1 = await BuildLoginViewModelAsync(model);
+                      
+                        return View(vm1);
+                    }
+
                     await _events.RaiseAsync(
                         new UserLoginSuccessEvent(user.UserName, user.Id.ToString(), user.UserName));
 

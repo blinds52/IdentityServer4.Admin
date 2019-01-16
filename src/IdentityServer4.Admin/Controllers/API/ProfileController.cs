@@ -60,7 +60,6 @@ namespace IdentityServer4.Admin.Controllers.API
         {
             dto.Email = dto.Email.Trim();
             dto.PhoneNumber = dto.PhoneNumber.Trim();
-            dto.UserName = dto.UserName.Trim();
             dto.FirstName = dto.FirstName?.Trim();
             dto.LastName = dto.LastName?.Trim();
             dto.OfficePhone = dto.OfficePhone?.Trim();
@@ -70,24 +69,7 @@ namespace IdentityServer4.Admin.Controllers.API
 
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null) return new ApiResult(ApiResultType.Error, "用户不存在");
-            if (user.UserName == AdminConsts.AdminName && dto.UserName != AdminConsts.AdminName)
-                return new ApiResult(ApiResultType.Error, "管理员用户名不能修改");
 
-            if (user.UserName != AdminConsts.AdminName && dto.UserName == AdminConsts.AdminName)
-                return new ApiResult(ApiResultType.Error, $"用户名不能是 {AdminConsts.AdminName}");
-
-            string normalizedName =
-                _serviceProvider.ProtectPersonalData(_userManager.NormalizeKey(dto.UserName),
-                    _userManager.Options);
-            // NormalizedUserName 有唯一索引, 应该用它做查询
-            // TODO: 判断邮件、用户名是否有重复
-            if (await _userManager.Users.AnyAsync(u => u.NormalizedUserName == normalizedName
-                                                       && u.Id != userId))
-            {
-                return new ApiResult(ApiResultType.Error, "用户名已经存在");
-            }
-
-            user.UserName = dto.UserName;
             user.Email = dto.Email;
             user.PhoneNumber = dto.PhoneNumber;
             user.FirstName = dto.FirstName;

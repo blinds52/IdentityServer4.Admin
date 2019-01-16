@@ -9,14 +9,6 @@ namespace IdentityServer4.Admin.Controllers.API.Dtos
     public class UpdateProfileInputDto
     {
         /// <summary>
-        /// 用户名
-        /// </summary>
-        [Required]
-        [StringLength(50)]
-        [MinLength(4)]
-        public string UserName { get; set; }
-
-        /// <summary>
         /// 邮件
         /// </summary>
         [StringLength(50)]
