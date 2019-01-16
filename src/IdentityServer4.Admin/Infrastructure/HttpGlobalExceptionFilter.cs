@@ -17,7 +17,7 @@ namespace IdentityServer4.Admin.Infrastructure
         {
             context.HttpContext.Response.StatusCode = 201;
             _logger.LogError(context.Exception.ToString());
-            context.Result = new ApiResult(ApiResult.Error, GetInnerMessage(context.Exception));
+            context.Result = new ApiResult(ApiResultType.Error, GetInnerMessage(context.Exception));
         }
 
         private string GetInnerMessage(Exception ex)

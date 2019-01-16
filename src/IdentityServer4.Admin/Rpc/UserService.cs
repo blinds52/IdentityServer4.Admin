@@ -147,7 +147,7 @@ namespace IdentityServer4.Admin.Rpc
 
             if (dto.Roles == null || dto.Roles.Length == 0)
             {
-                var output = await dbContext.Users.OrderByDescending(u => u.CreationTime).PagedQuery(dto, where);
+                var output = await dbContext.Users.OrderByDescending(u => u.CreationTime).PagedQueryAsync(dto, where);
                 var result = new PagedQueryResult
                 {
                     Page = output.Page,
@@ -194,7 +194,7 @@ namespace IdentityServer4.Admin.Rpc
                          t.Mobile.Contains(dto.Q))
                         && (string.IsNullOrWhiteSpace(dto.Group) || t.Group == dto.Group)
                         && (dto.Titles == null || dto.Titles.Length == 0 || dto.Titles.Contains(t.Title))).Distinct()
-                    .PagedQuery(dto);
+                    .PagedQueryAsync(dto);
                 var output = new PagedQueryResult
                 {
                     Total = result.Total,

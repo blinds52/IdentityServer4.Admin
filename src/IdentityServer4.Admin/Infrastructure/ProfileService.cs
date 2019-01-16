@@ -13,21 +13,18 @@ namespace IdentityServer4.Admin.Infrastructure
 {
     public class ProfileService : IProfileService
     {
-        /// <summary>
-        /// The logger
-        /// </summary>
-        protected readonly ILogger Logger;
-
-        protected readonly UserManager<User> UserManager;
+        private readonly ILogger _logger;
+        private readonly UserManager<User> _userManager;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultProfileService"/> class.
         /// </summary>
         /// <param name="logger">The logger.</param>
+        /// <param name="userManager">用户管理器</param>
         public ProfileService(ILogger<DefaultProfileService> logger, UserManager<User> userManager)
         {
-            Logger = logger;
-            UserManager = userManager;
+            _logger = logger;
+            _userManager = userManager;
         }
 
         /// <summary>
@@ -39,7 +36,7 @@ namespace IdentityServer4.Admin.Infrastructure
         {
             context.AddRequestedClaims(context.Subject.Claims);
 
-            var user = await UserManager.GetUserAsync(context.Subject);
+            var user = await _userManager.GetUserAsync(context.Subject);
 
             if (user == null)
             {
@@ -142,7 +139,7 @@ namespace IdentityServer4.Admin.Infrastructure
         /// <returns></returns>
         public virtual Task IsActiveAsync(IsActiveContext context)
         {
-            Logger.LogDebug("IsActive called from: {caller}", context.Caller);
+            _logger.LogDebug("IsActive called from: {caller}", context.Caller);
 
             context.IsActive = true;
             return Task.CompletedTask;

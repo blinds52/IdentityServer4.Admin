@@ -22,12 +22,10 @@ namespace IdentityServer4.Admin.Controllers.API
         private readonly IDbContext _dbContext;
         private readonly IServiceProvider _serviceProvider;
         private readonly RoleManager<Role> _roleManager;
-        private readonly AdminOptions _options;
 
         public UserController(UserManager<User> userManager,
             RoleManager<Role> roleManager,
             IDbContext dbContext,
-            AdminOptions options,
             IServiceProvider serviceProvider,
             ILoggerFactory loggerFactory) : base(loggerFactory)
         {
@@ -35,7 +33,6 @@ namespace IdentityServer4.Admin.Controllers.API
             _dbContext = dbContext;
             _serviceProvider = serviceProvider;
             _roleManager = roleManager;
-            _options = options;
         }
 
         #region User
@@ -44,7 +41,7 @@ namespace IdentityServer4.Admin.Controllers.API
         public async Task<IActionResult> CreateAsync([FromBody] CreateUserDto dto)
         {
             if (dto.UserName == AdminConsts.AdminName)
-                return new ApiResult(ApiResult.Error, $"用户名不能是 {AdminConsts.AdminName}");
+                return new ApiResult(ApiResultType.Error, $"用户名不能是 {AdminConsts.AdminName}");
 
             var user = Mapper.Map<User>(dto);
 
@@ -55,13 +52,13 @@ namespace IdentityServer4.Admin.Controllers.API
             // NormalizedUserName 有唯一索引, 应该用它做查询
             if (await _userManager.Users.AnyAsync(u => u.NormalizedUserName == normalizedName && u.IsDeleted == false))
             {
-                return new ApiResult(ApiResult.Error, "用户名已经存在");
+                return new ApiResult(ApiResultType.Error, "用户名已经存在");
             }
 
             // Check email exists
             if (await _userManager.Users.AnyAsync(u => u.Email == user.Email && u.IsDeleted == false))
             {
-                return new ApiResult(ApiResult.Error, "邮箱已经存在");
+                return new ApiResult(ApiResultType.Error, "邮箱已经存在");
             }
 
             var result = await _userManager.CreateAsync(user, dto.Password);
@@ -70,7 +67,7 @@ namespace IdentityServer4.Admin.Controllers.API
                 return ApiResult.Ok;
             }
 
-            return new ApiResult(ApiResult.Error,
+            return new ApiResult(ApiResultType.Error,
                 string.Join(",", result.Errors.Select(e => e.Description)));
         }
 
@@ -80,11 +77,11 @@ namespace IdentityServer4.Admin.Controllers.API
             PagedQueryResult<User> queryResult;
             if (string.IsNullOrWhiteSpace(input.Q))
             {
-                queryResult = await _userManager.Users.PagedQuery(input);
+                queryResult = await _userManager.Users.PagedQueryAsync(input);
             }
             else
             {
-                queryResult = await _userManager.Users.PagedQuery(input,
+                queryResult = await _userManager.Users.PagedQueryAsync(input,
                     u => u.Email.Contains(input.Q) ||
                          u.UserName.Contains(input.Q) ||
                          u.PhoneNumber.Contains(input.Q) ||
@@ -135,7 +132,7 @@ namespace IdentityServer4.Admin.Controllers.API
                 return new ApiResult(dto);
             }
 
-            return new ApiResult(ApiResult.Error, "用户不存在");
+            return new ApiResult(ApiResultType.Error, "用户不存在");
         }
 
 
@@ -143,12 +140,12 @@ namespace IdentityServer4.Admin.Controllers.API
         public async Task<IActionResult> UpdateAsync(Guid userId, [FromBody] UpdateUserDto dto)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            if (user == null) return new ApiResult(ApiResult.Error, "用户不存在或已经删除");
+            if (user == null) return new ApiResult(ApiResultType.Error, "用户不存在或已经删除");
             if (user.UserName == AdminConsts.AdminName && dto.UserName != AdminConsts.AdminName)
-                return new ApiResult(ApiResult.Error, "超级管理员用户名不能修改");
+                return new ApiResult(ApiResultType.Error, "超级管理员用户名不能修改");
 
             if (user.UserName != AdminConsts.AdminName && dto.UserName == AdminConsts.AdminName)
-                return new ApiResult(ApiResult.Error, $"用户名不能是 {AdminConsts.AdminName}");
+                return new ApiResult(ApiResultType.Error, $"用户名不能是 {AdminConsts.AdminName}");
 
             string normalizedName =
                 _serviceProvider.ProtectPersonalData(_userManager.NormalizeKey(user.UserName),
@@ -157,7 +154,7 @@ namespace IdentityServer4.Admin.Controllers.API
             if (await _userManager.Users.AnyAsync(u =>
                 u.Id != userId && u.NormalizedUserName == normalizedName && u.IsDeleted == false))
             {
-                return new ApiResult(ApiResult.Error, "用户名已经存在");
+                return new ApiResult(ApiResultType.Error, "用户名已经存在");
             }
 
             user.UserName = dto.UserName;
@@ -172,7 +169,9 @@ namespace IdentityServer4.Admin.Controllers.API
             user.Sex = dto.Sex;
 
             var result = await _userManager.UpdateAsync(user);
-            return result.Succeeded ? ApiResult.Ok : new ApiResult(ApiResult.Error, result.Errors.First().Description);
+            return result.Succeeded
+                ? ApiResult.Ok
+                : new ApiResult(ApiResultType.Error, result.Errors.First().Description);
         }
 
 
@@ -180,9 +179,9 @@ namespace IdentityServer4.Admin.Controllers.API
         public async Task<IActionResult> DeleteAsync(Guid userId)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId && u.IsDeleted == false);
-            if (user == null) return new ApiResult(ApiResult.Error, "用户不存在或已经删除");
+            if (user == null) return new ApiResult(ApiResultType.Error, "用户不存在或已经删除");
             if (user.UserName == AdminConsts.AdminName)
-                return new ApiResult(ApiResult.Error, "超级管理员不能删除");
+                return new ApiResult(ApiResultType.Error, "超级管理员不能删除");
             user.LockoutEnabled = true;
             await _userManager.DeleteAsync(user);
             return ApiResult.Ok;
@@ -193,13 +192,15 @@ namespace IdentityServer4.Admin.Controllers.API
         public async Task<IActionResult> ChangePasswordAsync(Guid userId, [FromBody] ChangePasswordInputDto dto)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            if (user == null) return new ApiResult(ApiResult.Error, "用户不存在或已经删除");
-            if (user.UserName == AdminConsts.AdminName) return new ApiResult(ApiResult.Error, "超级管理员请通过个人信息入口修改密码");
+            if (user == null) return new ApiResult(ApiResultType.Error, "用户不存在或已经删除");
+            if (user.UserName == AdminConsts.AdminName) return new ApiResult(ApiResultType.Error, "超级管理员请通过个人信息入口修改密码");
             var result = await _userManager.RemovePasswordAsync(user);
-            if (!result.Succeeded) return new ApiResult(ApiResult.Error, result.Errors.First().Description);
+            if (!result.Succeeded) return new ApiResult(ApiResultType.Error, result.Errors.First().Description);
 
             result = await _userManager.AddPasswordAsync(user, dto.NewPassword.Trim());
-            return result.Succeeded ? ApiResult.Ok : new ApiResult(ApiResult.Error, result.Errors.First().Description);
+            return result.Succeeded
+                ? ApiResult.Ok
+                : new ApiResult(ApiResultType.Error, result.Errors.First().Description);
         }
 
         #endregion
@@ -210,7 +211,7 @@ namespace IdentityServer4.Admin.Controllers.API
         public async Task<IActionResult> FindUserPermissionAsync(Guid userId, PagedQuery query)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            if (user == null) return new ApiResult(ApiResult.Error, "用户不存在或已经删除");
+            if (user == null) return new ApiResult(ApiResultType.Error, "用户不存在或已经删除");
 
             var queryResult = _dbContext.UserRoles.Where(ur => ur.UserId == userId)
                 .Join(_dbContext.Roles, userRole => userRole.RoleId, role => role.Id,
@@ -223,7 +224,7 @@ namespace IdentityServer4.Admin.Controllers.API
                     {
                         rolePermission.RoleId, rolePermission.RoleName, rolePermission.PermissionId, permission.Name,
                         permission.Description
-                    }).PagedQuery(query);
+                    }).PagedQueryAsync(query);
 
             return new ApiResult(queryResult);
         }
@@ -236,11 +237,11 @@ namespace IdentityServer4.Admin.Controllers.API
         public async Task<IActionResult> CreateUserRoleAsync(Guid userId, string role)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            if (user == null) return new ApiResult(ApiResult.Error, "用户不存在或已经删除");
+            if (user == null) return new ApiResult(ApiResultType.Error, "用户不存在或已经删除");
 
             if (user.UserName == AdminConsts.AdminName)
             {
-                return new ApiResult(ApiResult.Error, "超级管理员不能添加角色");
+                return new ApiResult(ApiResultType.Error, "超级管理员不能添加角色");
             }
 
             // 添加用户权限记录，用于权限校验接口
@@ -255,7 +256,7 @@ namespace IdentityServer4.Admin.Controllers.API
             var result = await _userManager.AddToRoleAsync(user, role);
             return result.Succeeded
                 ? ApiResult.Ok
-                : new ApiResult(ApiResult.Error, result.Errors.First().Description);
+                : new ApiResult(ApiResultType.Error, result.Errors.First().Description);
         }
 
 
@@ -263,7 +264,7 @@ namespace IdentityServer4.Admin.Controllers.API
         public async Task<IActionResult> FindUserRoleAsync(Guid userId)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            if (user == null) return new ApiResult(ApiResult.Error, "用户不存在或已经删除");
+            if (user == null) return new ApiResult(ApiResultType.Error, "用户不存在或已经删除");
 
             var roles = _dbContext.UserRoles.Where(ur => ur.UserId == userId).Join(_dbContext.Roles, ur => ur.RoleId,
                     r => r.Id, (ur, r) =>
@@ -283,14 +284,14 @@ namespace IdentityServer4.Admin.Controllers.API
         public async Task<IActionResult> DeleteUserRoleAsync(Guid userId, Guid roleId)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            if (user == null) return new ApiResult(ApiResult.Error, "用户不存在或已经删除");
+            if (user == null) return new ApiResult(ApiResultType.Error, "用户不存在或已经删除");
             if (user.UserName == AdminConsts.AdminName)
             {
-                return new ApiResult(ApiResult.Error, "超级管理员不能删除角色");
+                return new ApiResult(ApiResultType.Error, "超级管理员不能删除角色");
             }
 
             var role = await _roleManager.FindByIdAsync(roleId.ToString());
-            if (role == null) return new ApiResult(ApiResult.Error, "角色不存在");
+            if (role == null) return new ApiResult(ApiResultType.Error, "角色不存在");
 
 
             // 先删除用户权限记录
@@ -306,7 +307,7 @@ namespace IdentityServer4.Admin.Controllers.API
             var result = await _userManager.RemoveFromRoleAsync(user, role.Name);
             return result.Succeeded
                 ? ApiResult.Ok
-                : new ApiResult(ApiResult.Error, result.Errors.First().Description);
+                : new ApiResult(ApiResultType.Error, result.Errors.First().Description);
         }
 
         #endregion

@@ -120,7 +120,7 @@ namespace IdentityServer4.Admin
                     options.ResolveDbContextOptions = (provider, b) => dbContextOptionsBuilder(b);
                     // this enables automatic token cleanup. this is optional.
                     options.EnableTokenCleanup = adminOptions.EnableTokenCleanup;
-                }).AddResourceStore<EfResourceStore>();
+                });
             builder.AddProfileService<ProfileService>();
 
             // Configure AutoMapper

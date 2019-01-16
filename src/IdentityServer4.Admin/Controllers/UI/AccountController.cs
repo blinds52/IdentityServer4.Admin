@@ -138,7 +138,7 @@ namespace IdentityServer4.Admin.Controllers.UI
             else
             {
                 // start challenge and roundtrip the return URL and 
-                var props = new AuthenticationProperties()
+                var props = new AuthenticationProperties
                 {
                     RedirectUri = Url.Action("ExternalLoginCallback"),
                     Items =
@@ -396,7 +396,7 @@ namespace IdentityServer4.Admin.Controllers.UI
                 // we will issue the external cookie and then redirect the
                 // user back to the external callback, in essence, tresting windows
                 // auth the same as any other external authentication mechanism
-                var props = new AuthenticationProperties()
+                var props = new AuthenticationProperties
                 {
                     RedirectUri = Url.Action("ExternalLoginCallback"),
                     Items =

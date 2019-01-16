@@ -12,6 +12,9 @@ using Microsoft.Extensions.Logging;
 
 namespace IdentityServer4.Admin.Infrastructure
 {
+    /// <summary>
+    /// 这是官方的实现, 把代码 Copy 过来方便调试错误, 生产环境不需要使用
+    /// </summary>
     public class EfResourceStore : IResourceStore
     {
         private readonly IConfigurationDbContext _context;

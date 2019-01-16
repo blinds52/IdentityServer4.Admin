@@ -29,12 +29,13 @@ namespace IdentityServer4.Admin.Controllers.API
         {
             if (await _dbContext.ApiResources.AnyAsync(u => u.Name == dto.Name))
             {
-                return new ApiResult(ApiResult.Error, "资源名已经存在");
+                return new ApiResult(ApiResultType.Error, "资源名已经存在");
             }
 
-            var apiResource = new ApiResource(dto.Name, dto.DisplayName, dto.UserClaims);
-            apiResource.Enabled = dto.Enabled;
-            apiResource.Description = dto.Description;
+            var apiResource = new ApiResource(dto.Name, dto.DisplayName, dto.UserClaims)
+            {
+                Enabled = dto.Enabled, Description = dto.Description
+            };
             var entity = apiResource.ToEntity();
             await _dbContext.ApiResources.AddAsync(entity);
             await _dbContext.SaveChangesAsync();
@@ -44,7 +45,7 @@ namespace IdentityServer4.Admin.Controllers.API
         [HttpGet]
         public async Task<IActionResult> SearchAsync([FromQuery] PagedQuery input)
         {
-            var output = await _dbContext.ApiResources.PagedQuery(input);
+            var output = await _dbContext.ApiResources.AsNoTracking().PagedQueryAsync(input);
             return new ApiResult(output);
         }
 
@@ -52,7 +53,7 @@ namespace IdentityServer4.Admin.Controllers.API
         public async Task<IActionResult> DeleteAsync(int apiResourceId)
         {
             var apiResource = await _dbContext.ApiResources.FirstOrDefaultAsync(u => u.Id == apiResourceId);
-            if (apiResource == null) return new ApiResult(ApiResult.Error, "API 资源不存在或已经删除");
+            if (apiResource == null) return new ApiResult(ApiResultType.Error, "API 资源不存在或已经删除");
 
             //TODO: 确认其它表数据一并删除
             _dbContext.ApiResources.Remove(apiResource);

@@ -11,7 +11,7 @@ namespace IdentityServer4.Admin.Infrastructure
         /// <returns>The default <see cref="T:Microsoft.AspNetCore.Identity.IdentityError" />.</returns>
         public override IdentityError DefaultError()
         {
-            return new IdentityError()
+            return new IdentityError
             {
                 Code = nameof(DefaultError),
                 Description = Resources.DefaultError
@@ -24,7 +24,7 @@ namespace IdentityServer4.Admin.Infrastructure
         /// <returns>An <see cref="T:Microsoft.AspNetCore.Identity.IdentityError" /> indicating a concurrency failure.</returns>
         public override IdentityError ConcurrencyFailure()
         {
-            return new IdentityError()
+            return new IdentityError
             {
                 Code = nameof(ConcurrencyFailure),
                 Description = Resources.ConcurrencyFailure
@@ -37,7 +37,7 @@ namespace IdentityServer4.Admin.Infrastructure
         /// <returns>An <see cref="T:Microsoft.AspNetCore.Identity.IdentityError" /> indicating a password mismatch.</returns>
         public override IdentityError PasswordMismatch()
         {
-            return new IdentityError()
+            return new IdentityError
             {
                 Code = nameof(PasswordMismatch),
                 Description = Resources.PasswordMismatch
@@ -50,7 +50,7 @@ namespace IdentityServer4.Admin.Infrastructure
         /// <returns>An <see cref="T:Microsoft.AspNetCore.Identity.IdentityError" /> indicating an invalid token.</returns>
         public override IdentityError InvalidToken()
         {
-            return new IdentityError()
+            return new IdentityError
             {
                 Code = nameof(InvalidToken),
                 Description = Resources.InvalidToken
@@ -63,7 +63,7 @@ namespace IdentityServer4.Admin.Infrastructure
         /// <returns>An <see cref="T:Microsoft.AspNetCore.Identity.IdentityError" /> indicating a recovery code was not redeemed.</returns>
         public override IdentityError RecoveryCodeRedemptionFailed()
         {
-            return new IdentityError()
+            return new IdentityError
             {
                 Code = nameof(RecoveryCodeRedemptionFailed),
                 Description = Resources.RecoveryCodeRedemptionFailed
@@ -76,7 +76,7 @@ namespace IdentityServer4.Admin.Infrastructure
         /// <returns>An <see cref="T:Microsoft.AspNetCore.Identity.IdentityError" /> indicating an external login is already associated with an account.</returns>
         public override IdentityError LoginAlreadyAssociated()
         {
-            return new IdentityError()
+            return new IdentityError
             {
                 Code = nameof(LoginAlreadyAssociated),
                 Description = Resources.LoginAlreadyAssociated
@@ -90,10 +90,10 @@ namespace IdentityServer4.Admin.Infrastructure
         /// <returns>An <see cref="T:Microsoft.AspNetCore.Identity.IdentityError" /> indicating the specified user <paramref name="userName" /> is invalid.</returns>
         public override IdentityError InvalidUserName(string userName)
         {
-            return new IdentityError()
+            return new IdentityError
             {
                 Code = nameof(InvalidUserName),
-                Description = FormatInvalidUserName((object) userName)
+                Description = FormatInvalidUserName(userName)
             };
         }
 
@@ -104,7 +104,7 @@ namespace IdentityServer4.Admin.Infrastructure
         /// <returns>An <see cref="T:Microsoft.AspNetCore.Identity.IdentityError" /> indicating the specified <paramref name="email" /> is invalid.</returns>
         public override IdentityError InvalidEmail(string email)
         {
-            return new IdentityError()
+            return new IdentityError
             {
                 Code = nameof(InvalidEmail),
                 Description = FormatInvalidEmail(email)
@@ -118,10 +118,10 @@ namespace IdentityServer4.Admin.Infrastructure
         /// <returns>An <see cref="T:Microsoft.AspNetCore.Identity.IdentityError" /> indicating the specified <paramref name="userName" /> already exists.</returns>
         public override IdentityError DuplicateUserName(string userName)
         {
-            return new IdentityError()
+            return new IdentityError
             {
                 Code = nameof(DuplicateUserName),
-                Description = FormatDuplicateUserName((object) userName)
+                Description = FormatDuplicateUserName(userName)
             };
         }
 
@@ -132,10 +132,10 @@ namespace IdentityServer4.Admin.Infrastructure
         /// <returns>An <see cref="T:Microsoft.AspNetCore.Identity.IdentityError" /> indicating the specified <paramref name="email" /> is already associated with an account.</returns>
         public override IdentityError DuplicateEmail(string email)
         {
-            return new IdentityError()
+            return new IdentityError
             {
                 Code = nameof(DuplicateEmail),
-                Description = FormatDuplicateEmail((object) email)
+                Description = FormatDuplicateEmail(email)
             };
         }
 
@@ -146,10 +146,10 @@ namespace IdentityServer4.Admin.Infrastructure
         /// <returns>An <see cref="T:Microsoft.AspNetCore.Identity.IdentityError" /> indicating the specific role <paramref name="role" /> name is invalid.</returns>
         public override IdentityError InvalidRoleName(string role)
         {
-            return new IdentityError()
+            return new IdentityError
             {
                 Code = nameof(InvalidRoleName),
-                Description = FormatInvalidRoleName((object) role)
+                Description = FormatInvalidRoleName(role)
             };
         }
 
@@ -160,10 +160,10 @@ namespace IdentityServer4.Admin.Infrastructure
         /// <returns>An <see cref="T:Microsoft.AspNetCore.Identity.IdentityError" /> indicating the specific role <paramref name="role" /> name already exists.</returns>
         public override IdentityError DuplicateRoleName(string role)
         {
-            return new IdentityError()
+            return new IdentityError
             {
                 Code = nameof(DuplicateRoleName),
-                Description = FormatDuplicateRoleName((object) role)
+                Description = FormatDuplicateRoleName(role)
             };
         }
 
@@ -173,7 +173,7 @@ namespace IdentityServer4.Admin.Infrastructure
         /// <returns>An <see cref="T:Microsoft.AspNetCore.Identity.IdentityError" /> indicating a user already has a password.</returns>
         public override IdentityError UserAlreadyHasPassword()
         {
-            return new IdentityError()
+            return new IdentityError
             {
                 Code = nameof(UserAlreadyHasPassword),
                 Description = Resources.UserAlreadyHasPassword
@@ -186,7 +186,7 @@ namespace IdentityServer4.Admin.Infrastructure
         /// <returns>An <see cref="T:Microsoft.AspNetCore.Identity.IdentityError" /> indicating user lockout is not enabled.</returns>
         public override IdentityError UserLockoutNotEnabled()
         {
-            return new IdentityError()
+            return new IdentityError
             {
                 Code = nameof(UserLockoutNotEnabled),
                 Description = Resources.UserLockoutNotEnabled
@@ -200,10 +200,10 @@ namespace IdentityServer4.Admin.Infrastructure
         /// <returns>An <see cref="T:Microsoft.AspNetCore.Identity.IdentityError" /> indicating a user is already in the specified <paramref name="role" />.</returns>
         public override IdentityError UserAlreadyInRole(string role)
         {
-            return new IdentityError()
+            return new IdentityError
             {
                 Code = nameof(UserAlreadyInRole),
-                Description = FormatUserAlreadyInRole((object) role)
+                Description = FormatUserAlreadyInRole(role)
             };
         }
 
@@ -214,10 +214,10 @@ namespace IdentityServer4.Admin.Infrastructure
         /// <returns>An <see cref="T:Microsoft.AspNetCore.Identity.IdentityError" /> indicating a user is not in the specified <paramref name="role" />.</returns>
         public override IdentityError UserNotInRole(string role)
         {
-            return new IdentityError()
+            return new IdentityError
             {
                 Code = nameof(UserNotInRole),
-                Description = FormatUserNotInRole((object) role)
+                Description = FormatUserNotInRole(role)
             };
         }
 
@@ -228,10 +228,10 @@ namespace IdentityServer4.Admin.Infrastructure
         /// <returns>An <see cref="T:Microsoft.AspNetCore.Identity.IdentityError" /> indicating a password of the specified <paramref name="length" /> does not meet the minimum length requirements.</returns>
         public override IdentityError PasswordTooShort(int length)
         {
-            return new IdentityError()
+            return new IdentityError
             {
                 Code = nameof(PasswordTooShort),
-                Description = FormatPasswordTooShort((object) length)
+                Description = FormatPasswordTooShort(length)
             };
         }
 
@@ -242,10 +242,10 @@ namespace IdentityServer4.Admin.Infrastructure
         /// <returns>An <see cref="T:Microsoft.AspNetCore.Identity.IdentityError" /> indicating a password does not meet the minimum number <paramref name="uniqueChars" /> of unique chars.</returns>
         public override IdentityError PasswordRequiresUniqueChars(int uniqueChars)
         {
-            return new IdentityError()
+            return new IdentityError
             {
                 Code = nameof(PasswordRequiresUniqueChars),
-                Description = FormatPasswordRequiresUniqueChars((object) uniqueChars)
+                Description = FormatPasswordRequiresUniqueChars(uniqueChars)
             };
         }
 
@@ -255,7 +255,7 @@ namespace IdentityServer4.Admin.Infrastructure
         /// <returns>An <see cref="T:Microsoft.AspNetCore.Identity.IdentityError" /> indicating a password entered does not contain a non-alphanumeric character.</returns>
         public override IdentityError PasswordRequiresNonAlphanumeric()
         {
-            return new IdentityError()
+            return new IdentityError
             {
                 Code = nameof(PasswordRequiresNonAlphanumeric),
                 Description = Resources.PasswordRequiresNonAlphanumeric
@@ -268,7 +268,7 @@ namespace IdentityServer4.Admin.Infrastructure
         /// <returns>An <see cref="T:Microsoft.AspNetCore.Identity.IdentityError" /> indicating a password entered does not contain a numeric character.</returns>
         public override IdentityError PasswordRequiresDigit()
         {
-            return new IdentityError()
+            return new IdentityError
             {
                 Code = nameof(PasswordRequiresDigit),
                 Description = Resources.PasswordRequiresDigit
@@ -281,7 +281,7 @@ namespace IdentityServer4.Admin.Infrastructure
         /// <returns>An <see cref="T:Microsoft.AspNetCore.Identity.IdentityError" /> indicating a password entered does not contain a lower case letter.</returns>
         public override IdentityError PasswordRequiresLower()
         {
-            return new IdentityError()
+            return new IdentityError
             {
                 Code = nameof(PasswordRequiresLower),
                 Description = Resources.PasswordRequiresLower
@@ -294,7 +294,7 @@ namespace IdentityServer4.Admin.Infrastructure
         /// <returns>An <see cref="T:Microsoft.AspNetCore.Identity.IdentityError" /> indicating a password entered does not contain an upper case letter.</returns>
         public override IdentityError PasswordRequiresUpper()
         {
-            return new IdentityError()
+            return new IdentityError
             {
                 Code = nameof(PasswordRequiresUpper),
                 Description = Resources.PasswordRequiresUpper

@@ -4,9 +4,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace IdentityServer4.Admin.Infrastructure
 {
-    public static class UserManagerExtensions
+    public static class SecurityExtensions
     {
-        public static  string ProtectPersonalData(this IServiceProvider service, string data, IdentityOptions options)
+        public static string ProtectPersonalData(this IServiceProvider service, string data, IdentityOptions options)
         {
             if (options.Stores.ProtectPersonalData)
                 return service.GetRequiredService<ILookupProtector>()

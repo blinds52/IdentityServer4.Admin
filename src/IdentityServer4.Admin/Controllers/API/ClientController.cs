@@ -31,21 +31,21 @@ namespace IdentityServer4.Admin.Controllers.API
         {
             if (await _dbContext.Clients.AnyAsync(u => u.ClientId == dto.ClientId))
             {
-                return new ApiResult(ApiResult.Error, "资源名已经存在");
+                return new ApiResult(ApiResultType.Error, "资源名已经存在");
             }
 
             var redirectUris = dto.RedirectUris.Split(new[] {";"}, StringSplitOptions.RemoveEmptyEntries)
                 .Where(cors => !string.IsNullOrWhiteSpace(cors) && cors.IsUrl()).ToList();
             if (redirectUris.Count == 0)
             {
-                return new ApiResult(ApiResult.Error, "回调地址不能为空");
+                return new ApiResult(ApiResultType.Error, "回调地址不能为空");
             }
 
             var allowedCorsOrigins = dto.AllowedCorsOrigins.Split(new[] {";"}, StringSplitOptions.RemoveEmptyEntries)
                 .Where(cors => !string.IsNullOrWhiteSpace(cors) && cors.IsUrl()).ToList();
             if (allowedCorsOrigins.Count == 0)
             {
-                return new ApiResult(ApiResult.Error, "授权范围不能为空");
+                return new ApiResult(ApiResultType.Error, "授权范围不能为空");
             }
 
             var client = new IdentityServer4.Models.Client();
@@ -169,7 +169,7 @@ namespace IdentityServer4.Admin.Controllers.API
                 .Include(x => x.AllowedCorsOrigins)
                 .Include(x => x.Properties)
                 .AsNoTracking()
-                .PagedQuery(input);
+                .PagedQueryAsync(input);
             var dtos = new List<ClientDto>();
             foreach (var client in queryResult.Result)
             {
@@ -190,7 +190,7 @@ namespace IdentityServer4.Admin.Controllers.API
         public async Task<IActionResult> DeleteAsync(int clientId)
         {
             var client = await _dbContext.Clients.FirstOrDefaultAsync(u => u.Id == clientId);
-            if (client == null) return new ApiResult(ApiResult.Error, "客户端不存在或已经删除");
+            if (client == null) return new ApiResult(ApiResultType.Error, "客户端不存在或已经删除");
 
             _dbContext.Clients.Remove(client);
             // TODO: 确认其它关联表数据一并删除

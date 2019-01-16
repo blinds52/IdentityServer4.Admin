@@ -45,6 +45,7 @@ namespace IdentityServer4.Admin.Entities
         /// <summary>
         /// Last modifier user of this entity.
         /// </summary>
+        [StringLength(256)]
         public string LastModifierUserId { get; set; }
 
         /// <summary>
@@ -55,6 +56,7 @@ namespace IdentityServer4.Admin.Entities
         /// <summary>
         /// Creator of this entity.
         /// </summary>
+        [StringLength(256)]
         public string CreatorUserId { get; set; }
 
         /// <summary>
@@ -63,7 +65,7 @@ namespace IdentityServer4.Admin.Entities
         /// <returns>True, if this entity is transient</returns>
         public virtual bool IsTransient()
         {
-            if (EqualityComparer<TKey>.Default.Equals(Id, default(TKey)))
+            if (EqualityComparer<TKey>.Default.Equals(Id, default))
             {
                 return true;
             }

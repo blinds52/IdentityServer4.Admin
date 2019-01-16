@@ -9,7 +9,7 @@ namespace IdentityServer4.Admin.Infrastructure
 {
     public static class PagedQueryExtensions
     {
-        public static async Task<PagedQueryResult<TEntity>> PagedQuery<TEntity>(this IQueryable<TEntity> queryable,
+        public static async Task<PagedQueryResult<TEntity>> PagedQueryAsync<TEntity>(this IQueryable<TEntity> queryable,
             PagedQuery input,
             Expression<Func<TEntity, bool>> where = null) where TEntity : class
         {

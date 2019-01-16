@@ -32,7 +32,7 @@ namespace IdentityServer4.Admin.Controllers.API
         public async Task<IActionResult> GetProfileAsync(Guid userId)
         {
             if (User.FindFirst("sub")?.Value != userId.ToString())
-                return new ApiResult(ApiResult.Error, "验证失败");
+                return new ApiResult(ApiResultType.Error, "验证失败");
 
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId && u.IsDeleted == false);
             var dto = new UserOutputDto();
@@ -66,15 +66,15 @@ namespace IdentityServer4.Admin.Controllers.API
             dto.OfficePhone = dto.OfficePhone?.Trim();
 
             if (User.FindFirst("sub")?.Value != userId.ToString())
-                return new ApiResult(ApiResult.Error, "验证失败");
+                return new ApiResult(ApiResultType.Error, "验证失败");
 
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            if (user == null) return new ApiResult(ApiResult.Error, "用户不存在");
+            if (user == null) return new ApiResult(ApiResultType.Error, "用户不存在");
             if (user.UserName == AdminConsts.AdminName && dto.UserName != AdminConsts.AdminName)
-                return new ApiResult(ApiResult.Error, "管理员用户名不能修改");
+                return new ApiResult(ApiResultType.Error, "管理员用户名不能修改");
 
             if (user.UserName != AdminConsts.AdminName && dto.UserName == AdminConsts.AdminName)
-                return new ApiResult(ApiResult.Error, $"用户名不能是 {AdminConsts.AdminName}");
+                return new ApiResult(ApiResultType.Error, $"用户名不能是 {AdminConsts.AdminName}");
 
             string normalizedName =
                 _serviceProvider.ProtectPersonalData(_userManager.NormalizeKey(dto.UserName),
@@ -84,7 +84,7 @@ namespace IdentityServer4.Admin.Controllers.API
             if (await _userManager.Users.AnyAsync(u => u.NormalizedUserName == normalizedName
                                                        && u.Id != userId))
             {
-                return new ApiResult(ApiResult.Error, "用户名已经存在");
+                return new ApiResult(ApiResultType.Error, "用户名已经存在");
             }
 
             user.UserName = dto.UserName;
@@ -96,23 +96,23 @@ namespace IdentityServer4.Admin.Controllers.API
             user.Sex = dto.Sex;
             
             var result = await _userManager.UpdateAsync(user);
-            return result.Succeeded ? ApiResult.Ok : new ApiResult(ApiResult.Error, result.Errors.First().Description);
+            return result.Succeeded ? ApiResult.Ok : new ApiResult(ApiResultType.Error, result.Errors.First().Description);
         }
 
         [HttpPut("{userId}/password")]
         public async Task<IActionResult> ChangePasswordAsync(Guid userId, [FromBody] ChangeSelfPasswordInputDto dto)
         {
             if (User.FindFirst("sub")?.Value != userId.ToString())
-                return new ApiResult(ApiResult.Error, "验证失败");
+                return new ApiResult(ApiResultType.Error, "验证失败");
 
             dto.NewPassword = dto.NewPassword.Trim();
             dto.OldPassword = dto.OldPassword?.Trim();
 
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            if (user == null) return new ApiResult(ApiResult.Error, "用户不存在");
+            if (user == null) return new ApiResult(ApiResultType.Error, "用户不存在");
 
             var result = await _userManager.ChangePasswordAsync(user, dto.OldPassword, dto.NewPassword);
-            return result.Succeeded ? ApiResult.Ok : new ApiResult(ApiResult.Error, result.Errors.First().Description);
+            return result.Succeeded ? ApiResult.Ok : new ApiResult(ApiResultType.Error, result.Errors.First().Description);
         }
     }
 }

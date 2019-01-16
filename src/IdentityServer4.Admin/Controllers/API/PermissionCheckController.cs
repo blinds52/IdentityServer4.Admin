@@ -27,7 +27,7 @@ namespace IdentityServer4.Admin.Controllers.API
         {
             if (!(HttpContext.User.Identity.Name == AdminConsts.AdminName ||
                   HttpContext.User.Identity.Name == userId.ToString()))
-                return new ApiResult(ApiResult.Error, "禁止访问");
+                return new ApiResult(ApiResultType.Error, "禁止访问");
 
             var key = $"{userId}_{permission}";
 

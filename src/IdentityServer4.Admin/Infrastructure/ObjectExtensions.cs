@@ -56,7 +56,7 @@ namespace IdentityServer4.Admin.Infrastructure
         {
             if (value == null)
             {
-                return default(T);
+                return default;
             }
 
             if (value.GetType() == typeof(T))
@@ -161,7 +161,7 @@ namespace IdentityServer4.Admin.Infrastructure
         {
             if (obj == null)
             {
-                return default(T);
+                return default;
             }
 
             if (typeof(T).HasAttribute<SerializableAttribute>())

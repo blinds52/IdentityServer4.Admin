@@ -13,13 +13,6 @@ namespace IdentityServer4.Admin.Infrastructure.Entity
         where TKey : IEquatable<TKey>
     {
         /// <summary>
-        /// 初始化一个<see cref="EntityBase{TKey}"/>类型的新实例
-        /// </summary>
-        protected EntityBase()
-        {
-        }
-
-        /// <summary>
         /// 获取或设置 编号
         /// </summary>
         [DisplayName("编号")]
@@ -34,7 +27,7 @@ namespace IdentityServer4.Admin.Infrastructure.Entity
         /// <summary>
         /// Last modifier user of this entity.
         /// </summary>
-        [StringLength(36)]
+        [StringLength(256)]
         public string LastModifierUserId { get; set; }
 
         /// <summary>
@@ -45,7 +38,7 @@ namespace IdentityServer4.Admin.Infrastructure.Entity
         /// <summary>
         /// Creator of this entity.
         /// </summary>
-        [StringLength(36)]
+        [StringLength(256)]
         public string CreatorUserId { get; set; }
 
         /// <summary>
@@ -54,7 +47,7 @@ namespace IdentityServer4.Admin.Infrastructure.Entity
         /// <returns>True, if this entity is transient</returns>
         public virtual bool IsTransient()
         {
-            if (EqualityComparer<TKey>.Default.Equals(Id, default(TKey)))
+            if (EqualityComparer<TKey>.Default.Equals(Id, default))
             {
                 return true;
             }

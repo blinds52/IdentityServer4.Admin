@@ -32,9 +32,9 @@ namespace IdentityServer4.Admin.Controllers.API
         {
             var permission = Mapper.Map<Permission>(dto);
             if (dto.Name == AdminConsts.AdminName)
-                return new ApiResult(ApiResult.Error, $"权限名不能是: {AdminConsts.AdminName}");
+                return new ApiResult(ApiResultType.Error, $"权限名不能是: {AdminConsts.AdminName}");
             if (await _dbContext.Permissions.FirstOrDefaultAsync(u => u.Name == dto.Name) != null)
-                return new ApiResult(ApiResult.Error, "权限已经存在");
+                return new ApiResult(ApiResultType.Error, "权限已经存在");
 
             await _dbContext.Permissions.AddAsync(permission);
             await _dbContext.SaveChangesAsync();
@@ -44,7 +44,7 @@ namespace IdentityServer4.Admin.Controllers.API
         [HttpGet]
         public async Task<IActionResult> SearchAsync([FromQuery] PagedQuery input)
         {
-            var queryResult = await _dbContext.Permissions.PagedQuery(input);
+            var queryResult = await _dbContext.Permissions.PagedQueryAsync(input);
             var dtos = Mapper.Map<List<PermissionDto>>(queryResult.Result);
             return new ApiResult(queryResult.ToResult(dtos));
         }
@@ -60,13 +60,13 @@ namespace IdentityServer4.Admin.Controllers.API
         public async Task<IActionResult> UpdateAsync(Guid permissionId, [FromBody] PermissionDto dto)
         {
             if (dto.Name == AdminConsts.AdminName)
-                return new ApiResult(ApiResult.Error, $"权限名不能是: {AdminConsts.AdminName}");
+                return new ApiResult(ApiResultType.Error, $"权限名不能是: {AdminConsts.AdminName}");
 
             var permission = await _dbContext.Permissions.FirstOrDefaultAsync(p => p.Id == permissionId);
-            if (permission == null) return new ApiResult(ApiResult.Error, "权限不存在");
+            if (permission == null) return new ApiResult(ApiResultType.Error, "权限不存在");
             if (await _dbContext.Permissions.FirstOrDefaultAsync(u => u.Name == dto.Name
                                                                       && u.Id != permissionId) != null)
-                return new ApiResult(ApiResult.Error, "权限已经存在");
+                return new ApiResult(ApiResultType.Error, "权限已经存在");
 
             permission.Name = dto.Name;
             permission.Description = dto.Description;
@@ -79,8 +79,8 @@ namespace IdentityServer4.Admin.Controllers.API
         public async Task<IActionResult> DeleteAsync(Guid permissionId)
         {
             var permission = await _dbContext.Permissions.FirstOrDefaultAsync(p => p.Id == permissionId);
-            if (permission == null) return new ApiResult(ApiResult.Error, "权限不存在");
-            if (permission.Name == AdminConsts.AdminName) return new ApiResult(ApiResult.Error, "不能删除管理员权限");
+            if (permission == null) return new ApiResult(ApiResultType.Error, "权限不存在");
+            if (permission.Name == AdminConsts.AdminName) return new ApiResult(ApiResultType.Error, "不能删除管理员权限");
 
             // 删除 RolePermission 映射
             _dbContext.RolePermissions.RemoveRange(

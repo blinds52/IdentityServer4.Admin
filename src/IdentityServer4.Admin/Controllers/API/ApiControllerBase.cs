@@ -20,7 +20,7 @@ namespace IdentityServer4.Admin.Controllers.API
         {
             if (!ModelState.IsValid)
             {
-                context.Result = new ApiResult(ApiResult.ModelNotValid,
+                context.Result = new ApiResult(ApiResultType.Forbidden,
                     ModelState.First(kv => kv.Value.ValidationState == ModelValidationState.Invalid).Value.Errors
                         .First().ErrorMessage);
                 return;

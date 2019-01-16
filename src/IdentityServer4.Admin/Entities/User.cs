@@ -12,11 +12,6 @@ namespace IdentityServer4.Admin.Entities
     public class User : IdentityUser<Guid>, IEntity<Guid>, ISoftDelete
     {
         /// <summary>
-        /// 是否删除
-        /// </summary>
-        public bool IsDeleted { get; set; }
-
-        /// <summary>
         /// 姓
         /// </summary>
         [StringLength(256)]
@@ -27,19 +22,19 @@ namespace IdentityServer4.Admin.Entities
         /// </summary>
         [StringLength(256)]
         public string LastName { get; set; }
-        
+
         /// <summary>
         /// 职位
         /// </summary>
         [StringLength(256)]
         public string Title { get; set; }
-        
+
         /// <summary>
         /// 团队
         /// </summary>
         [StringLength(256)]
         public string Group { get; set; }
-        
+
         /// <summary>
         /// 职级
         /// </summary>
@@ -50,6 +45,44 @@ namespace IdentityServer4.Admin.Entities
         /// 性别
         /// </summary>
         public Sex Sex { get; set; }
+
+        /// <summary>
+        /// 是否删除
+        /// </summary>
+        public bool IsDeleted { get; set; }
+
+        /// <summary>
+        /// Last modification date of this entity.
+        /// </summary>
+        public DateTime? LastModificationTime { get; set; }
+
+        /// <summary>
+        /// Last modifier user of this entity.
+        /// </summary>
+        [StringLength(256)]
+        public string LastModifierUserId { get; set; }
+
+        /// <summary>
+        /// Creation time of this entity.
+        /// </summary>
+        public DateTime CreationTime { get; set; }
+
+        /// <summary>
+        /// Creator of this entity.
+        /// </summary>
+        [StringLength(256)]
+        public string CreatorUserId { get; set; }
+
+        /// <summary>
+        /// Which user deleted this entity?
+        /// </summary>
+        [StringLength(256)]
+        public string DeleterUserId { get; set; }
+
+        /// <summary>
+        /// Deletion time of this entity.
+        /// </summary>
+        public DateTime? DeletionTime { get; set; }
 
         /// <summary>
         /// 公司电话
@@ -96,6 +129,7 @@ namespace IdentityServer4.Admin.Entities
         /// <summary>
         /// Gets or sets a salted and hashed representation of the password for this user.
         /// </summary>
+        [StringLength(512)]
         public override string PasswordHash { get; set; }
 
         /// <summary>
@@ -145,36 +179,6 @@ namespace IdentityServer4.Admin.Entities
         /// Gets or sets the number of failed login attempts for the current user.
         /// </summary>
         public override int AccessFailedCount { get; set; }
-
-        /// <summary>
-        /// Last modification date of this entity.
-        /// </summary>
-        public DateTime? LastModificationTime { get; set; }
-
-        /// <summary>
-        /// Last modifier user of this entity.
-        /// </summary>
-        public string LastModifierUserId { get; set; }
-
-        /// <summary>
-        /// Creation time of this entity.
-        /// </summary>
-        public DateTime CreationTime { get; set; }
-
-        /// <summary>
-        /// Creator of this entity.
-        /// </summary>
-        public string CreatorUserId { get; set; }
-
-        /// <summary>
-        /// Which user deleted this entity?
-        /// </summary>
-        public string DeleterUserId { get; set; }
-
-        /// <summary>
-        /// Deletion time of this entity.
-        /// </summary>
-        public DateTime? DeletionTime { get; set; }
 
         /// <summary>
         /// Checks if this entity is transient (it has not an Id).
